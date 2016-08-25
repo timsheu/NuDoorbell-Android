@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">NuDoorbell</string>
+    <string name="dvr">DVR</string>
+    <string name="skyeye">SkyEye</string>
+
+    <string name="camera_category_title">Camera Setup</string>
+    <string name="wifi_category_title">Wi-Fi Setup</string>
+
+    <string name="camera_category_title_dvr">Video Stream</string>
+    <string name="audio_category_title_dvr">Audio Stream</string>
+    <string name="wifi_category_title_dvr">Wireless Setup</string>
+    <string name="info_category_title_dvr">Device Information</string>
+    <string name="version_category_title">APP Information</string>
+
+    <string name="online">ONLINE</string>
+    <string name="offline">OFFLINE</string>
+    <string name="temperature">N/A \u2103</string>
+    <string name="crash_toast_text">Crash detected ! Send E-mail report to developer !</string>
+    <string name="email_toast_text">Send E-mail report to developer !</string>
+</resources>
