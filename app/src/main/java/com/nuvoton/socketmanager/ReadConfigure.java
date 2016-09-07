@@ -2,8 +2,11 @@ package com.nuvoton.socketmanager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.EventLog;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 
+import com.google.common.net.InetAddresses;
 import com.longevitysoft.android.xml.plist.*;
 import com.longevitysoft.android.xml.plist.domain.aArray;
 import com.longevitysoft.android.xml.plist.domain.Dict;
@@ -14,6 +17,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -23,6 +28,7 @@ import java.util.Set;
  * Created by timsheu on 6/3/16.
  */
 public class ReadConfigure {
+    private static String cameraSerial = "5";
     private static Context contextLocal;
     private static final String TAG = "ReadConfigure";
     private static ReadConfigure readConfigure = new ReadConfigure();
@@ -128,7 +134,12 @@ public class ReadConfigure {
         if (clear){
             editor.clear();
         }
-        editor.putString("Version", "1.1.6");
+        editor.putString("PublicIPAddr", "192.168.8.5");
+        editor.putString("PrivateIPAddr", "192.168.8.5");
+        editor.putString("HTTPPort", "80");
+        editor.putString("RTSPPort", "554");
+        editor.putString("FCM Token", "-1");
+        editor.putString("Version", "1.0.1");
         editor.putBoolean("first created", true);
         editor.putString("Adaptive", "0");
         editor.putString("Fixed Quality", "0");
@@ -168,10 +179,10 @@ public class ReadConfigure {
             editor.putString("History 1", "rtsp://nuvoton.no-ip.biz/cam1/mpeg4");
         }else if (cameraSerial == 5){
             editor.putString("Name", "LOCAL-IP");
-            editor.putString("URL", "rtsp://192.168.100.1/cam1/mpeg4");
-            editor.putString("History 0", "rtsp://192.168.100.1/cam1/mpeg4");
+            editor.putString("URL", "rtsp://192.168.8.5/cam1/h264");
+            editor.putString("History 0", "rtsp://192.168.8.5/cam1/h264");
         }
-        editor.commit();
+        editor.apply();
     }
 
     private static boolean isSharedpreferenceCreated(int cameraSerial){
@@ -185,4 +196,81 @@ public class ReadConfigure {
         }
     }
 
+    public void setTargetValue(String key, String value){
+        String preferenceName = "Setup Camera " + String.valueOf(cameraSerial);
+        Log.d(TAG, "initSharedPreference: " + preferenceName);
+        SharedPreferences preferences = contextLocal.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+        if (key != null || value != null){
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(key, value).commit();
+        }
+    }
+
+    public String getTargetValue(String key){
+        String preferenceName = "Setup Camera " + String.valueOf(cameraSerial);
+        String value = "-2";
+        Log.d(TAG, "initSharedPreference: " + preferenceName);
+        SharedPreferences preferences = contextLocal.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+        if (key != null){
+            value = preferences.getString(key, "-1");
+        }
+        return value;
+    }
+
+    public void updateDoorBellDevice(EventMessageClass messageClass){
+        String preferenceName = "Setup Camera " + String.valueOf(cameraSerial);
+        Log.d(TAG, "initSharedPreference: " + preferenceName);
+        String key = null, value = null;
+        SharedPreferences preferences = contextLocal.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        InetAddress address = null;
+
+        key = "PublicIPAddr";
+        try{
+            address = InetAddresses.fromLittleEndianByteArray(messageClass.response.u32DevPublicIP);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d(TAG, "updateDoorBellDevice: retrieve public ip failed");
+        }
+        value = address.toString();
+        Log.d(TAG, "updateDoorBellDevice: public ip: " + value);
+        editor.putString(key, value);
+
+        key = "PrivateIPAddr";
+        try{
+            address = InetAddresses.fromLittleEndianByteArray(messageClass.response.u32DevPrivateIP);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d(TAG, "updateDoorBellDevice: retrieve private ip failed");
+        }
+        value = address.toString();
+        Log.d(TAG, "updateDoorBellDevice: private ip: " + value);
+        editor.putString(key, value);
+
+        key = "HTTPPort";
+        long temp = 0;
+        try{
+            temp = messageClass.response.u32DevHTTPPort;
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d(TAG, "updateDoorBellDevice: retrieve http port failed");
+        }
+        value = String.valueOf(temp);
+        Log.d(TAG, "updateDoorBellDevice: http port: " + value);
+        editor.putString(key, value);
+
+        key = "RTSPPort";
+        temp = 0;
+        try{
+            temp = messageClass.response.u32DevRTSPPort;
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.d(TAG, "updateDoorBellDevice: retrieve rtsp port failed");
+        }
+        value = String.valueOf(temp);
+        Log.d(TAG, "updateDoorBellDevice: rtsp port: " + value);
+        editor.putString(key, value);
+
+        editor.apply();
+    }
 }

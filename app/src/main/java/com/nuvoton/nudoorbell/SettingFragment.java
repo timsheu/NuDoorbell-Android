@@ -90,8 +90,8 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         Log.d(TAG, "onCreate: " + preferenceName + " pref name: " + getPreferenceManager().getSharedPreferencesName());
         // Inflate the layout for this fragment
 
-        if (platform.equals("NuWicam")) {
-            addPreferencesFromResource(R.xml.settings_nuwicam);
+        if (platform.equals("NuDoorbell")) {
+            addPreferencesFromResource(R.xml.settings_nudoorbell);
         }
         if (!isAdded()) return;
         configure = ReadConfigure.getInstance(getActivity().getApplicationContext(), false);

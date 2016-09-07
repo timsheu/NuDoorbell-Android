@@ -5,11 +5,11 @@ android {
     buildToolsVersion '24'
 
     defaultConfig {
-        applicationId "com.nuvoton.nuwicam"
+        applicationId "com.nuvoton.nudoorbell"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 117
-        versionName "1.1.7"
+        versionCode 101
+        versionName "1.0.1"
     }
     buildTypes {
         release {
@@ -36,6 +36,8 @@ dependencies {
     compile group: 'org.rxtx', name: 'rxtx', version: '2.1.7'
     compile 'ch.acra:acra:4.9.0'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
+    compile 'com.google.guava:guava:19.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

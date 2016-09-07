@@ -13,7 +13,10 @@ import android.util.Log;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.nuvoton.socketmanager.EventMessageClass;
+import com.nuvoton.socketmanager.FCMExecutive;
 import com.nuvoton.socketmanager.ReadConfigure;
+import com.nuvoton.socketmanager.ShmadiaConnectManager;
 
 import android.app.FragmentManager;
 import android.view.Surface;
@@ -22,7 +25,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBottomBarListener, SettingFragment.OnHideBottomBarListener {
+public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBottomBarListener, SettingFragment.OnHideBottomBarListener, ShmadiaConnectManager.ShmadiaConnectInterface {
     // live view callbacks
     public void onHideBottomBar(boolean isHide){
         if (isHide){
@@ -46,7 +49,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     }
 
     private int index=0;
-    private String platform = "NuWicam";
+    private String platform = "NuDoorbell";
     private String cameraSerial = "5";
     private boolean clicked = false;
     private boolean isLandscape = false;
@@ -73,6 +76,13 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
             isLandscape = false;
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isFCMTokenExist();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +95,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
         String cameraName = "Setup Camera " + cameraSerial;
         SharedPreferences preference = getApplicationContext().getSharedPreferences(cameraName, Context.MODE_PRIVATE);
         String version = preference.getString("Version", "0");
-        if (version.compareTo("1.1.6") != 0){
+        if (version.compareTo("1.0.1") != 0){
             configure.initSharedPreference(Integer.valueOf(cameraSerial), true);
         }
         switch (orientation){
@@ -102,6 +112,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
         String token = FirebaseInstanceId.getInstance().getToken();
         if (token != null){
             Log.d(TAG, "onCreate: token" + token);
+            preference.edit().putString("FCM Token", token).apply();
         }
     }
 
@@ -231,6 +242,39 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
+        ShmadiaConnectManager.getInstance(this).closeSocket();
     }
 
+    Runnable isFCMTokenExistRunnable = new Runnable() {
+        @Override
+        public void run() {
+            isFCMTokenExist();
+        }
+    };
+
+    public void isFCMTokenExist(){
+        ReadConfigure configure = ReadConfigure.getInstance(getApplicationContext(), false);
+        String token = configure.getTargetValue("FCM Token");
+        Log.d(TAG, "isFCMTokenExist: " + token);
+        if (token.compareTo("-1") != 0){
+            FCMExecutive.getInstance(this).setToken(token);
+            ShmadiaConnectManager manager = ShmadiaConnectManager.getInstance(this);
+            manager.shmadiaConnectInterface = this;
+            manager.openSocket();
+        }else{
+            new Handler().postDelayed(isFCMTokenExistRunnable, 5000);
+        }
+    }
+
+    @Override
+    public void announceIsConnected() {
+        EventMessageClass messageClass = new EventMessageClass();
+        char[] uuidArray = messageClass.TEST_UUID.toCharArray();
+        messageClass.request.szUUID = uuidArray;
+        messageClass.request.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
+        char[] tokenArray = FCMExecutive.getInstance(this).getToken().toCharArray();
+        messageClass.request.szCloudRegID = tokenArray;
+        ShmadiaConnectManager.getInstance(this).writeMessageToShmadia(messageClass);
+        Log.d(TAG, "sendRegistrationToServer: " + messageClass.toString());
+    }
 }
