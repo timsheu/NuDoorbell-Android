@@ -2,9 +2,7 @@ package com.nuvoton.socketmanager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.EventLog;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
 
 import com.google.common.net.InetAddresses;
 import com.longevitysoft.android.xml.plist.*;
@@ -17,12 +15,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by timsheu on 6/3/16.
@@ -272,5 +267,7 @@ public class ReadConfigure {
         editor.putString(key, value);
 
         editor.apply();
+
+
     }
 }
