@@ -12,24 +12,6 @@
     </item>
     <item
         is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.4.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-support-vector-drawable-23.4.0_7640044c0d5ccf29fcc8fdb4ee988d8b259fb5a1.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.4.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.4.0_58595b61cb4c6517798a894c3bba377c0f14ca8f.jar" />
-    </item>
-    <item
-        is-multidex="false"
         jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/design/23.1.1/jars/classes.jar"
         jumboMode="false"
         optimize="true"
@@ -45,6 +27,186 @@
         revision="24.0.0"
         sha1="88848548ab56d4fbf3d2d1b0c85bf1ff9b4c1f4b">
         <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.google.firebase-firebase-analytics-9.4.0_fdc8368e5c4af81b4e6061e32366de1d969bd6c6.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/ch.acra/acra/4.9.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="d03cbe00a6703cfa62ae868707af59d41aff2140">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/ch.acra-acra-4.9.0_34372f480397f6ce4ec3eafb9d9f3c701bbb6005.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-messaging/9.4.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="4b6d9b70f93bbeb872d0948bc064ae3f3f2bcbac">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.google.firebase-firebase-messaging-9.4.0_98e2639b725659159a391110d73354af70b21ffd.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/libs/internal_impl-23.4.0.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/internal_impl-23.4.0_9690f97bb33b4a3d71d000ac1367d8f72a8df52d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/info.hoang8f/android-segmented/1.0.6/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="692a913dff3246e0cc5369c2508f5970ecfeca01">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/info.hoang8f-android-segmented-1.0.6_e0b45f3189764a39a8753a924d4fcbfa5b3073b9.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-common/9.4.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="18b5697c65c4fe5b7381613b8b8ae9ac52e26fa7">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.google.firebase-firebase-common-9.4.0_e995d6e8c71a998d4c1a9d6bbe682a14eb1d3d94.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.4.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="618485fef3ebe12127f7622abbc9b5b39057b5c2">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.google.android.gms-play-services-basement-9.4.0_c44c9f3590c60701d4829c4cc812e212adf77b25.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-23.4.0_6026ace6a3bc29da7d9810557766ede83eff69a2.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/percent/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="91c2541305eec5a688f3a60529d974e48f77d760">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-percent-23.4.0_528207c0b95d63b55ac47451043e1e83b7562bd2.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.4.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.android.support-animated-vector-drawable-23.4.0_4a16e48b34225bba5d82e888967591cc9b8a30cd.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/cchsu20/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/19.0/6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9/guava-19.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/guava-19.0_042c00acfa6078b800e31164e486c2e55cf54a63.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics-impl/9.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="a440fb3fec30ff925e9f601cc458fb6671834cb2">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.google.firebase-firebase-analytics-impl-9.4.0_78e195b66e813f87584c3195e9795ccf1948ecbd.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="fbd5a31353bc4417e3675c9e869f2c945297c055">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_92fdfda92c2fde9c91057c18160df325d852715b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="5214f79773ec4ac4b917812d88e66f5f6ba73d79">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/instant-run_c6a97bff3228cf14c123e01e117cfd87f68b4df7.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-iid/9.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="3b7173b3df4c7029699919414400041f64519e34">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.google.firebase-firebase-iid-9.4.0_88a777e19dc4162781caddcdc8efe04e67b7cd47.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/preference-v7/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="b954d8588de65c67c1ec482678620845bbb5f737">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-preference-v7-23.4.0_6b90fd630d2962f6cc4e25d92f0c72832d9bfddf.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/AndroidSDK/sdk/extras/android/m2repository/com/android/support/support-annotations/23.4.0/support-annotations-23.4.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/support-annotations-23.4.0_2c9461afbdbe0cb6df1fce4cc18a50d9b4db3471.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.4.0/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="24.0.0"
+        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.android.support-support-vector-drawable-23.4.0_7640044c0d5ccf29fcc8fdb4ee988d8b259fb5a1.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/cchsu20/.gradle/caches/modules-2/files-2.1/org.rxtx/rxtx/2.1.7/e96c946be1e6537378fd532d2742b523df2725a4/rxtx-2.1.7.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="e96c946be1e6537378fd532d2742b523df2725a4">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/rxtx-2.1.7_44f3e678a569dd51badae39cdbed5cf8e1842c51.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-support-vector-drawable-23.4.0_7640044c0d5ccf29fcc8fdb4ee988d8b259fb5a1.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.0"
+        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
+        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.4.0_58595b61cb4c6517798a894c3bba377c0f14ca8f.jar" />
     </item>
     <item
         is-multidex="false"
@@ -93,48 +255,12 @@
     </item>
     <item
         is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/ch.acra/acra/4.9.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="d03cbe00a6703cfa62ae868707af59d41aff2140">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/ch.acra-acra-4.9.0_34372f480397f6ce4ec3eafb9d9f3c701bbb6005.jar" />
-    </item>
-    <item
-        is-multidex="false"
         jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.4.0/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="24.0.0"
         sha1="ec75036c3c52e451d0cde50a5aedaf5fd32354a0">
         <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.android.support-recyclerview-v7-23.4.0_1cbfda7fc0edcbc7d4693c19726f2d0833243fbb.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-messaging/9.4.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="4b6d9b70f93bbeb872d0948bc064ae3f3f2bcbac">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.google.firebase-firebase-messaging-9.4.0_98e2639b725659159a391110d73354af70b21ffd.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/libs/internal_impl-23.4.0.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="ea3c07504d2c8f4b13aa17c45c1b68ed9c1c3674">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/internal_impl-23.4.0_9690f97bb33b4a3d71d000ac1367d8f72a8df52d.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/info.hoang8f/android-segmented/1.0.6/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="692a913dff3246e0cc5369c2508f5970ecfeca01">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/info.hoang8f-android-segmented-1.0.6_e0b45f3189764a39a8753a924d4fcbfa5b3073b9.jar" />
     </item>
     <item
         is-multidex="false"
@@ -156,33 +282,6 @@
     </item>
     <item
         is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-common/9.4.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="18b5697c65c4fe5b7381613b8b8ae9ac52e26fa7">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.google.firebase-firebase-common-9.4.0_e995d6e8c71a998d4c1a9d6bbe682a14eb1d3d94.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.4.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="618485fef3ebe12127f7622abbc9b5b39057b5c2">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.google.android.gms-play-services-basement-9.4.0_c44c9f3590c60701d4829c4cc812e212adf77b25.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-support-v4-23.4.0_6026ace6a3bc29da7d9810557766ede83eff69a2.jar" />
-    </item>
-    <item
-        is-multidex="false"
         jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.4.0/jars/classes.jar"
         jumboMode="true"
         optimize="true"
@@ -192,39 +291,12 @@
     </item>
     <item
         is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/percent/23.4.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="91c2541305eec5a688f3a60529d974e48f77d760">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-percent-23.4.0_528207c0b95d63b55ac47451043e1e83b7562bd2.jar" />
-    </item>
-    <item
-        is-multidex="false"
         jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.4.0/jars/classes.jar"
         jumboMode="false"
         optimize="true"
         revision="24.0.0"
         sha1="67bd36ee9340ec7c254108936ad16b24bed160cc">
         <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.android.support-support-v4-23.4.0_6026ace6a3bc29da7d9810557766ede83eff69a2.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.4.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.android.support-animated-vector-drawable-23.4.0_4a16e48b34225bba5d82e888967591cc9b8a30cd.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/cchsu20/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/19.0/6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9/guava-19.0.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/guava-19.0_042c00acfa6078b800e31164e486c2e55cf54a63.jar" />
     </item>
     <item
         is-multidex="false"
@@ -243,24 +315,6 @@
         revision="24.0.0"
         sha1="de4db3785756bfb0915a9f59a9b3f2fea7407be4">
         <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-animated-vector-drawable-23.4.0_4a16e48b34225bba5d82e888967591cc9b8a30cd.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-analytics-impl/9.4.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="a440fb3fec30ff925e9f601cc458fb6671834cb2">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.google.firebase-firebase-analytics-impl-9.4.0_78e195b66e813f87584c3195e9795ccf1948ecbd.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="fbd5a31353bc4417e3675c9e869f2c945297c055">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_92fdfda92c2fde9c91057c18160df325d852715b.jar" />
     </item>
     <item
         is-multidex="false"
@@ -291,24 +345,6 @@
     </item>
     <item
         is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="5214f79773ec4ac4b917812d88e66f5f6ba73d79">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/instant-run_c6a97bff3228cf14c123e01e117cfd87f68b4df7.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.google.firebase/firebase-iid/9.4.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="3b7173b3df4c7029699919414400041f64519e34">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.google.firebase-firebase-iid-9.4.0_88a777e19dc4162781caddcdc8efe04e67b7cd47.jar" />
-    </item>
-    <item
-        is-multidex="false"
         jar="/Users/cchsu20/.gradle/caches/modules-2/files-2.1/org.rxtx/rxtx/2.1.7/e96c946be1e6537378fd532d2742b523df2725a4/rxtx-2.1.7.jar"
         jumboMode="false"
         optimize="true"
@@ -318,39 +354,12 @@
     </item>
     <item
         is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/preference-v7/23.4.0/jars/classes.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="b954d8588de65c67c1ec482678620845bbb5f737">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-preference-v7-23.4.0_6b90fd630d2962f6cc4e25d92f0c72832d9bfddf.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/AndroidSDK/sdk/extras/android/m2repository/com/android/support/support-annotations/23.4.0/support-annotations-23.4.0.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/support-annotations-23.4.0_2c9461afbdbe0cb6df1fce4cc18a50d9b4db3471.jar" />
-    </item>
-    <item
-        is-multidex="false"
         jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/design/23.1.1/jars/classes.jar"
         jumboMode="true"
         optimize="true"
         revision="24.0.0"
         sha1="379471b2bd17d9737c050345c08e8c7d16589784">
         <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/com.android.support-design-23.1.1_76df4eb22986374cd8f76c4d950f30c474ae32f0.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.4.0/jars/classes.jar"
-        jumboMode="false"
-        optimize="true"
-        revision="24.0.0"
-        sha1="c2c594cace5d83a3227b2b6e658ecbfd586d3ed9">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.android.support-support-vector-drawable-23.4.0_7640044c0d5ccf29fcc8fdb4ee988d8b259fb5a1.jar" />
     </item>
     <item
         is-multidex="false"
@@ -378,15 +387,6 @@
         revision="24.0.0"
         sha1="b954d8588de65c67c1ec482678620845bbb5f737">
         <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/release/com.android.support-preference-v7-23.4.0_6b90fd630d2962f6cc4e25d92f0c72832d9bfddf.jar" />
-    </item>
-    <item
-        is-multidex="false"
-        jar="/Users/cchsu20/.gradle/caches/modules-2/files-2.1/org.rxtx/rxtx/2.1.7/e96c946be1e6537378fd532d2742b523df2725a4/rxtx-2.1.7.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="24.0.0"
-        sha1="e96c946be1e6537378fd532d2742b523df2725a4">
-        <dex dex="/Volumes/Documents/Document/Project/Android/NuDoorbell/NuDoorbell-Android/app/build/intermediates/pre-dexed/debug/rxtx-2.1.7_44f3e678a569dd51badae39cdbed5cf8e1842c51.jar" />
     </item>
     <item
         is-multidex="false"
