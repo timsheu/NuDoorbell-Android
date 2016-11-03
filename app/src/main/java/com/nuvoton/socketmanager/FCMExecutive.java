@@ -177,7 +177,36 @@ public class FCMExecutive {
         }
     }
 
-    public void setupRemainData(byte[] bytes){
+    public void setupRemainRequestData(byte[] bytes){
+        byte[] tempByte = new byte[4];
+        if (bytes.length == 336){
+            System.arraycopy(bytes, 324, tempByte, 0, 4);
+            long tempLong = 0L;
+            byte[] publicIP = tempByte.clone();
+            messageClass.response.u32DevPublicIP = publicIP;
+            messageClass.response.u32DevPrivateIP = publicIP;
+
+            System.arraycopy(bytes, 328, tempByte, 0, 4);
+            tempLong = 0L;
+            for (int i=0; i<4; i++){
+                tempLong |= (tempByte[i] << i*8);
+            }
+            messageClass.response.u32DevHTTPPort = tempLong;
+
+            System.arraycopy(bytes, 332, tempByte, 0, 4);
+            tempLong = 0L;
+            for (int i=0; i<4; i++){
+                tempLong |= (tempByte[i] << i*8);
+            }
+            messageClass.response.u32DevRTSPPort = tempLong;
+
+            Log.d(TAG, "setupRemainData: " + messageClass.toString());
+
+            ReadConfigure.getInstance(contextLocal, false).updateDoorBellDevice(messageClass);
+        }
+    }
+
+    public void setupRemainResponseData(byte[] bytes){
         byte[] tempByte = new byte[4];
         if (bytes.length == 24){
             System.arraycopy(bytes, 0, tempByte, 0, 4);

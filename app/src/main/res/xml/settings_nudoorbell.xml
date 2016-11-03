@@ -98,7 +98,7 @@
         <Preference
             android:key="APP Version Number"
             android:title="NuDoorbell"
-            android:summary="APP Version 1.0.1"
+            android:summary="APP Version 1.0.2"
             />
         <ListPreference
             android:key="Send Report"

@@ -15,4 +15,5 @@ public interface SocketInterface {
     void deviceIsAlive();
     void updateSettingContent(String category, String value);
     void updateSettingContent(String category, JSONObject jsonObject);
+    void voiceConnectionOpened();
 }

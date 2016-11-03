@@ -31,7 +31,7 @@ public class SocketManager {
     public static final String CMDGET_ALL="6";
     public static final String CMDGET_ALIVE="7";
     public static final String CMDSET_RECORD="16";
-
+    public static final String CMDSET_TWOWAY="17";
 
     Timer timer = new Timer();
 
@@ -173,6 +173,13 @@ public class SocketManager {
                         Log.d(TAG,"Wi-Fi restarted");
                     }else {
                         Log.d(TAG,"Wi-Fi restart fail");
+                    }
+                }else if(httpcmd.equals(CMDSET_TWOWAY)){
+                    socketInterface.voiceConnectionOpened();
+                    if (result != null){
+                        Log.d(TAG,"Two Way audio started");
+                    }else {
+                        Log.d(TAG,"Two Way audio fail");
                     }
                 }
 

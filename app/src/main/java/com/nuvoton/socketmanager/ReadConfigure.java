@@ -23,6 +23,11 @@ import java.util.Map;
  * Created by timsheu on 6/3/16.
  */
 public class ReadConfigure {
+    public interface ReadConfigureInterface{
+        void updateStreamingURL(String updatedURL);
+    }
+    private ReadConfigureInterface readConfigureInterface;
+    private String updatedURL;
     private static String cameraSerial = "5";
     private static Context contextLocal;
     private static final String TAG = "ReadConfigure";
@@ -42,7 +47,7 @@ public class ReadConfigure {
         contextLocal = context;
 //        for (int i=0; i<5; i++){
         int i = 5; // hard coded for NuWicam Player
-            if (isSharedpreferenceCreated(i) == false) {
+            if ( ! isSharedpreferenceCreated(i) ) {
                 initSharedPreference(i, clear);
             }
 //        }
@@ -89,12 +94,10 @@ public class ReadConfigure {
                     e.printStackTrace();
                 }
             }
-            if (outputStream != null){
-                try {
-                    outputStream.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
+            try {
+                outputStream.close();
+            }catch (IOException e){
+                e.printStackTrace();
             }
         }
     }
@@ -107,8 +110,6 @@ public class ReadConfigure {
         try {
             parser.parse(input);
         }catch (IOException e){
-            e.printStackTrace();
-        }catch (IllegalStateException e){
             e.printStackTrace();
         }
         PList plist = ((PListXMLHandler) parser.getHandler()).getPlist();
@@ -134,7 +135,7 @@ public class ReadConfigure {
         editor.putString("HTTPPort", "80");
         editor.putString("RTSPPort", "554");
         editor.putString("FCM Token", "-1");
-        editor.putString("Version", "1.0.1");
+        editor.putString("Version", "1.0.2");
         editor.putBoolean("first created", true);
         editor.putString("Adaptive", "0");
         editor.putString("Fixed Quality", "0");
@@ -174,8 +175,8 @@ public class ReadConfigure {
             editor.putString("History 1", "rtsp://nuvoton.no-ip.biz/cam1/mpeg4");
         }else if (cameraSerial == 5){
             editor.putString("Name", "LOCAL-IP");
-            editor.putString("URL", "rtsp://192.168.8.5/cam1/h264");
-            editor.putString("History 0", "rtsp://192.168.8.5/cam1/h264");
+            editor.putString("URL", "rtsp://192.168.100.1/cam1/h264");
+            editor.putString("History 0", "rtsp://192.168.100.1/cam1/h264");
         }
         editor.apply();
     }
@@ -197,7 +198,7 @@ public class ReadConfigure {
         SharedPreferences preferences = contextLocal.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
         if (key != null || value != null){
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putString(key, value).commit();
+            editor.putString(key, value).apply();
         }
     }
 
@@ -227,7 +228,8 @@ public class ReadConfigure {
             e.printStackTrace();
             Log.d(TAG, "updateDoorBellDevice: retrieve public ip failed");
         }
-        value = address.toString();
+        String tempString = address.toString().substring(1);
+        value = tempString;
         Log.d(TAG, "updateDoorBellDevice: public ip: " + value);
         editor.putString(key, value);
 
@@ -238,7 +240,8 @@ public class ReadConfigure {
             e.printStackTrace();
             Log.d(TAG, "updateDoorBellDevice: retrieve private ip failed");
         }
-        value = address.toString();
+        tempString = address.toString().substring(1);
+        value = tempString;
         Log.d(TAG, "updateDoorBellDevice: private ip: " + value);
         editor.putString(key, value);
 
@@ -267,7 +270,40 @@ public class ReadConfigure {
         editor.putString(key, value);
 
         editor.apply();
+        boolean isChanged = modifyURL();
+//        if (isChanged){
+            readConfigureInterface.updateStreamingURL(updatedURL);
+//        }else {
 
+//        }
+    }
 
+    private boolean modifyURL(){
+        String preferenceName = "Setup Camera " + String.valueOf(cameraSerial);
+        Log.d(TAG, "initSharedPreference: " + preferenceName);
+        SharedPreferences preferences = contextLocal.getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
+        String oldURL = preferences.getString("URL", "-1");
+        String newIP = preferences.getString("PublicIPAddr", "-1");
+        SharedPreferences.Editor editor = preferences.edit();
+        if (oldURL.compareTo("-1") == 0 || newIP.compareTo("-1") == 0){
+            return true;
+        }else{
+            String[] urlSplit = oldURL.split("/");
+            String oldIP = urlSplit[2];
+            String newURL = oldURL.replaceAll(oldIP, newIP);
+            updatedURL = newURL;
+            if (oldIP.compareTo(newIP) == 0){
+                return false;
+            }
+            Log.d(TAG, "modifyURL: new URL: " + newURL);
+            updatedURL = newURL;
+            editor.putString(newURL, "URL").apply();
+            Log.d(TAG, "modifyURL: URL: " + preferences.getString("URL", "-1"));
+            return true;
+        }
+    }
+
+    public void setReadConfigureInterface(ReadConfigureInterface rcInterface){
+        this.readConfigureInterface = rcInterface;
     }
 }

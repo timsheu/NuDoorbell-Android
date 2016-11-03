@@ -490,4 +490,9 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         preference1.setSummary(historyList.get(0));
 //        Log.d(TAG, "updateHistoryList: " + preference.getString("URL", ""));
     }
+
+    @Override
+    public void voiceConnectionOpened() {
+        
+    }
 }

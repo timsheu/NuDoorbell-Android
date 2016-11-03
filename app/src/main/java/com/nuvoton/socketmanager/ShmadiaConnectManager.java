@@ -50,7 +50,7 @@ public class ShmadiaConnectManager {
         public void run() {
             try{
 //                String url = ReadConfigure.getInstance(contextLocal, false).getTargetValue("PublicIPAddr");
-                String url = "192.168.8.15";
+                String url = "192.168.8.9";
                 InetAddress serverIP = InetAddress.getByName(url);
 //                String httpPort = ReadConfigure.getInstance(contextLocal, false).getTargetValue("HTTPPort");
                 String httpPort = "5542";
@@ -73,7 +73,7 @@ public class ShmadiaConnectManager {
                     tempByte = new byte[remainDataLength];
                     ret = inputStream.read(tempByte);
                     if (ret == remainDataLength){
-                        FCMExecutive.getInstance(contextLocal).setupRemainData(tempByte);
+                        FCMExecutive.getInstance(contextLocal).setupRemainResponseData(tempByte);
                     }
                     closeSocket();
                 }
