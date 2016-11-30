@@ -1,7 +1,9 @@
 package com.nuvoton.nudoorbell;
 
+import android.app.ActivityManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -13,6 +15,9 @@ import android.util.Log;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.karumi.dexter.Dexter;
+import com.nuvoton.socketmanager.BGBCReceiverService;
+import com.nuvoton.socketmanager.BroadcastReceiver;
 import com.nuvoton.socketmanager.EventMessageClass;
 import com.nuvoton.socketmanager.FCMExecutive;
 import com.nuvoton.socketmanager.ReadConfigure;
@@ -48,6 +53,8 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
         }
     }
 
+    Intent mServiceIntent;
+    private BGBCReceiverService mBGBCReceiverService;
     private int index=0;
     private String platform = "NuDoorbell";
     private String cameraSerial = "5";
@@ -59,6 +66,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     private FragmentManager fragmentManager = getFragmentManager();
     private LiveFragment liveFragment = null;
     private SettingFragment settingFragment = null;
+    private String serviceURL;
     @Override
     public void onConfigurationChanged(Configuration newConfig){
         super.onConfigurationChanged(newConfig);
@@ -84,8 +92,14 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Dexter.initialize(getApplication());
         int orientation = getWindowManager().getDefaultDisplay().getRotation();
         View decorView = getWindow().getDecorView();
         setContentView(R.layout.activity_live_page);
@@ -95,7 +109,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
         String cameraName = "Setup Camera " + cameraSerial;
         SharedPreferences preference = getApplicationContext().getSharedPreferences(cameraName, Context.MODE_PRIVATE);
         String version = preference.getString("Version", "0");
-        if (version.compareTo("1.0.1") != 0){
+        if (version.compareTo(String.valueOf(R.string.version)) != 0){
             configure.initSharedPreference(Integer.valueOf(cameraSerial), true);
         }
         switch (orientation){
@@ -114,7 +128,31 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
             Log.d(TAG, "onCreate: token" + token);
             preference.edit().putString("FCM Token", token).apply();
         }
+        mBGBCReceiverService = new BGBCReceiverService();
+        mServiceIntent = new Intent(this, mBGBCReceiverService.getClass());
+        if (!isMyServiceRunning(mBGBCReceiverService.getClass())) {
+            startService(mServiceIntent);
+        }
+        String result = getIntent().getStringExtra("URL");
+        if (result != null){
+            serviceURL = result;
+        }
+        Log.d(TAG, "onCreate: " + serviceURL);
     }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("isMyServiceRunning?", true+"");
+                return true;
+            }
+        }
+        Log.i ("isMyServiceRunning?", false+"");
+        return false;
+    }
+
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState){
@@ -191,6 +229,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
         Bundle bundle = new Bundle();
         bundle.putString("Platform", platform);
         bundle.putString("CameraSerial", cameraSerial);
+        bundle.putString("URL", serviceURL);
         index = savedIndex;
         if (index == 0){
             FragmentTransaction trans = fragmentManager.beginTransaction();
@@ -240,6 +279,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
 
     @Override
     protected void onDestroy() {
+        stopService(mServiceIntent);
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
         ShmadiaConnectManager.getInstance(this).closeSocket();

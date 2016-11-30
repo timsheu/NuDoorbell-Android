@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">NuDoorbell</string>
+    <string name="version">1.0.4</string>
     <string name="dvr">DVR</string>
     <string name="skyeye">SkyEye</string>
 
@@ -17,4 +18,8 @@
     <string name="temperature">N/A \u2103</string>
     <string name="crash_toast_text">Crash detected ! Send E-mail report to developer !</string>
     <string name="email_toast_text">Send E-mail report to developer !</string>
+
+    <string name="request_mic_auth">Need Record Audio Permission to upload voice to NuDoorbell device!</string>
+    <string name="permission_mic_denied">Voice upload permission cannot be granted!</string>
+    <string name="permission_mic_neverask">Never ask for audio upload permission!</string>
 </resources>

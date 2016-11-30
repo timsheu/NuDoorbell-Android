@@ -13,13 +13,23 @@ import java.net.ServerSocket;
  * Created by cchsu20 on 10/27/16.
  */
 
-public class BroadcastReceiver {
+public class BroadcastReceiver implements ReadConfigure.ReadConfigureInterface{
+
+    @Override
+    public void updateStreamingURL(String updatedURL) {
+        bcrInterface.signalDataHandled(updatedURL);
+    }
+
+    interface BCRInterface{
+        void signalDataHandled(String URL);
+    }
+    public BCRInterface bcrInterface;
     private Thread thread;
     private InputStream inputStream;
     private Context contextLocal;
     private static String TAG = "BroadcastReceiver";
     private static BroadcastReceiver bcrReceiver = new BroadcastReceiver();
-
+    private DatagramSocket socket;
     private BroadcastReceiver(){
 
     }
@@ -34,6 +44,16 @@ public class BroadcastReceiver {
         thread.start();
     }
 
+    public void closeUDPSocket(){
+        Log.d(TAG, "closeUDPSocket: ");
+        if (socket.isConnected()){
+            socket.disconnect();
+            socket.close();
+            socket = null;
+        }
+        thread.interrupt();
+    }
+
     private Runnable OpenUDPSocket = new Runnable() {
         @Override
         public void run() {
@@ -43,7 +63,7 @@ public class BroadcastReceiver {
             int udpPort = 5543;
             try{
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                DatagramSocket socket = new DatagramSocket(udpPort);
+                socket = new DatagramSocket(udpPort);
                 socket.receive(packet);
                 byte[] tempByte = new byte[8];
                 System.arraycopy(buffer, 0, tempByte, 0, 8);
@@ -67,5 +87,8 @@ public class BroadcastReceiver {
         }
     };
 
-
+    public void setBcrInterface(BCRInterface bcrInterface) {
+        this.bcrInterface = bcrInterface;
+        ReadConfigure.getInstance(contextLocal, false).setReadConfigureInterface(this);
+    }
 }

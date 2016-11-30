@@ -3,19 +3,27 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion '24'
-
     defaultConfig {
+        jackOptions {
+            enabled true
+        }
         applicationId "com.nuvoton.nudoorbell"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 102
-        versionName "1.0.2"
+        versionCode 104
+        versionName "1.0.4"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    productFlavors {
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 repositories {
@@ -24,7 +32,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:preference-v7:23.4.0'
@@ -33,11 +41,11 @@ dependencies {
     compile 'info.hoang8f:android-segmented:1.0.6'
     compile 'com.android.support:percent:23.4.0'
     compile 'com.android.support:design:23.1.1'
-    compile group: 'org.rxtx', name: 'rxtx', version: '2.1.7'
+    compile 'org.rxtx:rxtx:2.1.7'
     compile 'ch.acra:acra:4.9.0'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
     compile 'com.google.guava:guava:19.0'
-
+    compile 'com.karumi:dexter:2.3.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
