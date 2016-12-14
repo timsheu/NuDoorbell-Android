@@ -62,13 +62,23 @@
     </string-array>
 
     <string-array name="send_report">
-        <item>Send</item>
-        <item>Cancel</item>
-    </string-array>
+    <item>Send</item>
+    <item>Cancel</item>
+</string-array>
 
     <string-array name="send_report_value">
         <item>0</item>
         <item>1</item>
+    </string-array>
+
+    <string-array name="voice_upload">
+        <item>HTTP</item>
+        <item>Socket</item>
+    </string-array>
+
+    <string-array name="voice_upload_value">
+        <item>http</item>
+        <item>socket</item>
     </string-array>
 
 </resources>

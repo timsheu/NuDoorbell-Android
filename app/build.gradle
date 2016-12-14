@@ -10,8 +10,8 @@ android {
         applicationId "com.nuvoton.nudoorbell"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 104
-        versionName "1.0.4"
+        versionCode 105
+        versionName "1.0.5"
     }
     buildTypes {
         release {
@@ -46,6 +46,8 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:9.4.0'
     compile 'com.google.guava:guava:19.0'
     compile 'com.karumi:dexter:2.3.1'
+    compile 'com.mcxiaoke.volley:library:1.0.+'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

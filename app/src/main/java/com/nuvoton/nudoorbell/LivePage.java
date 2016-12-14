@@ -30,7 +30,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBottomBarListener, SettingFragment.OnHideBottomBarListener, ShmadiaConnectManager.ShmadiaConnectInterface {
+public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBottomBarListener, SettingFragment.OnHideBottomBarListener, ShmadiaConnectManager.ShmadiaConnectInterface, BGBCReceiverService.BGBCInterface{
     // live view callbacks
     public void onHideBottomBar(boolean isHide){
         if (isHide){
@@ -129,9 +129,11 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
             preference.edit().putString("FCM Token", token).apply();
         }
         mBGBCReceiverService = new BGBCReceiverService();
+        mBGBCReceiverService.setBgbcInterface(this);
         mServiceIntent = new Intent(this, mBGBCReceiverService.getClass());
         if (!isMyServiceRunning(mBGBCReceiverService.getClass())) {
-            startService(mServiceIntent);
+            mServiceIntent.putExtra("StopService", true);
+            stopService(mServiceIntent);
         }
         String result = getIntent().getStringExtra("URL");
         if (result != null){
@@ -279,6 +281,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
 
     @Override
     protected void onDestroy() {
+        mServiceIntent.putExtra("StopService", false);
         stopService(mServiceIntent);
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
@@ -316,5 +319,10 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
         messageClass.request.szCloudRegID = tokenArray;
         ShmadiaConnectManager.getInstance(this).writeMessageToShmadia(messageClass);
         Log.d(TAG, "sendRegistrationToServer: " + messageClass.toString());
+    }
+
+    @Override
+    public void updateURLToLive(String URL) {
+        liveFragment.updateStreamingURL(URL);
     }
 }

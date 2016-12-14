@@ -130,6 +130,7 @@ public class ReadConfigure {
         if (clear){
             editor.clear();
         }
+        editor.putString("VoiceUpload", "http");
         editor.putString("PublicIPAddr", "192.168.8.5");
         editor.putString("PrivateIPAddr", "192.168.8.5");
         editor.putString("HTTPPort", "80");

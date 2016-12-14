@@ -51,7 +51,7 @@ import java.util.TimerTask;
  * A simple {@link Fragment} subclass.
  */
 public class LiveFragment extends Fragment implements OnClickListener, OnSeekBarChangeListener,
-        FFmpegListener, SocketInterface, ReadConfigure.ReadConfigureInterface, TwoWayTalking.TwoWayTalkingInterface{
+        FFmpegListener, SocketInterface, ReadConfigure.ReadConfigureInterface, TwoWayTalking.TwoWayTalkingInterface, BroadcastReceiver.BCRInterface {
     private boolean isTCP = false;
     private TwoWayTalking mTwoWayTalking;
     private boolean isDuplex = true;
@@ -106,14 +106,21 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
             case R.id.phone_ans:
                 Log.d(TAG, "onClick: phone_ans");
                 if (isDuplex){
-                    mTwoWayTalking = TwoWayTalking.getInstance();
+                    mTwoWayTalking = TwoWayTalking.getInstance(getActivity().getApplicationContext());
                     mTwoWayTalking.setInterface(this);
                     if (!mTwoWayTalking.isRecording){
                         if (isAdded()){
                             Toast.makeText(getActivity(), "Audio upload started.", Toast.LENGTH_SHORT).show();
                         }
+                        String cameraName = "Setup Camera " + cameraSerial;
+                        SharedPreferences preference = getActivity().getSharedPreferences(cameraName, Context.MODE_PRIVATE);
+                        String httpModeString = preference.getString("VoiceUpload", "http");
+                        if (httpModeString.compareTo("http") == 0){
+                            mTwoWayTalking.updateURL(getDeviceURL());
+                        }else {
+                            mTwoWayTalking.pokeClient(getDeviceURL(), "tcp");
+                        }
                         mTwoWayTalking.startRecording();
-                        mTwoWayTalking.pokeClient(getDeviceURL(), "tcp");
                         ansButton.setEnabled(false);
                         hangButton.setEnabled(true);
                     }
@@ -122,7 +129,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
             case R.id.phone_hang:
                 Log.d(TAG, "onClick: phone_hang");
                 if (isDuplex){
-                    mTwoWayTalking = TwoWayTalking.getInstance();
+                    mTwoWayTalking = TwoWayTalking.getInstance(getActivity().getApplicationContext());
                     mTwoWayTalking.setInterface(this);
                     if (mTwoWayTalking.isRecording){
                         if (isAdded()){
@@ -147,7 +154,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        Log.d(TAG, "onProgressChanged:");
+//        Log.d(TAG, "onProgressChanged:");
     }
 
     @Override
@@ -175,6 +182,11 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
             setDataSource();
             mMpegPlayer.resume();
         }
+    }
+
+    @Override
+    public void signalDataHandled(String URL) {
+        Log.d(TAG, "signalDataHandled: ");
     }
 
     public interface OnHideBottomBarListener{
@@ -257,6 +269,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
         socketManager.setSocketInterface(this);
         BroadcastReceiver bcr = BroadcastReceiver.getInstance(getActivity().getApplicationContext());
         bcr.openUDPSocket();
+        bcr.setBcrInterface(this);
         PermissionListener dialogPermissionListener =
                 DialogOnDeniedPermissionListener.Builder
                 .withContext(getActivity())
@@ -430,7 +443,9 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
         params.put("max_delay", "0");
         params.put("fflags", "nobuffer");
         params.put("flush_packets", "1");
-        params.put("rtsp_transport", "tcp");
+//        if (isTCP){
+            params.put("rtsp_transport", "tcp");
+//        }
         mMpegPlayer.setMpegListener(this);
         mMpegPlayer.setDataSource(localURL, params, FFmpegPlayer.UNKNOWN_STREAM, mAudioStreamNo,
                 mSubtitleStreamNo, resolution);
@@ -487,7 +502,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
     }
 
     public void onFFUpdateTime(long currentTimeUs, long videoDurationUs, boolean isFinished){
-        Log.d(TAG, "onFFUpdateTime: ");
+//        Log.d(TAG, "onFFUpdateTime: ");
         if ( isTracking == false){
             mCurrentTimeS = (int)(currentTimeUs / 1000000);
             int videoDurationS = (int)(videoDurationUs / 1000000);

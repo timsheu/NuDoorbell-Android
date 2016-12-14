@@ -24,12 +24,22 @@ import java.net.DatagramSocket;
 import java.nio.charset.Charset;
 
 public class BGBCReceiverService extends Service implements BroadcastReceiver.BCRInterface{
+    public interface BGBCInterface {
+        void updateURLToLive(String URL);
+    }
+    public BGBCInterface bgbcInterface;
     private int mID = 100;
     private final String TAG = "BGBCReceiverService";
     private BroadcastReceiver bcrReceiver;
 
     public BGBCReceiverService() {
 
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand: " + intent.getBooleanExtra("StopService", false));
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -84,13 +94,25 @@ public class BGBCReceiverService extends Service implements BroadcastReceiver.BC
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(mID, mBuilder.build());
+        try {
+            bgbcInterface.updateURLToLive(URL);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+//        openWaiting();
         this.stopSelf();
     }
 
     private void openWaiting(){
         Log.d(TAG, "openWaiting: ");
         bcrReceiver = BroadcastReceiver.getInstance(this);
+        bcrReceiver.closeUDPSocket();
         bcrReceiver.openUDPSocket();
         bcrReceiver.setBcrInterface(this);
+    }
+
+    public void setBgbcInterface(BGBCInterface bgbcInterface) {
+        Log.d(TAG, "setBgbcInterface: ");
+        this.bgbcInterface = bgbcInterface;
     }
 }

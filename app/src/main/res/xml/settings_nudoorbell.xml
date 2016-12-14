@@ -40,6 +40,14 @@
             android:defaultValue="1024"
             />
         <ListPreference
+            android:key="Voice Upload"
+            android:title="Voice Upload"
+            android:summary="Choose voice upload through HTTP or socket."
+            android:entryValues="@array/voice_upload"
+            android:entries="@array/voice_upload_value"
+            android:defaultValue="0"
+            />
+        <ListPreference
             android:key="Restart Stream"
             android:title="Restart Stream"
             android:summary="Click to restart stream, and take effect."

@@ -8,16 +8,20 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Timer;
 
 /**
  * Created by timsheu on 6/3/16.
  */
 public class SocketManager {
+    private Map<String, String> paramters;
+    private byte[] dataContent;
     private ArrayList<String> commandList;
     private SocketInterface socketInterface = null;
     private URL url;
@@ -42,13 +46,24 @@ public class SocketManager {
 
         url = new URL(urlString);
         URLConnection conn = url.openConnection();
-
         if(!(conn instanceof HttpURLConnection))
             throw new IOException("Not an HTTP connection");
         try{
             HttpURLConnection httpConn = (HttpURLConnection) conn;
             httpConn.setAllowUserInteraction(false);
             httpConn.setInstanceFollowRedirects(true);
+            Log.d(TAG, "OpenHttpConnection: in POST");
+            httpConn.setRequestMethod("POST");
+            if (paramters != null){
+                for (String s: paramters.keySet()) {
+                    httpConn.setRequestProperty(s, paramters.get(s));
+                }
+            }
+            httpConn.setDoOutput(true);
+            OutputStream os = httpConn.getOutputStream();
+                os.write(dataContent);
+                os.flush();
+            os.close();
             httpConn.setRequestMethod("GET");
             httpConn.connect();
             response = httpConn.getResponseCode();
@@ -100,6 +115,7 @@ public class SocketManager {
 
         return null;
     }
+
 
     private class SendGetTask extends AsyncTask<String,Void,String> {
         String httpcmd="";
@@ -198,6 +214,7 @@ public class SocketManager {
         new SendGetTask().execute(command, commandType);
     }
 
+
     public void executeSendGetTaskList(ArrayList<String> list, String commandType){
         new SendGetTask().execute(list.get(0), commandType);
     }
@@ -205,5 +222,9 @@ public class SocketManager {
     public void setCommandList(ArrayList<String> list){
         Log.d(TAG, "setCommandList: " + list.toString());
         commandList = list;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.paramters = parameters;
     }
 }

@@ -20,7 +20,7 @@ public class BroadcastReceiver implements ReadConfigure.ReadConfigureInterface{
         bcrInterface.signalDataHandled(updatedURL);
     }
 
-    interface BCRInterface{
+    public interface BCRInterface{
         void signalDataHandled(String URL);
     }
     public BCRInterface bcrInterface;
