@@ -19,8 +19,9 @@ import android.widget.Toast;
 
 import com.longevitysoft.android.xml.plist.domain.PListObject;
 import com.longevitysoft.android.xml.plist.domain.sString;
-import com.nuvoton.socketmanager.CustomDialogFragment;
-import com.nuvoton.socketmanager.ReadConfigure;
+import com.nuvoton.utility.CustomDialogFragment;
+import com.nuvoton.utility.FileContent;
+import com.nuvoton.utility.ReadConfigure;
 import com.nuvoton.socketmanager.SocketInterface;
 import com.nuvoton.socketmanager.SocketManager;
 
@@ -67,7 +68,7 @@ public class SettingFragment extends PreferenceFragment implements SharedPrefere
         }else if(category.compareTo("Send Report") == 0){
             sendReport();
         }
-        Log.d(TAG, "sendOkay: setting fragment");
+        Log.d(TAG, "removeDevice: setting fragment");
     }
 
     public interface OnHideBottomBarListener{

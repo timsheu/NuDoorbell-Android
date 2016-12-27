@@ -1,13 +1,14 @@
 package com.nuvoton.socketmanager;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
+
+import com.nuvoton.utility.EventMessageClass;
+import com.nuvoton.utility.ReadConfigure;
 
 import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.ServerSocket;
 
 /**
  * Created by cchsu20 on 10/27/16.

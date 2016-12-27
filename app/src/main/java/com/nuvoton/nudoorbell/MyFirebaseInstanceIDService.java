@@ -16,15 +16,12 @@
 
 package com.nuvoton.nudoorbell;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.nuvoton.socketmanager.EventMessageClass;
-import com.nuvoton.socketmanager.ReadConfigure;
+import com.nuvoton.utility.EventMessageClass;
+import com.nuvoton.utility.ReadConfigure;
 import com.nuvoton.socketmanager.ShmadiaConnectManager;
 
 

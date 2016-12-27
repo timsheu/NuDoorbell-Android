@@ -17,10 +17,9 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.karumi.dexter.Dexter;
 import com.nuvoton.socketmanager.BGBCReceiverService;
-import com.nuvoton.socketmanager.BroadcastReceiver;
-import com.nuvoton.socketmanager.EventMessageClass;
+import com.nuvoton.utility.EventMessageClass;
 import com.nuvoton.socketmanager.FCMExecutive;
-import com.nuvoton.socketmanager.ReadConfigure;
+import com.nuvoton.utility.ReadConfigure;
 import com.nuvoton.socketmanager.ShmadiaConnectManager;
 
 import android.app.FragmentManager;

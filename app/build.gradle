@@ -47,6 +47,7 @@ dependencies {
     compile 'com.google.guava:guava:19.0'
     compile 'com.karumi:dexter:2.3.1'
     compile 'com.mcxiaoke.volley:library:1.0.+'
+    compile 'com.github.satyan:sugar:1.4'
 
 }
 

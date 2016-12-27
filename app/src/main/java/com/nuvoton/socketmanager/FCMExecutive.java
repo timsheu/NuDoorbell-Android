@@ -3,9 +3,9 @@ package com.nuvoton.socketmanager;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.common.primitives.Longs;
+import com.nuvoton.utility.EventMessageClass;
+import com.nuvoton.utility.ReadConfigure;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**

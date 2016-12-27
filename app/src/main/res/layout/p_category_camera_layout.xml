@@ -5,7 +5,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="25sp"
+        android:textAllCaps="true"
+        android:fontFamily="sans-serif-medium"
         android:textColor="#000000"
-        android:text="@string/camera_category_title"/>
+        android:text="@string/db_setting_title"
+        android:layout_gravity="center"/>
 </LinearLayout>

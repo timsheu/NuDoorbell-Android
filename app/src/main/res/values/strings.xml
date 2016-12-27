@@ -10,6 +10,8 @@
     <string name="camera_category_title_dvr">Video Stream</string>
     <string name="audio_category_title_dvr">Audio Stream</string>
     <string name="wifi_category_title_dvr">Wireless Setup</string>
+    <string name="db_setting_title">Doorbell Setup</string>
+
     <string name="info_category_title_dvr">Device Information</string>
     <string name="version_category_title">APP Information</string>
 

@@ -1,7 +1,6 @@
 package com.nuvoton.nudoorbell;
 
 
-import android.*;
 import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
@@ -34,9 +33,10 @@ import com.appunite.ffmpeg.NotPlayingException;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
 import com.karumi.dexter.listener.single.PermissionListener;
-import com.karumi.dexter.listener.single.SnackbarOnDeniedPermissionListener;
+import com.nuvoton.utility.FileContent;
+import com.nuvoton.utility.TwoWayTalking;
 import com.nuvoton.socketmanager.BroadcastReceiver;
-import com.nuvoton.socketmanager.ReadConfigure;
+import com.nuvoton.utility.ReadConfigure;
 import com.nuvoton.socketmanager.SocketInterface;
 import com.nuvoton.socketmanager.SocketManager;
 import org.json.JSONObject;

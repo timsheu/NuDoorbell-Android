@@ -1,6 +1,6 @@
 package com.nuvoton.socketmanager;
 
-import com.nuvoton.nudoorbell.FileContent;
+import com.nuvoton.utility.FileContent;
 
 import org.json.JSONObject;
 
