@@ -7,6 +7,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -108,6 +109,14 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
                 if (isDuplex){
                     mTwoWayTalking = TwoWayTalking.getInstance(getActivity().getApplicationContext());
                     mTwoWayTalking.setInterface(this);
+                    Log.d(TAG, "onClick: " + Build.VERSION.SDK_INT);
+                    if (Build.VERSION.SDK_INT >= 23){
+                        int isGranted = getActivity().checkSelfPermission(Manifest.permission.RECORD_AUDIO);
+                        if (isGranted == 0){
+                            Toast.makeText(getActivity(), "The record voice permission is not granted, please open setting to authroize it.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     if (!mTwoWayTalking.isRecording){
                         if (isAdded()){
                             Toast.makeText(getActivity(), "Audio upload started.", Toast.LENGTH_SHORT).show();
