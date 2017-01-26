@@ -63,6 +63,12 @@ public class TwoWayTalking implements SocketInterface{
         public void showToast(String message);
         public void didOpenVoiceUpload();
     }
+
+    public void setDeviceID(int deviceID) {
+        this.deviceID = deviceID;
+    }
+
+    private int deviceID = 0;
     private static Context context;
     private final String lineEnd = "\r\n";
     private URLConnection conn;
@@ -209,8 +215,7 @@ public class TwoWayTalking implements SocketInterface{
                     dos.write(tmpBuf, 0, tmpBuf.length);
                     dos.flush();
                 }
-                if (dos != null)
-                    dos.close();
+                dos.close();
                 if (httpConn != null)
                     httpConn.disconnect();
                 audioRecord.stop();

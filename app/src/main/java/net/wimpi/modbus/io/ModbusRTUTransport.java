@@ -113,7 +113,7 @@ public class ModbusRTUTransport
 
     try {
       do {
-        //1. read to function code, create request and read function specific bytes
+        //1. read to function code, create sEventmsgLoginReq and read function specific bytes
         synchronized (m_ByteIn) {
           int uid = m_InputStream.read();
           if (uid != -1) {
@@ -122,7 +122,7 @@ public class ModbusRTUTransport
             m_ByteInOut.writeByte(uid);
             m_ByteInOut.writeByte(fc);
 
-            //create response to acquire length of message
+            //create sEventmsgLoginResp to acquire length of message
             response = ModbusResponse.createModbusResponse(fc);
             response.setHeadless();
 
@@ -130,7 +130,7 @@ public class ModbusRTUTransport
             // the message is complete as is or we must do function
             // specific processing to know the correct length.  To avoid
             // moving frame timing to the serial input functions, we set the
-            // timeout and to message specific parsing to read a response.
+            // timeout and to message specific parsing to read a sEventmsgLoginResp.
             getResponse(fc, m_ByteInOut);
             dlength = m_ByteInOut.size() - 2; // less the crc
             if (Modbus.debug) System.out.println("Response: " +
@@ -145,10 +145,10 @@ public class ModbusRTUTransport
               throw new IOException("CRC Error in received frame: " + dlength + " bytes: " + ModbusUtil.toHex(m_ByteIn.getBuffer(), 0, dlength));
             }
           } else {
-            throw new IOException("Error reading response");
+            throw new IOException("Error reading sEventmsgLoginResp");
           }
 
-          //read response
+          //read sEventmsgLoginResp
           m_ByteIn.reset(m_InBuffer, dlength);
           if (response != null) {
             response.readFrom(m_ByteIn);
@@ -158,7 +158,7 @@ public class ModbusRTUTransport
       } while (!done);
       return response;
     } catch (Exception ex) {
-      System.err.println("Last request: " + ModbusUtil.toHex(lastRequest));
+      System.err.println("Last sEventmsgLoginReq: " + ModbusUtil.toHex(lastRequest));
       System.err.println(ex.getMessage());
       throw new ModbusIOException("I/O exception - failed to read");
     }

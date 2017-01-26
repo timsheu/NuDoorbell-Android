@@ -29,7 +29,7 @@ import java.io.IOException;
  * Class implementing a <tt>ReadInputRegistersRequest</tt>.
  * The implementation directly correlates with the class 0
  * function <i>read multiple registers (FC 4)</i>. It
- * encapsulates the corresponding response message.
+ * encapsulates the corresponding sEventmsgLoginResp message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)
@@ -56,7 +56,7 @@ public final class ReadInputRegistersResponse
    * Constructs a new <tt>ReadInputRegistersResponse</tt>
    * instance.
    *
-   * @param registers the InputRegister[] holding response input registers.
+   * @param registers the InputRegister[] holding sEventmsgLoginResp input registers.
    */
   public ReadInputRegistersResponse(InputRegister[] registers) {
     super();
@@ -82,7 +82,7 @@ public final class ReadInputRegistersResponse
   /**
    * Returns the number of words that have been read.
    * The returned value should be twice as much as
-   * the byte count of the response.
+   * the byte count of the sEventmsgLoginResp.
    * <p/>
    *
    * @return the number of words that have been read
@@ -105,7 +105,7 @@ public final class ReadInputRegistersResponse
   /**
    * Returns the <tt>InputRegister</tt> at
    * the given position (relative to the reference
-   * used in the request).
+   * used in the sEventmsgLoginReq).
    * <p/>
    *
    * @param index the relative index of the <tt>InputRegister</tt>.
@@ -126,7 +126,7 @@ public final class ReadInputRegistersResponse
   /**
    * Returns the value of the register at
    * the given position (relative to the reference
-   * used in the request) interpreted as usigned
+   * used in the sEventmsgLoginReq) interpreted as usigned
    * short.
    * <p/>
    *

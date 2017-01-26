@@ -30,7 +30,7 @@ import net.wimpi.modbus.Modbus;
  * Class implementing a <tt>ReadMultipleRegistersResponse</tt>.
  * The implementation directly correlates with the class 0
  * function <i>read multiple registers (FC 3)</i>. It encapsulates
- * the corresponding response message.
+ * the corresponding sEventmsgLoginResp message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)
@@ -55,7 +55,7 @@ public final class ReadMultipleRegistersResponse
    * Constructs a new <tt>ReadInputRegistersResponse</tt>
    * instance.
    *
-   * @param registers the Register[] holding response registers.
+   * @param registers the Register[] holding sEventmsgLoginResp registers.
    */
   public ReadMultipleRegistersResponse(Register[] registers) {
     super();
@@ -102,7 +102,7 @@ public final class ReadMultipleRegistersResponse
   /**
    * Returns the value of the register at
    * the given position (relative to the reference
-   * used in the request) interpreted as unsigned short.
+   * used in the sEventmsgLoginReq) interpreted as unsigned short.
    * <p>
    * @param index the relative index of the register
    *        for which the value should be retrieved.
@@ -120,7 +120,7 @@ public final class ReadMultipleRegistersResponse
   /**
    * Returns the <tt>Register</tt> at
    * the given position (relative to the reference
-   * used in the request).
+   * used in the sEventmsgLoginReq).
    * <p>
    * @param index the relative index of the <tt>Register</tt>.
    *

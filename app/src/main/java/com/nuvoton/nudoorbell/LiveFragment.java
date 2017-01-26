@@ -31,14 +31,17 @@ import com.appunite.ffmpeg.FFmpegStreamInfo;
 import com.appunite.ffmpeg.FFmpegSurfaceView;
 import com.appunite.ffmpeg.NotPlayingException;
 import com.karumi.dexter.Dexter;
-import com.karumi.dexter.listener.single.DialogOnDeniedPermissionListener;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
-import com.nuvoton.utility.FileContent;
-import com.nuvoton.utility.TwoWayTalking;
 import com.nuvoton.socketmanager.BroadcastReceiver;
-import com.nuvoton.utility.ReadConfigure;
 import com.nuvoton.socketmanager.SocketInterface;
 import com.nuvoton.socketmanager.SocketManager;
+import com.nuvoton.utility.FileContent;
+import com.nuvoton.utility.ReadConfigure;
+import com.nuvoton.utility.TwoWayTalking;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -51,7 +54,7 @@ import java.util.TimerTask;
  * A simple {@link Fragment} subclass.
  */
 public class LiveFragment extends Fragment implements OnClickListener, OnSeekBarChangeListener,
-        FFmpegListener, SocketInterface, ReadConfigure.ReadConfigureInterface, TwoWayTalking.TwoWayTalkingInterface, BroadcastReceiver.BCRInterface {
+        FFmpegListener, SocketInterface, ReadConfigure.ReadConfigureInterface, TwoWayTalking.TwoWayTalkingInterface, BroadcastReceiver.BroadcastInterface {
     private boolean isTCP = false;
     private TwoWayTalking mTwoWayTalking;
     private boolean isDuplex = true;
@@ -79,6 +82,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
     private int mSubtitleStreamNo = FFmpegPlayer.NO_STREAM;
     private static final String TAG = "LiveFragment";
     private Timer delayConnectTimer;
+    private boolean isGranted = false;
 
     private boolean isHide = false;
     OnHideBottomBarListener onHideBottomBarListener;
@@ -105,25 +109,30 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
                 break;
             case R.id.phone_ans:
                 Log.d(TAG, "onClick: phone_ans");
-                if (isDuplex){
-                    mTwoWayTalking = TwoWayTalking.getInstance(getActivity().getApplicationContext());
-                    mTwoWayTalking.setInterface(this);
-                    if (!mTwoWayTalking.isRecording){
-                        if (isAdded()){
-                            Toast.makeText(getActivity(), "Audio upload started.", Toast.LENGTH_SHORT).show();
+                if (isGranted){
+                    if (isDuplex){
+                        mTwoWayTalking = TwoWayTalking.getInstance(getActivity().getApplicationContext());
+                        mTwoWayTalking.setInterface(this);
+                        if (!mTwoWayTalking.isRecording){
+                            if (isAdded()){
+                                Toast.makeText(getActivity(), "Audio upload started.", Toast.LENGTH_SHORT).show();
+                            }
+                            String cameraName = "Setup Camera " + cameraSerial;
+                            SharedPreferences preference = getActivity().getSharedPreferences(cameraName, Context.MODE_PRIVATE);
+                            String httpModeString = preference.getString("VoiceUpload", "http");
+                            if (httpModeString.compareTo("http") == 0){
+                                mTwoWayTalking.updateURL(getDeviceURL());
+                            }else {
+                                mTwoWayTalking.pokeClient(getDeviceURL(), "tcp");
+                            }
+                            mTwoWayTalking.startRecording();
+                            ansButton.setEnabled(false);
+                            hangButton.setEnabled(true);
                         }
-                        String cameraName = "Setup Camera " + cameraSerial;
-                        SharedPreferences preference = getActivity().getSharedPreferences(cameraName, Context.MODE_PRIVATE);
-                        String httpModeString = preference.getString("VoiceUpload", "http");
-                        if (httpModeString.compareTo("http") == 0){
-                            mTwoWayTalking.updateURL(getDeviceURL());
-                        }else {
-                            mTwoWayTalking.pokeClient(getDeviceURL(), "tcp");
-                        }
-                        mTwoWayTalking.startRecording();
-                        ansButton.setEnabled(false);
-                        hangButton.setEnabled(true);
                     }
+                }else{
+                    Toast.makeText(getActivity(), "The permission is not granted, please kill the app and authorize it in the setting!", Toast.LENGTH_SHORT).show();
+
                 }
                 break;
             case R.id.phone_hang:
@@ -185,7 +194,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
     }
 
     @Override
-    public void signalDataHandled(String URL) {
+    public void signalDataHandled(DeviceData deviceData) {
         Log.d(TAG, "signalDataHandled: ");
     }
 
@@ -269,16 +278,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
         socketManager.setSocketInterface(this);
         BroadcastReceiver bcr = BroadcastReceiver.getInstance(getActivity().getApplicationContext());
         bcr.openUDPSocket();
-        bcr.setBcrInterface(this);
-        PermissionListener dialogPermissionListener =
-                DialogOnDeniedPermissionListener.Builder
-                .withContext(getActivity())
-                .withTitle("Mic Permission")
-                .withMessage(R.string.request_mic_auth)
-                .withButtonText("OK")
-                .withIcon(R.drawable.microphone)
-                .build();
-        Dexter.checkPermission(dialogPermissionListener, Manifest.permission.RECORD_AUDIO);
+        bcr.setBroadcastInterface(this);
         // Inflate the layout for this fragment
         return thisView;
     }
@@ -376,7 +376,26 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
         if (onHideBottomBarListener != null){
             onHideBottomBarListener.onEnableClick(true);
         }
+        Dexter.withActivity(getActivity()).
+                withPermission(Manifest.permission.RECORD_AUDIO)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        Log.d(TAG, "onPermissionGranted: permitted");
+                        isGranted = true;
+                    }
 
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        Log.d(TAG, "onPermissionDenied: not permitted");
+                        isGranted = false;
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                    }
+                }).check();
     }
 
     @Override
@@ -575,7 +594,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
         repeatRedDot(false);
         isRestart = true;
     }
-	
+
 	public void setResolution(String resolution){
         mVideoView.setResolution(resolution);
     }

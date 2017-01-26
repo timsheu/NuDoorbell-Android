@@ -31,7 +31,7 @@ import java.io.IOException;
  * Class implementing a <tt>WriteMultipleCoilsRequest</tt>.
  * The implementation directly correlates with the class 1
  * function <i>write multiple coils (FC 15)</i>. It encapsulates
- * the corresponding request message.
+ * the corresponding sEventmsgLoginReq message.
  * <p/>
  * Coils are understood as bits that can be manipulated
  * (i.e. set or unset).
@@ -145,7 +145,7 @@ public final class WriteMultipleCoilsRequest
 
   /**
    * Returns the number of bits (i.e. input discretes)
-   * read with the request.
+   * read with the sEventmsgLoginReq.
    * <p/>
    *
    * @return the number of bits that have been read.

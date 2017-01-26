@@ -10,7 +10,7 @@
     <string name="camera_category_title_dvr">Video Stream</string>
     <string name="audio_category_title_dvr">Audio Stream</string>
     <string name="wifi_category_title_dvr">Wireless Setup</string>
-    <string name="db_setting_title">Doorbell Setup</string>
+    <string name="db_setting_title">Device Setup</string>
 
     <string name="info_category_title_dvr">Device Information</string>
     <string name="version_category_title">APP Information</string>
@@ -24,4 +24,5 @@
     <string name="request_mic_auth">Need Record Audio Permission to upload voice to NuDoorbell device!</string>
     <string name="permission_mic_denied">Voice upload permission cannot be granted!</string>
     <string name="permission_mic_neverask">Never ask for audio upload permission!</string>
+    <string name="title_activity_streaming">Streaming</string>
 </resources>

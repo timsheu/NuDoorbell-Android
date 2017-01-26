@@ -15,8 +15,7 @@ import android.util.Log;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.karumi.dexter.Dexter;
-import com.nuvoton.socketmanager.BGBCReceiverService;
+import com.nuvoton.socketmanager.UDPSocketService;
 import com.nuvoton.utility.EventMessageClass;
 import com.nuvoton.socketmanager.FCMExecutive;
 import com.nuvoton.utility.ReadConfigure;
@@ -29,7 +28,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBottomBarListener, SettingFragment.OnHideBottomBarListener, ShmadiaConnectManager.ShmadiaConnectInterface, BGBCReceiverService.BGBCInterface{
+public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBottomBarListener, SettingFragment.OnHideBottomBarListener, ShmadiaConnectManager.ShmadiaConnectInterface, UDPSocketService.BGBCInterface{
     // live view callbacks
     public void onHideBottomBar(boolean isHide){
         if (isHide){
@@ -53,7 +52,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     }
 
     Intent mServiceIntent;
-    private BGBCReceiverService mBGBCReceiverService;
+    private UDPSocketService mUDPSocketService;
     private int index=0;
     private String platform = "NuDoorbell";
     private String cameraSerial = "5";
@@ -98,7 +97,6 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Dexter.initialize(getApplication());
         int orientation = getWindowManager().getDefaultDisplay().getRotation();
         View decorView = getWindow().getDecorView();
         setContentView(R.layout.activity_live_page);
@@ -127,10 +125,10 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
             Log.d(TAG, "onCreate: token" + token);
             preference.edit().putString("FCM Token", token).apply();
         }
-        mBGBCReceiverService = new BGBCReceiverService();
-        mBGBCReceiverService.setBgbcInterface(this);
-        mServiceIntent = new Intent(this, mBGBCReceiverService.getClass());
-        if (!isMyServiceRunning(mBGBCReceiverService.getClass())) {
+        mUDPSocketService = new UDPSocketService();
+        mUDPSocketService.setBgbcInterface(this);
+        mServiceIntent = new Intent(this, mUDPSocketService.getClass());
+        if (!isMyServiceRunning(mUDPSocketService.getClass())) {
             mServiceIntent.putExtra("StopService", true);
             stopService(mServiceIntent);
         }
@@ -263,6 +261,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     @Override
     public void onBackPressed() {
         if (exit){
+            finish();
             super.onBackPressed();
             return;
         }else {
@@ -299,7 +298,7 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
         String token = configure.getTargetValue("FCM Token");
         Log.d(TAG, "isFCMTokenExist: " + token);
         if (token.compareTo("-1") != 0){
-            FCMExecutive.getInstance(this).setToken(token);
+            FCMExecutive.getInstance().setToken(token);
             ShmadiaConnectManager manager = ShmadiaConnectManager.getInstance(this);
             manager.shmadiaConnectInterface = this;
             manager.openSocket();
@@ -312,16 +311,16 @@ public class LivePage extends AppCompatActivity implements LiveFragment.OnHideBo
     public void announceIsConnected() {
         EventMessageClass messageClass = new EventMessageClass();
         char[] uuidArray = messageClass.TEST_UUID.toCharArray();
-        messageClass.request.szUUID = uuidArray;
-        messageClass.request.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
-        char[] tokenArray = FCMExecutive.getInstance(this).getToken().toCharArray();
-        messageClass.request.szCloudRegID = tokenArray;
+        messageClass.sEventmsgLoginReq.szUUID = uuidArray;
+        messageClass.sEventmsgLoginReq.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
+        char[] tokenArray = FCMExecutive.getInstance().getToken().toCharArray();
+        messageClass.sEventmsgLoginReq.szCloudRegID = tokenArray;
         ShmadiaConnectManager.getInstance(this).writeMessageToShmadia(messageClass);
         Log.d(TAG, "sendRegistrationToServer: " + messageClass.toString());
     }
 
     @Override
-    public void updateURLToLive(String URL) {
-        liveFragment.updateStreamingURL(URL);
+    public void updateURLToLive(DeviceData deviceData) {
+
     }
 }

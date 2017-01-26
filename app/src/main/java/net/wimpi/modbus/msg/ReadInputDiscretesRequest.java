@@ -30,7 +30,7 @@ import net.wimpi.modbus.procimg.ProcessImage;
  * Class implementing a <tt>ReadInputDiscretesRequest</tt>.
  * The implementation directly correlates with the class 1
  * function <i>read input discretes (FC 2)</i>. It encapsulates
- * the corresponding request message.
+ * the corresponding sEventmsgLoginReq message.
  * <p>
  * Input Discretes are understood as bits that cannot be
  * manipulated (i.e. set or unset).
@@ -76,10 +76,10 @@ public final class ReadInputDiscretesRequest
 
   /*
   public ModbusResponse getResponse() {
-    ReadInputDiscretesResponse response =
+    ReadInputDiscretesResponse sEventmsgLoginResp =
         new ReadInputDiscretesResponse(getBitCount());
-    response.setHeadless(isHeadless());
-    return response;
+    sEventmsgLoginResp.setHeadless(isHeadless());
+    return sEventmsgLoginResp;
   }//getResponse
   */
 

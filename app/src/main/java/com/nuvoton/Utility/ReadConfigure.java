@@ -224,7 +224,7 @@ public class ReadConfigure {
 
         key = "PublicIPAddr";
         try{
-            address = InetAddresses.fromLittleEndianByteArray(messageClass.response.u32DevPublicIP);
+            address = InetAddresses.fromLittleEndianByteArray(messageClass.sEventmsgLoginResp.u32DevPublicIP);
         }catch (Exception e){
             e.printStackTrace();
             Log.d(TAG, "updateDoorBellDevice: retrieve public ip failed");
@@ -236,7 +236,7 @@ public class ReadConfigure {
 
         key = "PrivateIPAddr";
         try{
-            address = InetAddresses.fromLittleEndianByteArray(messageClass.response.u32DevPrivateIP);
+            address = InetAddresses.fromLittleEndianByteArray(messageClass.sEventmsgLoginResp.u32DevPrivateIP);
         }catch (Exception e){
             e.printStackTrace();
             Log.d(TAG, "updateDoorBellDevice: retrieve private ip failed");
@@ -249,7 +249,7 @@ public class ReadConfigure {
         key = "HTTPPort";
         long temp = 0;
         try{
-            temp = messageClass.response.u32DevHTTPPort;
+            temp = messageClass.sEventmsgLoginResp.u32DevHTTPPort;
         }catch (Exception e){
             e.printStackTrace();
             Log.d(TAG, "updateDoorBellDevice: retrieve http port failed");
@@ -261,7 +261,7 @@ public class ReadConfigure {
         key = "RTSPPort";
         temp = 0;
         try{
-            temp = messageClass.response.u32DevRTSPPort;
+            temp = messageClass.sEventmsgLoginResp.u32DevRTSPPort;
         }catch (Exception e){
             e.printStackTrace();
             Log.d(TAG, "updateDoorBellDevice: retrieve rtsp port failed");

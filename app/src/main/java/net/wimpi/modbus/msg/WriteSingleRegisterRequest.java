@@ -30,7 +30,7 @@ import java.io.IOException;
  * Class implementing a <tt>WriteSingleRegisterRequest</tt>.
  * The implementation directly correlates with the class 0
  * function <i>write single register (FC 6)</i>. It
- * encapsulates the corresponding request message.
+ * encapsulates the corresponding sEventmsgLoginReq message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)

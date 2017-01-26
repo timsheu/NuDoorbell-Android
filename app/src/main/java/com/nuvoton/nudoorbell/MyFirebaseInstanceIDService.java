@@ -75,10 +75,10 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService imple
     public void announceIsConnected() {
         EventMessageClass messageClass = new EventMessageClass();
         char[] uuidArray = messageClass.TEST_UUID.toCharArray();
-        messageClass.request.szUUID = uuidArray;
-        messageClass.request.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
+        messageClass.sEventmsgLoginReq.szUUID = uuidArray;
+        messageClass.sEventmsgLoginReq.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
         char[] tokenArray = refreshedToken.toCharArray();
-        messageClass.request.szCloudRegID = tokenArray;
+        messageClass.sEventmsgLoginReq.szCloudRegID = tokenArray;
         manager.writeMessageToShmadia(messageClass);
         Log.d(TAG, "sendRegistrationToServer: " + messageClass.toString());
     }

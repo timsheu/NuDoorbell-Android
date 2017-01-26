@@ -229,7 +229,7 @@ class UDPSlaveTerminal
     public void run() {
       do {
         try {
-          //1. pickup the message and corresponding request
+          //1. pickup the message and corresponding sEventmsgLoginReq
           byte[] message = (byte[]) m_SendQueue.take();
           DatagramPacket req = (DatagramPacket)
               m_Requests.remove(new Integer(ModbusUtil.registersToInt(message)));
@@ -268,7 +268,7 @@ class UDPSlaveTerminal
           byte[] buffer = new byte[256];//max size
           DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
           m_Socket.receive(packet);
-          //2. Extract TID and remember request
+          //2. Extract TID and remember sEventmsgLoginReq
           Integer tid = new Integer(ModbusUtil.registersToInt(buffer));
           m_Requests.put(tid, packet);
           //3. place the data buffer in the queue

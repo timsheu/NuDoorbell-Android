@@ -163,7 +163,7 @@ public class ModbusSerialTransaction
        */
       m_TransactionLock.acquire();
 
-      //3. write request, and read response,
+      //3. write sEventmsgLoginReq, and read sEventmsgLoginResp,
       //   while holding the lock on the IO object
       synchronized (m_IO) {
         int tries = 0;
@@ -181,9 +181,9 @@ public class ModbusSerialTransaction
                 System.err.println("InterruptedException: " + ex.getMessage());
               }
             }
-            //write request message
+            //write sEventmsgLoginReq message
             m_IO.writeMessage(m_Request);
-            //read response message
+            //read sEventmsgLoginResp message
             m_Response = m_IO.readResponse();
             finished = true;
           } catch (ModbusIOException e) {
@@ -231,8 +231,8 @@ public class ModbusSerialTransaction
 
   /**
    * Checks the validity of the transaction, by
-   * checking if the values of the response correspond
-   * to the values of the request.
+   * checking if the values of the sEventmsgLoginResp correspond
+   * to the values of the sEventmsgLoginReq.
    *
    * @throws ModbusException if the transaction is not valid.
    */

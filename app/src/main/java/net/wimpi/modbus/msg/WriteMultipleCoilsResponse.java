@@ -26,7 +26,7 @@ import java.io.IOException;
  * Class implementing a <tt>WriteMultipleCoilsResponse</tt>.
  * The implementation directly correlates with the class 1
  * function <i>read coils (FC 15)</i>. It encapsulates
- * the corresponding response message.
+ * the corresponding sEventmsgLoginResp message.
  * <p>
  * Coils are understood as bits that can be manipulated
  * (i.e. set or unset).
@@ -79,7 +79,7 @@ public final class WriteMultipleCoilsResponse
 
   /**
    * Returns the number of bits (i.e. coils)
-   * read with the request.
+   * read with the sEventmsgLoginReq.
    * <p>
    * @return the number of bits that have been read.
    */
@@ -89,9 +89,9 @@ public final class WriteMultipleCoilsResponse
 
   /**
    * Sets the number of bits (i.e. coils)
-   * that will be in a response.
+   * that will be in a sEventmsgLoginResp.
    *
-   * @param count the number of bits in the response.
+   * @param count the number of bits in the sEventmsgLoginResp.
    */
   public void setBitCount(int count) {
     m_BitCount = count;

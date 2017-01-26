@@ -211,7 +211,7 @@ public class ModbusSerialMaster {
    * Reads a given number of input registers from the slave.
    * <p/>
    * Note that the number of input registers returned (i.e. array length)
-   * will be according to the number received in the slave response.
+   * will be according to the number received in the slave sEventmsgLoginResp.
    *
    * @param unitid the slave unit id.
    * @param ref    the offset of the input register to start reading from.
@@ -234,7 +234,7 @@ public class ModbusSerialMaster {
    * Reads a given number of registers from the slave.
    * <p/>
    * Note that the number of registers returned (i.e. array length)
-   * will be according to the number received in the slave response.
+   * will be according to the number received in the slave sEventmsgLoginResp.
    *
    * @param unitid the slave unit id.
    * @param ref    the offset of the register to start reading from.

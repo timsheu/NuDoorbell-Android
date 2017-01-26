@@ -15,8 +15,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity
-            android:name=".MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,22 +37,24 @@
         </service>
         <!-- [END firebase_iid_service] -->
         <service
-            android:name="com.nuvoton.socketmanager.BGBCReceiverService"
+            android:name="com.nuvoton.socketmanager.UDPSocketService"
             android:enabled="true"
             android:exported="true" />
 
-        <receiver
-            android:name="com.nuvoton.socketmanager.BGBCReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.nuvoton.ActivityRecognition.RestartService"/>
-            </intent-filter>
-        </receiver>
-        <!--<meta-data android:name="DATABASE" android:value="device_data.db"/>-->
-        <meta-data android:name="VERSION" android:value="1"/>
-        <meta-data android:name="QUERY_LOG" android:value="true"/>
-        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.nuvoton.nudoorbell"/>
+        <meta-data
+            android:name="VERSION"
+            android:value="1" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.nuvoton.nudoorbell" />
+
+        <activity
+            android:name=".Streaming"
+            android:label="@string/title_activity_streaming"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

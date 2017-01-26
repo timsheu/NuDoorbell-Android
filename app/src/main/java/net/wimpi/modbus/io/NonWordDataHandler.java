@@ -64,7 +64,7 @@ public interface NonWordDataHandler {
    * Commits the data if it has been read into an intermediate
    * repository.
    * This method is called by a <tt>WriteMultipleRegistersRequest</tt>
-   * instance when finished with reading, for creating a response.
+   * instance when finished with reading, for creating a sEventmsgLoginResp.
    *
    * @return -1 if the commit was successful, a Modbus exception code
    *         valid for the read/write multiple registers commands
@@ -76,7 +76,7 @@ public interface NonWordDataHandler {
    * Prepares the raw data, putting it together from a
    * backing data store.
    * This method is called by a <tt>ReadMultipleRegistersRequest</tt>
-   * instance when finshed with reading, for creating a response.
+   * instance when finshed with reading, for creating a sEventmsgLoginResp.
    *
    * @param reference to specify the offset as <tt>int</tt>.
    * @param count to sepcify the amount of bytes as <tt>int</tt>.

@@ -137,7 +137,7 @@ public interface Modbus {
   /**
    * Defines the Modbus slave exception type <tt>illegal data value</tt>.
    * This exception code indicates a fault in the structure of the data values
-   * of a complex request, such as an incorrect implied length.<br>
+   * of a complex sEventmsgLoginReq, such as an incorrect implied length.<br>
    * <b>This code does not indicate a problem with application specific validity
    * of the value.</b>
    */

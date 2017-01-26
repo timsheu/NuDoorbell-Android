@@ -79,7 +79,7 @@ public class UDPDITest {
       conn.connect();
 
 
-      //3. Prepare the request
+      //3. Prepare the sEventmsgLoginReq
       req = new ReadInputDiscretesRequest(ref, count);
       req.setUnitID(0);
       if (Modbus.debug) System.out.println("Request: " + req.getHexMessage());

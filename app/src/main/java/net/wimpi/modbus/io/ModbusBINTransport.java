@@ -125,7 +125,7 @@ public class ModbusBINTransport
             continue;
           }
           in = m_ByteIn.readUnsignedByte();
-          //create request
+          //create sEventmsgLoginReq
           request = ModbusRequest.createModbusRequest(in);
           request.setHeadless();
           //read message
@@ -180,7 +180,7 @@ public class ModbusBINTransport
             continue;
           }
           in = m_ByteIn.readUnsignedByte();
-          //create request
+          //create sEventmsgLoginReq
           response = ModbusResponse.createModbusResponse(in);
           response.setHeadless();
           //read message

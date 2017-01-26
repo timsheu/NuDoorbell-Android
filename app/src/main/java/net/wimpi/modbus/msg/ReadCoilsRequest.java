@@ -30,7 +30,7 @@ import net.wimpi.modbus.procimg.ProcessImage;
  * Class implementing a <tt>ReadCoilsRequest</tt>.
  * The implementation directly correlates with the class 1
  * function <i>read coils (FC 1)</i>. It encapsulates
- * the corresponding request message.
+ * the corresponding sEventmsgLoginReq message.
  * <p>
  * Coils are understood as bits that can be manipulated
  * (i.e. set or unset).

@@ -42,6 +42,11 @@ public class DeviceData extends SugarRecord{
         this.name = name;
     }
 
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    String uuid;                        // Device UUID for recognition
     String name;                        // Device custom name
     String deviceType;                  // NuDoorbell, SkyEye, NuWiCam
     String publicIP;                    // public ip of the device
@@ -270,6 +275,7 @@ public class DeviceData extends SugarRecord{
     }
 
     public DeviceData(){
+        uuid = "00000001";
         name = "NuDoorbell";
         deviceType = "NuDoorbell";
         publicIP = "192.168.100.1";
@@ -287,7 +293,7 @@ public class DeviceData extends SugarRecord{
         isRecorderOn = false;
         resolution = "QVGA";
         encodeQuality = 30;
-        bitRate = 1000;
+        bitRate = 1024;
         fps = 20;
         ssid = "NuDoorbell";
         password = "12345678";
@@ -298,7 +304,8 @@ public class DeviceData extends SugarRecord{
         history5 = "";
     }
 
-    public DeviceData(String name, String deviceType, String publicIP, String privateIP, int httpPort, int rtspPort, String fcmToken, Boolean isVoiceUploadHttp, Boolean isAdaptive, Boolean isFixedQuality, Boolean isFixedBitrate, Boolean isTCPTransmission, Boolean isMute, Boolean isStorageAvailable, Boolean isRecorderOn, String resolution, int encodeQuality, int bitRate, int fps, String ssid, String password, String history1, String history2, String history3, String history4, String history5) {
+    public DeviceData(String uuid, String name, String deviceType, String publicIP, String privateIP, int httpPort, int rtspPort, String fcmToken, Boolean isVoiceUploadHttp, Boolean isAdaptive, Boolean isFixedQuality, Boolean isFixedBitrate, Boolean isTCPTransmission, Boolean isMute, Boolean isStorageAvailable, Boolean isRecorderOn, String resolution, int encodeQuality, int bitRate, int fps, String ssid, String password, String history1, String history2, String history3, String history4, String history5) {
+        this.uuid = uuid;
         this.deviceType = deviceType;
         this.publicIP = publicIP;
         this.privateIP = privateIP;

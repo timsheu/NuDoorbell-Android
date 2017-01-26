@@ -1,7 +1,12 @@
 package com.nuvoton.nudoorbell;
 
 import android.app.FragmentTransaction;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,17 +17,21 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.nuvoton.socketmanager.UDPSocketService;
 import com.nuvoton.utility.EditDeviceDialogFragment;
 import com.orm.SugarContext;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements SetDBFragment.SetDBInterface, EditDBFragment.EditDBInterface, EditDeviceDialogFragment.EditDeviceDialogInterface {
+public class MainActivity extends AppCompatActivity implements AddDBFragment.SetDBInterface, EditDBFragment.EditDBInterface, EditDeviceDialogFragment.EditDeviceDialogInterface{
     private boolean isSetting = false;
+    private int iterateCount = 0;
     private final String TAG = "grid";
     private GridView gridView;
     private SimpleAdapter adapter;
@@ -31,6 +40,20 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
     private int[] indicator = {R.mipmap.status_r, R.mipmap.status_g, R.mipmap.status_y, R.mipmap.status_n};
     private int[] button = {R.mipmap.db, R.mipmap.plus};
     private int index = 0;
+    private UDPSocketService udpSocketService;
+    public ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            udpSocketService = ((UDPSocketService.MyBinder) iBinder).getService();
+            Log.d(TAG, "onServiceConnected: ");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            udpSocketService = null;
+            Log.d(TAG, "onServiceDisconnected: ");
+        }
+    };
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
@@ -57,6 +80,14 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
         SugarContext.init(this);
         initElement();
         initUI();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                updateIndicator();
+            }
+        }).start();
+        Intent intent = new Intent(MainActivity.this, UDPSocketService.class);
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE);
     }
 
     @Override
@@ -64,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
         if (isSetting){
             backFromSettingsFragment();
         }else{
+            unbindService(serviceConnection);
             super.onBackPressed();
         }
     }
@@ -81,11 +113,17 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
                     isSetting = true;
                     final Bundle bundle = new Bundle();
                     bundle.putString("serial", String.valueOf(i+1));
-                    SetDBFragment mSetDBFragment = SetDBFragment.newInsatnce(bundle);
-                    mSetDBFragment.setInterface(MainActivity.this);
+                    AddDBFragment mAddDBFragment = AddDBFragment.newInsatnce(bundle);
+                    mAddDBFragment.setInterface(MainActivity.this);
                     FragmentTransaction trans = getFragmentManager().beginTransaction();
                     trans.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out, android.R.animator.fade_in, android.R.animator.fade_out);
-                    trans.replace(android.R.id.content, mSetDBFragment).addToBackStack("db").commit();
+                    trans.replace(android.R.id.content, mAddDBFragment).addToBackStack("db").commit();
+                }else{
+                    Map<String, Object> map = items.get(i);
+                    long id = (long) map.get("ID");
+                    Intent intent = new Intent(MainActivity.this, Streaming.class);
+                    intent.putExtra("ID", id);
+                    startActivity(intent);
                 }
             }
         });
@@ -125,6 +163,8 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
             item.put("button", button[0]);
             String text = deviceDataList.get(i).getDeviceType();
             item.put("text", text);
+            long id = deviceDataList.get(i).getId();
+            item.put("ID", id);
             items.add(item);
             Log.d(TAG, "initElement: " + items);
         }
@@ -145,9 +185,9 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
     }
 
 
-    //MARK: SetDBDelegate
+    //MARK: AddDBDelegate
     @Override
-    public void addNewDoorbell(String serial, String type, String name, String url) {;
+    public void addNewDoorbell(String serial, String type, String name, String url) {
         DeviceData deviceData = new DeviceData();
         deviceData.setDeviceType(type);
         deviceData.setName(name);
@@ -160,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
         item.put("button", button[0]);
         item.put("text", name);
         item.put("ID", deviceData.getId());
+        item.put("PublicIP", deviceData.getPublicIP());
         items.add(items.size() -1, item);
         adapter.notifyDataSetChanged();
         initUI();
@@ -182,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
             long sugarID = (long) item.get("ID");
             DeviceData deviceData = DeviceData.findById(DeviceData.class, sugarID);
             deviceData.delete();
-            deviceData.save();
             items.remove(index);
         }
         adapter.notifyDataSetChanged();
@@ -194,10 +234,13 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
     }
 
     @Override
-    public void editDB(String category) {
+    public void enterEditPage(String category) {
+        Log.d(TAG, "enterEditPage: ");
         if (category.compareTo("Selection") == 0){
             final Bundle bundle = new Bundle();
-            bundle.putInt("Serial", index);
+            Map<String, Object> item = items.get(index);
+            long sugarID = (long) item.get("ID");
+            bundle.putLong("DeviceID", sugarID);
             EditDBFragment frag = EditDBFragment.newInsatnce(bundle);
             frag.setInterface(this);
             FragmentTransaction trans = getFragmentManager().beginTransaction();
@@ -206,9 +249,32 @@ public class MainActivity extends AppCompatActivity implements SetDBFragment.Set
         }
     }
 
+    @Override
+    public void restartChosen(int index, String type) {
+
+    }
+
+    //MARK: Utility
+    public void updateIndicator(){
+        for (Map<String, Object> m: items) {
+            try {
+                String publicIP = (String)m.get("PublicIP");
+                boolean isReachable = InetAddress.getByName(publicIP).isReachable(10);
+                if (isReachable){
+                    m.put("indicator", indicator[1]);
+                }else{
+                    m.put("indicator", indicator[0]);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        adapter.notifyDataSetChanged();
+    }
+
     //MARK: EditDialogInterface
     @Override
-    public void editNewDoorbell(String serial, String name, String type, String url) {
+    public void editDevice(String serial, String name, String type, String url) {
 
     }
 }

@@ -227,7 +227,7 @@ public class ModbusTCPMaster {
    * Reads a given number of input registers from the slave.
    * <p/>
    * Note that the number of input registers returned (i.e. array length)
-   * will be according to the number received in the slave response.
+   * will be according to the number received in the slave sEventmsgLoginResp.
    *
    * @param ref   the offset of the input register to start reading from.
    * @param count the number of input registers to be read.
@@ -248,7 +248,7 @@ public class ModbusTCPMaster {
    * Reads a given number of registers from the slave.
    * <p/>
    * Note that the number of registers returned (i.e. array length)
-   * will be according to the number received in the slave response.
+   * will be according to the number received in the slave sEventmsgLoginResp.
    *
    * @param ref   the offset of the register to start reading from.
    * @param count the number of registers to be read.

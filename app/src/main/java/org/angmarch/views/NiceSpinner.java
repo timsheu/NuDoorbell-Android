@@ -94,7 +94,7 @@ public class NiceSpinner extends TextView {
 
             if (bundle.getBoolean(IS_POPUP_SHOWING)) {
                 if (popupWindow != null) {
-                    // Post the show request into the looper to avoid bad token exception
+                    // Post the show sEventmsgLoginReq into the looper to avoid bad token exception
                     post(new Runnable() {
                         @Override
                         public void run() {

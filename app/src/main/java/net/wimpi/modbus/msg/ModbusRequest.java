@@ -55,7 +55,7 @@ public abstract class ModbusRequest
    *
    * @param EXCEPTION_CODE the code of the exception.
    * @return a ModbusResponse instance representing the exception
-   *         response.
+   *         sEventmsgLoginResp.
    */
   public ModbusResponse createExceptionResponse(int EXCEPTION_CODE) {
     ExceptionResponse response =
@@ -74,7 +74,7 @@ public abstract class ModbusRequest
    * Factory method creating the required specialized <tt>ModbusRequest</tt>
    * instance.
    *
-   * @param functionCode the function code of the request as <tt>int</tt>.
+   * @param functionCode the function code of the sEventmsgLoginReq as <tt>int</tt>.
    * @return a ModbusRequest instance specific for the given function type.
    */
   public static ModbusRequest createModbusRequest(int functionCode) {

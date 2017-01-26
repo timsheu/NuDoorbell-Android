@@ -30,7 +30,7 @@ import net.wimpi.modbus.procimg.ProcessImage;
  * Class implementing a <tt>ReadInputRegistersRequest</tt>.
  * The implementation directly correlates with the class 0
  * function <i>read multiple registers (FC 4)</i>. It
- * encapsulates the corresponding request message.
+ * encapsulates the corresponding sEventmsgLoginReq message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)

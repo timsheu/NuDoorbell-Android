@@ -237,7 +237,7 @@ public class AHBottomNavigation extends FrameLayout {
 			createSmallItems(linearLayout);
 		}
 
-		// Force a request layout after all the items have been created
+		// Force a sEventmsgLoginReq layout after all the items have been created
 		post(new Runnable() {
 			@Override
 			public void run() {

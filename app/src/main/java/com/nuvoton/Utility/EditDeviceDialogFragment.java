@@ -27,7 +27,8 @@ public class EditDeviceDialogFragment extends DialogFragment {
     public interface EditDeviceDialogInterface {
         void removeDevice(String category);
         void spinnerChosen(EditDeviceDialogFragment fragment, int index);
-        void editDB(String category);
+        void enterEditPage(String category);
+        void restartChosen(int index, String type);
     }
 
     private static final String TAG = "CustomDialogFragment";
@@ -40,7 +41,7 @@ public class EditDeviceDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        if (type.compareTo("Dialog ") == 0){
+        if (type.compareTo("Dialog") == 0){
             builder.setTitle(label).setMessage(content).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -76,18 +77,25 @@ public class EditDeviceDialogFragment extends DialogFragment {
             }).setNegativeButton("Setup", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    editDeviceDialogInterface.editDB(label);
+                    editDeviceDialogInterface.enterEditPage(label);
                 }
             });
+        }else if (type.compareTo("Restart") == 0){
+            View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_confirm, null);
+            spinner = (NiceSpinner) view.findViewById(R.id.historySpinner);
+            spinner.attachDataSource(localSpinnerData);
+            spinner.setTextColor(Color.BLACK);
+            Log.d(TAG, "onCreateDialog: " + localSpinnerData);
+            builder.setPositiveButton("Restart", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    editDeviceDialogInterface.restartChosen(i, label);
+                }
+            });
+            builder.setView(view).setTitle(label).setNegativeButton("Cancel", null);
         }
 
         return builder.create();
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        Log.d(TAG, "onAttach: ");
     }
 
     public void setLabel(String label){
