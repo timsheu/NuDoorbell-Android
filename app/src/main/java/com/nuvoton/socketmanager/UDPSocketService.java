@@ -15,7 +15,6 @@ import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.nuvoton.nudoorbell.DeviceData;
-import com.nuvoton.nudoorbell.LivePage;
 import com.nuvoton.nudoorbell.R;
 import com.nuvoton.nudoorbell.Streaming;
 

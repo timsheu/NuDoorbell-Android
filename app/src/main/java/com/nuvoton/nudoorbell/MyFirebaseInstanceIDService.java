@@ -21,7 +21,6 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.nuvoton.utility.EventMessageClass;
-import com.nuvoton.utility.ReadConfigure;
 import com.nuvoton.socketmanager.ShmadiaConnectManager;
 
 
@@ -46,12 +45,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService imple
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken);
-        ReadConfigure configure = ReadConfigure.getInstance(getApplicationContext(), false);
-//        String preferenceName = "Setup Camera 5";
-//        Log.d(TAG, "initSharedPreference: " + preferenceName);
-//        SharedPreferences preferences = getApplicationContext().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
-        configure.setTargetValue("FCM Token", refreshedToken);
-//        boolean success = preferences.edit().putString("FCM Token", refreshedToken).commit();
         Log.d(TAG, "onTokenRefresh: ");
         // [END refresh_token]
     }

@@ -11,14 +11,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.nuvoton.nudoorbell.Streaming"
-    tools:showIn="@layout/activity_streaming">
+    tools:showIn="@layout/activity_streaming"
+    android:background="@color/black">
         <com.appunite.ffmpeg.FFmpegSurfaceView
             android:layout_width="match_parent"
             android:layout_height="240dp"
             android:id="@+id/videoView"
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
-            android:backgroundTint="#114236"
+            android:backgroundTint="@color/black"
+
             />
         <RelativeLayout
             android:layout_width="match_parent"
@@ -27,6 +29,7 @@
             android:layout_alignRight="@+id/videoView"
             android:layout_alignLeft="@+id/videoView"
             android:background="#036D6E"
+            android:visibility="invisible"
             >
 
             <SeekBar
@@ -43,6 +46,7 @@
                 android:paddingLeft="10dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
+                android:clickable="false"
                 />
 
             <ImageButton
@@ -85,7 +89,8 @@
             android:scaleType="fitCenter"
             android:background="#00ffffff"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp" />
+            android:layout_marginTop="5dp"
+            android:visibility="invisible"/>
 
         <ImageView
             android:layout_width="8dp"
@@ -97,6 +102,7 @@
             android:scaleType="centerCrop"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"
+            android:visibility="invisible"
             />
 
         <TextView
@@ -108,7 +114,8 @@
             android:text="OFFLINE"
             android:layout_marginTop="7dp"
             android:textAlignment="center"
-            android:paddingRight="5dp" />
+            android:paddingRight="5dp"
+            android:visibility="invisible"/>
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -122,16 +129,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true">
+        android:layout_below="@+id/videoView"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true">
         <ImageButton
             android:layout_width="64dp"
             android:id="@+id/phone_hang"
             android:src="@drawable/phonehang"
             android:scaleType="fitCenter"
             android:background="#00ffffff"
-            android:layout_height="64dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
+            android:layout_gravity="bottom"
             />
 
         <ImageButton
@@ -140,8 +149,9 @@
             android:src="@drawable/phonecall"
             android:scaleType="fitCenter"
             android:background="#00ffffff"
-            android:layout_height="64dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
+            android:layout_gravity="bottom"
         />
     </LinearLayout>
 
