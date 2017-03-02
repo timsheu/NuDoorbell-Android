@@ -8,8 +8,8 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.util.Log;
 
-import com.nuvoton.socketmanager.SocketInterface;
-import com.nuvoton.socketmanager.SocketManager;
+import com.nuvoton.socketmanager.HTTPSocketInterface;
+import com.nuvoton.socketmanager.HTTPSocketManager;
 
 import org.json.JSONObject;
 
@@ -22,34 +22,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by timsheu on 7/21/16.
  */
-public class TwoWayTalking implements SocketInterface{
+public class TwoWayTalking implements HTTPSocketInterface{
 
     @Override
-    public void showToastMessage(String message, int duration) {
-
-    }
-
-    @Override
-    public void updateFileList(ArrayList<FileContent> fileList) {
-
-    }
-
-    @Override
-    public void deviceIsAlive() {
-
-    }
-
-    @Override
-    public void updateSettingContent(String category, String value) {
-
-    }
-
-    @Override
-    public void updateSettingContent(String category, JSONObject jsonObject) {
+    public void httpSocketResponse(Map<String, Object> responseMap) {
 
     }
 
@@ -73,9 +54,14 @@ public class TwoWayTalking implements SocketInterface{
     private final String lineEnd = "\r\n";
     private URLConnection conn;
     private HttpURLConnection httpConn;
+
+    public void setHTTPMode(boolean HTTPMode) {
+        isHTTPMode = HTTPMode;
+    }
+
     private boolean isHTTPMode = true;
     private String localURL;
-    private SocketManager socketManager;
+    private HTTPSocketManager socketManager;
     private TwoWayTalkingInterface mInterface;
     private ServerSocket mServerSocket = null;
     private URL url;
@@ -102,7 +88,7 @@ public class TwoWayTalking implements SocketInterface{
 
     public void startRecording(){
         if (socketManager == null){
-            socketManager = new SocketManager();
+            socketManager = new HTTPSocketManager();
         }
 
         isRecording = true;
@@ -191,6 +177,9 @@ public class TwoWayTalking implements SocketInterface{
                 httpConn.setUseCaches(false);
 //                int i=0, j=49, tmp=0;
                 DataOutputStream dos = new DataOutputStream(httpConn.getOutputStream());
+                byte[] zero = new byte[0];
+                dos.write(zero);
+                dos.flush();
 //                AssetManager am = context.getAssets();
 //                AssetFileDescriptor adf = am.openFd("8kHz.wav");
 //                FileInputStream fis = adf.createInputStream();
@@ -232,17 +221,20 @@ public class TwoWayTalking implements SocketInterface{
     }
 
     public void updateURL(String URL){
-        localURL = URL;
+        String[] strings = URL.split("/");
+        localURL = "http://" + strings[2] + "/";
     }
 
     public void pokeClient(String URL, String protocol){
+        String [] strings = URL.split("/");
+        String url = strings[2];
         Log.d(TAG, "pokeClient: ");
         if (protocol.compareTo("tcp") == 0){
-            String command = URL + "audio.input?protocol=tcp&samplerate=8000&channel=1&volume=100&port=8080";
-            localURL = URL;
-            SocketManager socketManager = new SocketManager();
+            String command = "http://" + url + "/audio.input?protocol=tcp&samplerate=8000&channel=1&volume=100&port=8080";
+            localURL = url;
+            HTTPSocketManager socketManager = new HTTPSocketManager();
             socketManager.setSocketInterface(this);
-            socketManager.executeSendGetTask(command, SocketManager.CMDSET_TWOWAY);
+            socketManager.executeSendGetTask(command);
         }
     }
 

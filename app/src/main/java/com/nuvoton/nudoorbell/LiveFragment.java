@@ -376,26 +376,7 @@ public class LiveFragment extends Fragment implements OnClickListener, OnSeekBar
         if (onHideBottomBarListener != null){
             onHideBottomBarListener.onEnableClick(true);
         }
-        Dexter.withActivity(getActivity()).
-                withPermission(Manifest.permission.RECORD_AUDIO)
-                .withListener(new PermissionListener() {
-                    @Override
-                    public void onPermissionGranted(PermissionGrantedResponse response) {
-                        Log.d(TAG, "onPermissionGranted: permitted");
-                        isGranted = true;
-                    }
 
-                    @Override
-                    public void onPermissionDenied(PermissionDeniedResponse response) {
-                        Log.d(TAG, "onPermissionDenied: not permitted");
-                        isGranted = false;
-                    }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                    }
-                }).check();
     }
 
     @Override

@@ -14,21 +14,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import com.nuvoton.socketmanager.HTTPSocketInterface;
+import com.nuvoton.socketmanager.HTTPSocketManager;
 import com.nuvoton.utility.CustomDialogFragment;
 import com.nuvoton.utility.EditDeviceDialogFragment;
+import com.nuvoton.utility.NuDoorbellCommand;
+import com.nuvoton.utility.NuPlayerCommand;
+import com.nuvoton.utility.NuWicamCommand;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * Created by cchsu20 on 15/11/2016.
  */
 
-public class EditDBFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener, CustomDialogFragment.DialogFragmentInterface, EditDeviceDialogFragment.EditDeviceDialogInterface{
+public class EditDBFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener, CustomDialogFragment.DialogFragmentInterface, EditDeviceDialogFragment.EditDeviceDialogInterface, HTTPSocketInterface{
 
     public interface EditDBInterface{
         void editDevice(String serial, String name, String type, String url);
@@ -38,8 +44,11 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     private static long deviceID = 0;
     private static String serial = "0";
     private static String name = "Doorbell";
-    private static String url = "192.168.100.1";
+    private static String ip = "192.168.100.1";
     private static String type = "NuDoorbell";
+    private DeviceData deviceData = null;
+    private String localSsid = "";
+    private String localPassword = "";
 
     public static EditDBFragment newInsatnce(Bundle bundle){
         deviceID = bundle.getLong("DeviceID");
@@ -53,7 +62,12 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         String dbName = "Doorbell " + String.valueOf(serial);
         getPreferenceManager().setSharedPreferencesName(dbName);
         addPreferencesFromResource(R.xml.edit_db_setting);
-        setPreferenceDefaultValue();
+        deviceData = DeviceData.findById(DeviceData.class, deviceID);
+        localSsid = deviceData.getSsid();
+        localPassword = deviceData.getPassword();
+        ip = deviceData.getPublicIP();
+        name = deviceData.getName();
+        type = deviceData.getDeviceType();
     }
 
     @Override
@@ -64,8 +78,16 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     }
 
     @Override
+    public void onDestroy() {
+        if (deviceData != null){
+            deviceData.save();
+        }
+        mInterface.editDevice(serial, type, name, ip);
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        DeviceData deviceData = DeviceData.findById(DeviceData.class, deviceID);
         String key = preference.getKey();
         CustomDialogFragment dialog = new CustomDialogFragment();
         dialog.setInterface(this);
@@ -89,64 +111,103 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                 }
             });
 
-        }else if (key.compareTo("url") == 0){
+        }else if (key.compareTo("ip") == 0){
             EditTextPreference pref = (EditTextPreference) preference;
             pref.getEditText().setText(deviceData.getPublicIP());
             pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
-                    url = (String) o;
-                    pref.getEditText().setText(url);
-                    deviceData.setPublicIP(url);
-                    deviceData.setPrivateIP(url);
+                    ip = (String) o;
+                    pref.getEditText().setText(ip);
+                    deviceData.setPublicIP(ip);
+                    deviceData.setPrivateIP(ip);
                     deviceData.save();
                     return false;
                 }
             });
         }else if (key.compareTo("type") == 0) {
             ListPreference list = (ListPreference) preference;
+            String deviceDataTempString = deviceData.getDeviceType();
+            int listIndex = 0;
+            if (deviceDataTempString.compareTo("SkyEye") == 0){
+                listIndex = 1;
+            }else if(deviceDataTempString.compareTo("NuWicam") == 0){
+                listIndex = 2;
+            }
+            list.setValueIndex(listIndex);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
                     type = (String) o;
                     deviceData.setDeviceType(type);
+                    deviceData.save();
                     return true;
                 }
             });
             // type is selected.
         }else if(key.compareTo("resolution") == 0){
             ListPreference list = (ListPreference) preference;
+            String deviceDataTempString = deviceData.getResolution();
+            int listIndex = 0;
+            if (deviceDataTempString.compareTo("VGA") == 0){
+                listIndex = 1;
+            }else if (deviceDataTempString.compareTo("360") == 0){
+                listIndex = 2;
+            }
+            list.setValueIndex(listIndex);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
                     deviceData.setResolution((String) o);
+                    deviceData.save();
+                    setDeviceSetting(key, deviceData.getResolution());
                     return true;
                 }
             });
         }else if(key.compareTo("bit_rate") == 0){
             ListPreference list = (ListPreference) preference;
+            int deviceDataTempInt = deviceData.getBitRate();
+            int listIndex = 0;
+            if (deviceDataTempInt > 1024 && deviceDataTempInt <= 2048){
+                listIndex = 1;
+            }else if (deviceDataTempInt > 2048 && deviceDataTempInt <= 3072){
+                listIndex = 2;
+            }else if (deviceDataTempInt > 3072 && deviceDataTempInt <= 4096){
+                listIndex = 3;
+            }
+            list.setValueIndex(listIndex);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
-                    deviceData.setBitRate((int) o);
+                    int bitRate = Integer.valueOf((String) o);
+                    deviceData.setBitRate(bitRate);
+                    deviceData.save();
+                    setDeviceSetting(key, String.valueOf(bitRate));
                     return false;
                 }
             });
         }else if(key.compareTo("voice_upload") == 0){
             ListPreference list = (ListPreference) preference;
+            boolean deviceDataTempBoolean = deviceData.getVoiceUploadHttp();
+            int listIndex = 1;
+            if (deviceDataTempBoolean){
+                listIndex = 0;
+            }
+            list.setValueIndex(listIndex);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
                     boolean isHttp = true;
                     String httpString = (String) o;
-                    if (httpString.compareTo("socket") == 0){
+                    if (httpString.compareTo("Socket") == 0){
                         isHttp = false;
                     }
                     deviceData.setVoiceUploadHttp(isHttp);
+                    deviceData.save();
                     return false;
                 }
             });
@@ -159,6 +220,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                     String ssid = pref.getText();
                     deviceData.setSsid(ssid);
                     deviceData.save();
+                    setDeviceSetting(key, ssid);
                     return false;
                 }
             });
@@ -171,6 +233,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                     String password = pref.getText();
                     deviceData.setPassword(password);
                     deviceData.save();
+                    setDeviceSetting(key, password);
                     return false;
                 }
             });
@@ -191,7 +254,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                     String restart = "Restart";
                     fragment.setInterface(EditDBFragment.this);
                     fragment.setLabel(restart);
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     if (type.compareTo("NuDoorbell") == 0){
                         list.add("restart");
                     } else if (type.compareTo("SkyEye") == 0){
@@ -210,7 +273,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             });
         }else if (key.compareTo("save") == 0){
             deviceData.save();
-            mInterface.editDevice(serial, type, name, url);
+            mInterface.editDevice(serial, type, name, ip);
             FragmentTransaction trans = getFragmentManager().beginTransaction();
             trans.setCustomAnimations(android.R.animator.fade_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
             getFragmentManager().popBackStackImmediate();
@@ -234,76 +297,70 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     }
 
     //MARK: Utility
-    public void setPreferenceDefaultValue(){
-        DeviceData deviceData = DeviceData.findById(DeviceData.class, deviceID);
-        ListPreference listPreference;
-        EditTextPreference editTextPreference;
-        Preference preference;
-
-        //serial
-        preference = findPreference("serial");
-        String temp = "Device serial is " + deviceData.getId();
-        preference.setSummary(temp);
-
-        editTextPreference = (EditTextPreference) findPreference("name");
-        editTextPreference.getEditText().setText(deviceData.getName());
-
-        //type
-        listPreference = (ListPreference) findPreference("type");
-        String deviceDataTempString = deviceData.getDeviceType();
-        int listIndex = 0;
-        if (deviceDataTempString.compareTo("SkyEye") == 0){
-            listIndex = 1;
-        }else if(deviceDataTempString.compareTo("NuWicam") == 0){
-            listIndex = 2;
+    public void setDeviceSetting(String category, String value){
+        String deviceType = deviceData.deviceType;
+        HTTPSocketManager httpSocketManager = new HTTPSocketManager();
+        httpSocketManager.setSocketInterface(this);
+        String command = "http://" + ip + ":" + deviceData.getHttpPort();
+        if (deviceType.compareTo("NuDoorbell") == 0){
+            if (category.compareTo("resolution") == 0){
+                command += NuDoorbellCommand.setResolution(value);
+            }else if (category.compareTo("bit_rate") == 0){
+                command += NuDoorbellCommand.setEncodeBitrate(value);
+            }else if (category.compareTo("ssid") == 0){
+                localSsid = value;
+                command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
+            }else if (category.compareTo("password") == 0){
+                localPassword = value;
+                command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
+            }
+        }else if (deviceType.compareTo("SkyEye") == 0){
+            if (category.compareTo("resolution") == 0){
+                int number = 0;
+                if (value.compareTo("VGA") == 0){
+                    number = 1;
+                }else {
+                    number = 2;
+                }
+                command += NuPlayerCommand.setResolution("h264", number);
+            }else if (category.compareTo("bit_rate") == 0){
+                command += NuPlayerCommand.setEncodeBitrate("h264", Integer.valueOf(value));
+            }else if (category.compareTo("ssid") == 0){
+                localSsid = value;
+                command += NuPlayerCommand.updateWifiParameters(localSsid, localPassword);
+            }else if (category.compareTo("password") == 0){
+                localPassword = value;
+                command += NuPlayerCommand.updateWifiParameters(localSsid, localPassword);
+            }
+        }else if (deviceType.compareTo("NuWicam") == 0){
+            Map<String, String> parameters = new HashMap<>();
+            if (category.compareTo("resolution") == 0){
+                String height = "240", width = "320";
+                if (value.compareTo("1") == 0){
+                    height = "480";
+                    width = "640";
+                }else{
+                    height = "360";
+                    width = "640";
+                }
+                parameters.put("VINHEIGHT", height);
+                parameters.put("JPEGENCHEIGHT", height);
+                parameters.put("VINWIDTH", width);
+                parameters.put("JPEGENCWIDTH", width);
+                command += NuWicamCommand.updateStreamParameters(parameters);
+            }else if (category.compareTo("bit_rate") == 0){
+                parameters.put("BITRATE", value);
+                command += NuWicamCommand.updateStreamParameters(parameters);
+            }else if (category.compareTo("ssid") == 0){
+                localSsid = value;
+                command += NuWicamCommand.updateWifiParameters(localSsid, localPassword);
+            }else if (category.compareTo("password") == 0){
+                localPassword = value;
+                command += NuWicamCommand.updateWifiParameters(localSsid, localPassword);
+            }
         }
-        listPreference.setValueIndex(listIndex);
-
-        //url
-        editTextPreference = (EditTextPreference) findPreference("url");
-        editTextPreference.getEditText().setText(deviceData.getPublicIP());
-
-        //resolution
-        listPreference = (ListPreference) findPreference("resolution");
-        deviceDataTempString = deviceData.getResolution();
-        listIndex = 0;
-        if (deviceDataTempString.compareTo("VGA") == 0){
-            listIndex = 1;
-        }else if (deviceDataTempString.compareTo("360") == 0){
-            listIndex = 2;
-        }
-        listPreference.setValueIndex(listIndex);
-
-        //bitrate
-        listPreference = (ListPreference) findPreference("bit_rate");
-        int deviceDataTempInt = deviceData.getBitRate();
-        listIndex = 0;
-        if (deviceDataTempInt > 1024 && deviceDataTempInt <= 2048){
-            listIndex = 1;
-        }else if (deviceDataTempInt > 2048 && deviceDataTempInt <= 3072){
-            listIndex = 2;
-        }else if (deviceDataTempInt > 3072 && deviceDataTempInt <= 4096){
-            listIndex = 3;
-        }
-        listPreference.setValueIndex(listIndex);
-
-        //voice upload
-        listPreference = (ListPreference) findPreference("voice_upload");
-        boolean deviceDataTempBoolean = deviceData.getVoiceUploadHttp();
-        listIndex = 0;
-        if (deviceDataTempBoolean){
-            listIndex = 1;
-        }
-        listPreference.setValueIndex(listIndex);
-
-        //ssid
-        editTextPreference = (EditTextPreference) findPreference("ssid");
-        editTextPreference.getEditText().setText(deviceData.getSsid());
-
-        //password
-        editTextPreference = (EditTextPreference) findPreference("password");
-        editTextPreference.getEditText().setText(deviceData.getPassword());
-
+        httpSocketManager.setSocketInterface(this);
+        httpSocketManager.executeSendGetTask(command);
     }
 
     //MARK: EditDeviceDialogInterface
@@ -334,4 +391,19 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
 
     }
 
+    //MARK: HTTPSocketInterface
+    @Override
+    public void httpSocketResponse(Map<String, Object> responseMap) {
+        String value = (String) responseMap.get("value");
+        if (value.compareTo("0") == 0){
+            Toast.makeText(getActivity().getApplicationContext(), "Value sent successfully.", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getActivity().getApplicationContext(), "Value sent failed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void voiceConnectionOpened() {
+
+    }
 }

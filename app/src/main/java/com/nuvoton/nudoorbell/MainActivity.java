@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
     private int[] button = {R.mipmap.db, R.mipmap.plus};
     private int index = 0;
     private UDPSocketService udpSocketService;
+    private boolean isBinded = false;
     public ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -88,6 +89,16 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
         }).start();
         Intent intent = new Intent(MainActivity.this, UDPSocketService.class);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
+        isBinded = true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isBinded){
+            isBinded = false;
+            unbindService(serviceConnection);
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -95,7 +106,10 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
         if (isSetting){
             backFromSettingsFragment();
         }else{
-            unbindService(serviceConnection);
+            if (isBinded){
+                isBinded = false;
+                unbindService(serviceConnection);
+            }
             super.onBackPressed();
         }
     }
@@ -256,7 +270,12 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
 
     //MARK: Utility
     public void updateIndicator(){
+        int i=0;
         for (Map<String, Object> m: items) {
+            if (i == items.size()-1){
+                return;
+            }
+            i++;
             try {
                 String publicIP = (String)m.get("PublicIP");
                 boolean isReachable = InetAddress.getByName(publicIP).isReachable(10);

@@ -8,4 +8,5 @@ import java.util.Map;
 
 public interface HTTPSocketInterface {
     void httpSocketResponse(Map<String, Object> responseMap);
+    void voiceConnectionOpened();
 }

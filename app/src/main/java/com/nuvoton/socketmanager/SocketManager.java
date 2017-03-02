@@ -46,24 +46,13 @@ public class SocketManager {
 
         url = new URL(urlString);
         URLConnection conn = url.openConnection();
+
         if(!(conn instanceof HttpURLConnection))
             throw new IOException("Not an HTTP connection");
         try{
             HttpURLConnection httpConn = (HttpURLConnection) conn;
             httpConn.setAllowUserInteraction(false);
             httpConn.setInstanceFollowRedirects(true);
-            Log.d(TAG, "OpenHttpConnection: in POST");
-            httpConn.setRequestMethod("POST");
-            if (paramters != null){
-                for (String s: paramters.keySet()) {
-                    httpConn.setRequestProperty(s, paramters.get(s));
-                }
-            }
-            httpConn.setDoOutput(true);
-            OutputStream os = httpConn.getOutputStream();
-                os.write(dataContent);
-                os.flush();
-            os.close();
             httpConn.setRequestMethod("GET");
             httpConn.connect();
             response = httpConn.getResponseCode();

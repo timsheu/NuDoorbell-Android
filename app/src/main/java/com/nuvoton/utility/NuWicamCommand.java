@@ -25,14 +25,12 @@ public class NuWicamCommand {
         return command;
     }
 
-    public static String updateStreamParameters(ArrayList<Map<String, String>> parameters){
+    public static String updateStreamParameters(Map<String, String> parameters){
         String command = "/param.cgi?action=update&group=stream";
-        for (Map<String, String> p: parameters) {
-            Set<String> keys = p.keySet();
-            for (String key: keys) {
-                String value = p.get(key);
-                command = command + "&" + key + "=" + value;
-            }
+        Set<String> keys = parameters.keySet();
+        for (String key: keys) {
+            String value = parameters.get(key);
+            command = command + "&" + key + "=" + value;
         }
         return command;
     }

@@ -25,6 +25,7 @@ import java.util.Timer;
  * Created by timsheu on 6/3/16.
  */
 public class HTTPSocketManager {
+    public static final String CMDSET_TWOWAY="17";
     private Map<String, String> paramters;
     private byte[] dataContent;
     private ArrayList<String> commandList;
@@ -33,6 +34,11 @@ public class HTTPSocketManager {
         this.httpSocketInterface = httpSocketInterface;
     }
 
+    public void setTwoWayTalking(boolean twoWayTalking) {
+        isTwoWayTalking = twoWayTalking;
+    }
+
+    private boolean isTwoWayTalking = false;
     private HTTPSocketInterface httpSocketInterface = null;
     private URL url;
     private static final String TAG = "HTTPSocketManager";
@@ -46,43 +52,31 @@ public class HTTPSocketManager {
 
         url = new URL(urlString);
         URLConnection conn = url.openConnection();
+
         if(!(conn instanceof HttpURLConnection))
             throw new IOException("Not an HTTP connection");
         try{
             HttpURLConnection httpConn = (HttpURLConnection) conn;
             httpConn.setAllowUserInteraction(false);
             httpConn.setInstanceFollowRedirects(true);
-            Log.d(TAG, "OpenHttpConnection: in POST");
-            httpConn.setRequestMethod("POST");
-            if (paramters != null){
-                for (String s: paramters.keySet()) {
-                    httpConn.setRequestProperty(s, paramters.get(s));
-                }
-            }
-            httpConn.setDoOutput(true);
-            OutputStream os = httpConn.getOutputStream();
-                os.write(dataContent);
-                os.flush();
-            os.close();
             httpConn.setRequestMethod("GET");
             httpConn.connect();
             response = httpConn.getResponseCode();
             if(response == HttpURLConnection.HTTP_OK) {
                 in = httpConn.getInputStream();
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             //Log.d("Networking", ex.getLocalizedMessage());
             ex.printStackTrace();
-            throw new IOException("Error connecting");
+            throw new IOException("Error connceting");
         }
         return  in;
     }
+
     private String SendGet(String url)
     {
-
         try {
+            Log.d(TAG, "SendGet: " + url);
             InputStream In = OpenHttpConnection(url);
             if (In == null){
                 return null;
@@ -93,16 +87,15 @@ public class HTTPSocketManager {
             String result = "";
             char[] buf = new char[64];
             try{
-                while((charRead=isr.read(buf))>0){
+                while((charRead = isr.read(buf)) > 0){
                     String readString = String.copyValueOf(buf,0,charRead);
-                    result+=readString;
+                    result += readString;
                     buf = new char[64];
                 }
             }catch (IOException e){
                 Log.d(TAG,e.getLocalizedMessage());
             }
-            Log.d(TAG, "Response Content from server: " +result);
-
+            Log.d(TAG, "Response Content from server: " + result);
             In.close();
             return result;
         } catch (IOException e) {
@@ -125,7 +118,10 @@ public class HTTPSocketManager {
                 JSONObject jsonObject = new JSONObject(result);
                 Map<String, Object> map = toMap(jsonObject);
                 httpSocketInterface.httpSocketResponse(map);
-            }catch (Exception e){
+                if (isTwoWayTalking) {
+                    httpSocketInterface.voiceConnectionOpened();
+                }
+            }catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -149,6 +145,7 @@ public class HTTPSocketManager {
         this.paramters = parameters;
     }
 
+
     private static Map<String, Object> toMap(JSONObject jsonObject) throws JSONException{
         Map<String, Object> map = new HashMap<>();
         Iterator<String> keys = jsonObject.keys();
@@ -165,6 +162,7 @@ public class HTTPSocketManager {
         }
         return map;
     }
+
     private static List<Object> toList(JSONArray array) throws JSONException{
         List<Object> list = new ArrayList<>();
         for (int i=0; i<array.length(); i++){
@@ -177,5 +175,9 @@ public class HTTPSocketManager {
             list.add(value);
         }
         return list;
+    }
+
+    public void setSocketInterface(HTTPSocketInterface socketInterface){
+        this.httpSocketInterface = socketInterface;
     }
 }

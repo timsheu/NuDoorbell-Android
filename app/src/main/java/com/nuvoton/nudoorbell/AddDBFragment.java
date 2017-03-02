@@ -29,14 +29,14 @@ public class AddDBFragment extends PreferenceFragment implements SharedPreferenc
     }
 
     public interface SetDBInterface{
-        void addNewDoorbell(String serial, String name, String type, String url);
+        void addNewDoorbell(String serial, String name, String type, String ip);
     }
 
     public SetDBInterface mInterface;
     private final String TAG = "AddDBFragment";
     private static String serial = "0";
     private static String name = "Device";
-    private static String url = "rtsp://192.168.100.1/cam1/h264";
+    private static String ip = "rtsp://192.168.100.1/cam1/h264";
     private static String type = "NuDoorbell";
 
 
@@ -49,9 +49,9 @@ public class AddDBFragment extends PreferenceFragment implements SharedPreferenc
         if (temp != null){
             name = temp;
         }
-        temp = bundle.getString("url");
+        temp = bundle.getString("ip");
         if (temp != null){
-            url = temp;
+            ip = temp;
         }
         AddDBFragment fragment = new AddDBFragment();
         return fragment;
@@ -86,9 +86,9 @@ public class AddDBFragment extends PreferenceFragment implements SharedPreferenc
             EditTextPreference pref = (EditTextPreference) preference;
             pref.getEditText().setText(name);
 
-        }else if (key.compareTo("url") == 0){
+        }else if (key.compareTo("ip") == 0){
             EditTextPreference pref = (EditTextPreference) preference;
-            pref.getEditText().setText(url);
+            pref.getEditText().setText(ip);
         }else if (key.compareTo("type") == 0){
             ListPreference list = (ListPreference) preference;
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -101,7 +101,7 @@ public class AddDBFragment extends PreferenceFragment implements SharedPreferenc
             });
             // type is selected.
         }else if (key.compareTo("save") == 0){
-            mInterface.addNewDoorbell(serial, type, name, url);
+            mInterface.addNewDoorbell(serial, type, name, ip);
             FragmentTransaction trans = getFragmentManager().beginTransaction();
             trans.setCustomAnimations(android.R.animator.fade_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
             getFragmentManager().popBackStackImmediate();

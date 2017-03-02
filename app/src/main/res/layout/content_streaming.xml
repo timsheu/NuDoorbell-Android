@@ -68,7 +68,8 @@
                 android:layout_centerInParent="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginRight="8dp"
-                android:tint="@android:color/transparent" />
+                android:tint="@android:color/transparent"
+                />
 
 
 
@@ -114,7 +115,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/progressBar"
             android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -1,5 +1,6 @@
 package com.nuvoton.nudoorbell;
 
+import android.*;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,12 @@ import com.appunite.ffmpeg.FFmpegPlayer;
 import com.appunite.ffmpeg.FFmpegStreamInfo;
 import com.appunite.ffmpeg.FFmpegSurfaceView;
 import com.appunite.ffmpeg.NotPlayingException;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 import com.nuvoton.socketmanager.HTTPSocketInterface;
 import com.nuvoton.socketmanager.HTTPSocketManager;
 import com.nuvoton.utility.NuDoorbellCommand;
@@ -50,11 +57,9 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
     private int mSubtitleStreamNo = FFmpegPlayer.NO_STREAM;
     private Timer delayConnectTimer;
     private boolean isGranted = false;
-    private boolean isHide = false;
     private String localURL;
     private long localId;
     private DeviceData deviceData;
-    OnHideBottomBarListener onHideBottomBarListener;
 
     //Tow way talking interface implementation
     @Override
@@ -71,6 +76,11 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
     @Override
     public void httpSocketResponse(Map<String, Object> responseMap) {
         Log.d(TAG, "httpSocketResponse: " + responseMap);
+    }
+
+    @Override
+    public void voiceConnectionOpened() {
+
     }
 
     public interface OnHideBottomBarListener{
@@ -109,6 +119,27 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
         }
         setupFFMPEGSurface();
         setDataSource();
+
+        Dexter.withActivity(this).
+                withPermission(android.Manifest.permission.RECORD_AUDIO)
+                .withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse response) {
+                        Log.d(TAG, "onPermissionGranted: permitted");
+                        isGranted = true;
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse response) {
+                        Log.d(TAG, "onPermissionDenied: not permitted");
+                        isGranted = false;
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                    }
+                }).check();
     }
 
     @OnClick({R.id.playButton, R.id.expandButton, R.id.snapshotButton, R.id.redDot, R.id.phone_hang, R.id.phone_ans})
@@ -144,6 +175,7 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
                     if (isDuplex) {
                         mTwoWayTalking = TwoWayTalking.getInstance(getApplicationContext());
                         mTwoWayTalking.setInterface(Streaming.this);
+                        mTwoWayTalking.setHTTPMode(deviceData.getVoiceUploadHttp());
                         if (!mTwoWayTalking.isRecording) {
                             Toast.makeText(Streaming.this, "Audio upload started.", Toast.LENGTH_SHORT).show();
                             boolean isHttpVoice = true;
@@ -198,15 +230,6 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
     //FFMPEG
     public void setupFFMPEGSurface(){
             mVideoView = (FFmpegSurfaceView) findViewById(R.id.videoView);
-            mVideoView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    Log.d(TAG, "onTouch: ");
-                    isHide = !isHide;
-                    onHideBottomBarListener.onHideBottomBar(isHide);
-                    return false;
-                }
-            });
             mMpegPlayer = new FFmpegPlayer((FFmpegDisplay) mVideoView, this);
     }
 

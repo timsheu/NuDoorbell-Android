@@ -6,12 +6,6 @@
         android:layout="@layout/p_category_camera_layout"
         >
 
-        <Preference
-            android:title="Serial"
-            android:key="serial"
-            android:summary="The serial number of device, No. %S"
-            />
-
         <EditTextPreference
             android:title="Name"
             android:key="name"
@@ -27,9 +21,9 @@
             />
 
         <EditTextPreference
-            android:title="URL"
-            android:key="url"
-            android:summary="The device's URL, click to edit"
+            android:title="IP"
+            android:key="ip"
+            android:summary="The device's IP, click to edit"
             />
 
         <Preference

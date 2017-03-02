@@ -6,11 +6,6 @@
         </PreferenceCategory>
     <PreferenceCategory
         android:title="Basic Information">
-        <Preference
-            android:title="Serial"
-            android:key="serial"
-            android:summary="The serial number of device, No. %s"
-            />
 
         <EditTextPreference
             android:title="Name"
@@ -21,7 +16,7 @@
         <ListPreference
             android:title="Type"
             android:key="type"
-            android:summary="The device's type, click to change"
+            android:summary="%s"
             android:entries="@array/type_array"
             android:entryValues="@array/type_array"
             />
@@ -59,7 +54,7 @@
         <ListPreference
             android:key="voice_upload"
             android:title="Voice Upload"
-            android:summary="Choose voice upload through HTTP or socket."
+            android:summary="%s"
             android:entryValues="@array/voice_upload"
             android:entries="@array/voice_upload_value"
             android:defaultValue="0"
@@ -100,11 +95,6 @@
             android:title="Restart"
             android:key="restart"
             android:summary="Click to show restart menu"
-            />
-
-        <Preference
-            android:title="Click to save and leave"
-            android:key="save"
             />
 
     </PreferenceCategory>
