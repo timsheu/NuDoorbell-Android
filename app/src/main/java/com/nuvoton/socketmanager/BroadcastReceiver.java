@@ -1,29 +1,38 @@
 package com.nuvoton.socketmanager;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
+
+import com.nuvoton.nudoorbell.DeviceData;
+import com.nuvoton.utility.EventMessageClass;
 
 import java.io.InputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.ServerSocket;
+import java.util.List;
 
 /**
  * Created by cchsu20 on 10/27/16.
  */
 
-public class BroadcastReceiver implements ReadConfigure.ReadConfigureInterface{
+public class BroadcastReceiver implements FCMExecutive.FCMExecutiveInterface{
 
     @Override
-    public void updateStreamingURL(String updatedURL) {
-        bcrInterface.signalDataHandled(updatedURL);
+    public void responseData(DeviceData deviceData) {
+        broadcastInterface.signalDataHandled(deviceData);
+        Log.d(TAG, "responseData: " + deviceData.toString());
     }
 
-    public interface BCRInterface{
-        void signalDataHandled(String URL);
+    public interface BroadcastInterface {
+        void signalDataHandled(DeviceData deviceData);
     }
-    public BCRInterface bcrInterface;
+
+    public void setOn(boolean on) {
+        isOn = on;
+    }
+    private DeviceData responseData;
+    private boolean isOn = false;
+    public BroadcastInterface broadcastInterface;
     private Thread thread;
     private InputStream inputStream;
     private Context contextLocal;
@@ -40,6 +49,7 @@ public class BroadcastReceiver implements ReadConfigure.ReadConfigureInterface{
     }
 
     public void openUDPSocket(){
+        isOn = true;
         thread = new Thread(OpenUDPSocket);
         thread.start();
     }
@@ -59,36 +69,74 @@ public class BroadcastReceiver implements ReadConfigure.ReadConfigureInterface{
         public void run() {
             Log.d(TAG, "run: ");
             final int SIZE = 344;
+            final int headerSize = 8;
             byte buffer[] = new byte[SIZE];
             int udpPort = 5543;
             try{
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket = new DatagramSocket(udpPort);
-                socket.receive(packet);
-                byte[] tempByte = new byte[8];
-                System.arraycopy(buffer, 0, tempByte, 0, 8);
-                FCMExecutive.getInstance(contextLocal).setupHeader(tempByte);
-                EventMessageClass messageClass = FCMExecutive.getInstance(contextLocal).getMessageClass();
-                int remainDataLength = (int)messageClass.response.sMsgHdr.u32MsgLen - 8;
-                if (remainDataLength == 73){
-                    socket.close();
-                    bcrReceiver.openUDPSocket();
-                    Log.d(TAG, "run: length incorrect: " + String.valueOf(remainDataLength+8) );
-                    return;
+                while (isOn){
+                    socket.receive(packet);
+                    byte[] tempByte = new byte[headerSize];
+                    System.arraycopy(buffer, 0, tempByte, 0, headerSize);
+                    FCMExecutive.getInstance().setupHeader(tempByte);
+                    FCMExecutive.getInstance().setmInterface(BroadcastReceiver.this);
+                    EventMessageClass messageClass = FCMExecutive.getInstance().getMessageClass();
+                    int remainDataLength = (int)messageClass.sEventmsgLoginResp.sMsgHdr.u32MsgLen - headerSize;
+                    if (messageClass.sEventmsgHeader.eMsgType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_EVENT_NOTIFY){
+                        Log.d(TAG, "run: ring: " + String.valueOf(remainDataLength+headerSize) );
+                        String uuid = new String(messageClass.sEventmsgEventNotify.szUUID);
+                        List<DeviceData> list = DeviceData.findWithQuery(DeviceData.class, "uuid = ?", uuid);
+                        switch (list.size()){
+                            case 0:
+                                Log.d(TAG, "run: no such uuid in DeviceData ORM");
+                                break;
+                            case 1:
+                                Log.d(TAG, "run: ring form uuid: " + uuid);
+                                DeviceData deviceData = list.get(0);
+                                broadcastInterface.signalDataHandled(deviceData);
+                                break;
+                            default:
+                                Log.d(TAG, "run: multiple SQL entries!!");
+                                break;
+                        }
+                    }else if(messageClass.sEventmsgHeader.eMsgType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_LOGIN){
+                        Log.d(TAG, "run: login: " + String.valueOf(remainDataLength+headerSize) );
+                        tempByte = new byte[remainDataLength];
+                        System.arraycopy(buffer, 8, tempByte, 0, remainDataLength);
+                        FCMExecutive.getInstance().setupRemainRequestData(tempByte);
+                    }
                 }
-                Log.d(TAG, "run: length correct: " + String.valueOf(remainDataLength+8) );
-                tempByte = new byte[remainDataLength];
-                System.arraycopy(buffer, 8, tempByte, 0, remainDataLength);
-                FCMExecutive.getInstance(contextLocal).setupRemainRequestData(tempByte);
-                socket.close();
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
     };
 
-    public void setBcrInterface(BCRInterface bcrInterface) {
-        this.bcrInterface = bcrInterface;
-        ReadConfigure.getInstance(contextLocal, false).setReadConfigureInterface(this);
+    private int determineMessageLength(EventMessageClass eventMessageClass){
+        int length = 0;
+        long messageType = eventMessageClass.sEventmsgHeader.eMsgType;
+        if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_EVENT_NOTIFY){
+            length = eventMessageClass.sEventmsgEventNotify.messageLength();
+        }else if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_EVENT_NOTIFY_RESP){
+            length = eventMessageClass.sEventmsgEventNotifyResp.messageLength();
+        }else if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_LOGIN){
+            length = eventMessageClass.sEventmsgLoginReq.messageLength();
+        }else if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_LOGIN_RESP){
+            length = eventMessageClass.sEventmsgLoginResp.messageLength();
+        }else if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_FW_DOWNLOAD){
+            length = eventMessageClass.sEventmsgFwDownload.messageLength();
+        }else if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_FW_DOWNLOAD_RESP){
+            length = eventMessageClass.sEventmsgFwDownloadResp.messageLength();
+        }else if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_GET_FW_VER){
+            length = eventMessageClass.sEventmsgGetFwVer.messageLength();
+        }else if (messageType == EventMessageClass.E_EVENTMSG_TYPE.eEVENTMSG_GET_FW_VER_RESP){
+            length = eventMessageClass.sEventmsgGetFwVerResp.messageLength();
+        }
+        return length;
+    }
+
+    public void setBroadcastInterface(BroadcastInterface broadcastInterface) {
+        this.broadcastInterface = broadcastInterface;
     }
 }

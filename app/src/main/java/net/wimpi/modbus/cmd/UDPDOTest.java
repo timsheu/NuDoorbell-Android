@@ -90,7 +90,7 @@ public class UDPDOTest {
       conn.setPort(502);
       conn.connect();
 
-      //3. Prepare a request
+      //3. Prepare a sEventmsgLoginReq
       req = new WriteCoilRequest(ref, set);
       req.setUnitID(0);
       if (Modbus.debug) System.out.println("Request: " + req.getHexMessage());

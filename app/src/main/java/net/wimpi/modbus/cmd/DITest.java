@@ -80,7 +80,7 @@ public class DITest {
 
       if (Modbus.debug) System.out.println("Connected to " + addr.toString() + ":" + con.getPort());
 
-      //3. Prepare the request
+      //3. Prepare the sEventmsgLoginReq
       req = new ReadInputDiscretesRequest(ref, count);
       //ReadCoilsRequest req = new ReadCoilsRequest(ref, count);
       req.setUnitID(0);

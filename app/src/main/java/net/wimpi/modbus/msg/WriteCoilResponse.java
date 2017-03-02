@@ -26,7 +26,7 @@ import net.wimpi.modbus.Modbus;
  * Class implementing a <tt>WriteCoilResponse</tt>.
  * The implementation directly correlates with the class 0
  * function <i>write coil (FC 5)</i>. It
- * encapsulates the corresponding response message.
+ * encapsulates the corresponding sEventmsgLoginResp message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)
@@ -65,7 +65,7 @@ public final class WriteCoilResponse
 
   /**
    * Sets the state that has been returned
-   * in the raw response.
+   * in the raw sEventmsgLoginResp.
    * <p>
    * @param b true if the coil should be set of
    *        false if it should be unset.
@@ -86,7 +86,7 @@ public final class WriteCoilResponse
 
   /**
    * Returns the reference of the register of the coil
-   * that has been written to with the request.
+   * that has been written to with the sEventmsgLoginReq.
    * <p>
    * @return the reference of the coil's register.
    */
@@ -96,7 +96,7 @@ public final class WriteCoilResponse
 
   /**
    * Sets the reference of the register of the coil
-   * that has been written to with the request.
+   * that has been written to with the sEventmsgLoginReq.
    * <p>
    * @param ref the reference of the coil's register.
    */

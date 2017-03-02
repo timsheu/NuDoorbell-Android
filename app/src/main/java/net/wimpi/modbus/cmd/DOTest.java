@@ -90,7 +90,7 @@ public class DOTest {
 
       if (Modbus.debug) System.out.println("Connected to " + addr.toString() + ":" + con.getPort());
 
-      //3. Prepare the request
+      //3. Prepare the sEventmsgLoginReq
       req = new WriteCoilRequest(ref, count);
       req.setUnitID(0);
       if (Modbus.debug) System.out.println("Request: " + req.getHexMessage());

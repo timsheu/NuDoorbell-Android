@@ -187,9 +187,9 @@ public class ModbusTCPTransaction
         try {
           //toggle and set the id
           m_Request.setTransactionID(c_TransactionID.increment());
-          //3. write request, and read response
+          //3. write sEventmsgLoginReq, and read sEventmsgLoginResp
           m_IO.writeMessage(m_Request);
-          //read response message
+          //read sEventmsgLoginResp message
           m_Response = m_IO.readResponse();
           break;
         } catch (ModbusIOException ex) {
@@ -245,8 +245,8 @@ public class ModbusTCPTransaction
 
   /**
    * Checks the validity of the transaction, by
-   * checking if the values of the response correspond
-   * to the values of the request.
+   * checking if the values of the sEventmsgLoginResp correspond
+   * to the values of the sEventmsgLoginReq.
    * Use an override to provide some checks, this method will only return.
    *
    * @throws ModbusException if this transaction has not been valid.

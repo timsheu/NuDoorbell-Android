@@ -24,7 +24,7 @@ import java.io.IOException;
  * Class implementing a <tt>WriteMultipleRegistersResponse</tt>.
  * The implementation directly correlates with the class 0
  * function <i>read multiple registers (FC 16)</i>. It encapsulates
- * the corresponding response message.
+ * the corresponding sEventmsgLoginResp message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)
@@ -94,7 +94,7 @@ public final class WriteMultipleRegistersResponse
   /**
    * Returns the number of words that have been read.
    * The returned value should be half of
-   * the byte count of the response.
+   * the byte count of the sEventmsgLoginResp.
    * <p>
    * @return the number of words that have been read
    *         as <tt>int</tt>.

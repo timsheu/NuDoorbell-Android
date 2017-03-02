@@ -1,11 +1,14 @@
 package com.nuvoton.socketmanager;
 
-import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.google.common.primitives.Longs;
+import com.google.common.net.InetAddresses;
+import com.nuvoton.nudoorbell.DeviceData;
+import com.nuvoton.utility.EventMessageClass;
 
-import java.nio.ByteBuffer;
+import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,7 +16,16 @@ import java.util.Map;
  */
 
 public class FCMExecutive {
-    private Context contextLocal;
+    public interface FCMExecutiveInterface {
+        void responseData(DeviceData deviceData);
+    }
+
+    public void setmInterface(FCMExecutiveInterface mInterface) {
+        this.mInterface = mInterface;
+    }
+
+    //    private Context contextLocal;
+    private FCMExecutiveInterface mInterface;
     private static final String TAG = "FCMExecutive";
     private static String token;
     private EventMessageClass messageClass;
@@ -25,8 +37,8 @@ public class FCMExecutive {
         Log.d(TAG, "instance initializer: created");
     }
 
-    public static FCMExecutive getInstance(Context context){
-        manager.contextLocal = context;
+    public static FCMExecutive getInstance(){
+//        manager.contextLocal = context;
         Log.d(TAG, "getInstance: ");
         return manager;
     }
@@ -49,7 +61,7 @@ public class FCMExecutive {
                 for (String entry: messageInfo) {
                     retrieveInfo = (String) content.get(entry);
                     if (retrieveInfo != null){
-                        ReadConfigure.getInstance(contextLocal, false).setTargetValue(entry, retrieveInfo);
+//                        ReadConfigure.getInstance(contextLocal, false).setTargetValue(entry, retrieveInfo);
                     }else{
                         Log.d(TAG, "retrivedMessage: key \"" + entry + "\" has null info");
                     }
@@ -60,15 +72,15 @@ public class FCMExecutive {
     }
 
     private void modifyURLWithPublicIP(){
-        String oldURL = ReadConfigure.getInstance(contextLocal, false).getTargetValue("URL");
-        String newIP = ReadConfigure.getInstance(contextLocal, false).getTargetValue("PublicIPAddr");
-        String[] split = oldURL.split("/");
-        if (split.length > 1){
-            String oldIP = split[2];
-            String newURL = oldURL.replace(oldIP, newIP);
-            ReadConfigure.getInstance(contextLocal, false).setTargetValue("URL", newURL);
-            Log.d(TAG, "modifyURLWithPublicIP: new URL: " + newURL);
-        }
+//        String oldURL = ReadConfigure.getInstance(contextLocal, false).getTargetValue("URL");
+//        String newIP = ReadConfigure.getInstance(contextLocal, false).getTargetValue("PublicIPAddr");
+//        String[] split = oldURL.split("/");
+//        if (split.length > 1){
+//            String oldIP = split[2];
+//            String newURL = oldURL.replace(oldIP, newIP);
+//            ReadConfigure.getInstance(contextLocal, false).setTargetValue("URL", newURL);
+//            Log.d(TAG, "modifyURLWithPublicIP: new URL: " + newURL);
+//        }
     }
 
     public void retrieveString(String message){
@@ -164,16 +176,26 @@ public class FCMExecutive {
             for (int i=0; i<type.length; i++){
                 tempLong |= (type[i] << i*8);
             }
-            messageClass.response.sMsgHdr.eMsgType = tempLong;
-            Log.d(TAG, "setupHeader: messageClass.response.sMsgHdr.eMsgType: " + tempLong);
+//            messageClass.sEventmsgHeader.u32SignWord = tempLong;
+//            Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.u32SignWord: " + tempLong);
+//
+//            type = new byte[4];
+//            System.arraycopy(bytes, 4, type, 0, 4);
+//            tempLong = 0L;
+//            for (int i=0; i<type.length; i++){
+//                tempLong |= (type[i] << i*8);
+//            }
+            messageClass.sEventmsgHeader.eMsgType = tempLong;
+            Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.eMsgType: " + tempLong);
+
             type = new byte[4];
             System.arraycopy(bytes, 4, type, 0, 4);
             tempLong = 0L;
             for (int i=0; i<type.length; i++){
                 tempLong |= (type[i] << i*8);
             }
-            messageClass.response.sMsgHdr.u32MsgLen = tempLong;
-            Log.d(TAG, "setupHeader: messageClass.response.sMsgHdr.u32MsgLen: " + tempLong);
+            messageClass.sEventmsgHeader.u32MsgLen = tempLong;
+            Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.u32MsgLen: " + tempLong);
         }
     }
 
@@ -183,26 +205,32 @@ public class FCMExecutive {
             System.arraycopy(bytes, 324, tempByte, 0, 4);
             long tempLong = 0L;
             byte[] publicIP = tempByte.clone();
-            messageClass.response.u32DevPublicIP = publicIP;
-            messageClass.response.u32DevPrivateIP = publicIP;
+            messageClass.sEventmsgLoginReq.u32DevPrivateIP = publicIP;
 
             System.arraycopy(bytes, 328, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
-            messageClass.response.u32DevHTTPPort = tempLong;
+            messageClass.sEventmsgLoginReq.u32DevHTTPPort = tempLong;
 
             System.arraycopy(bytes, 332, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
-            messageClass.response.u32DevRTSPPort = tempLong;
+            messageClass.sEventmsgLoginReq.u32DevRTSPPort = tempLong;
 
             Log.d(TAG, "setupRemainData: " + messageClass.toString());
 
-            ReadConfigure.getInstance(contextLocal, false).updateDoorBellDevice(messageClass);
+            String uuid = new String(messageClass.sEventmsgLoginReq.szUUID);
+            List<DeviceData> result = DeviceData.find(DeviceData.class, "uuid = ?", uuid);DeviceData one = result.get(0);
+            if (result.size() > 1) {
+                Log.d(TAG, "sEventmsgLoginReq: multiple records in SQLite !");
+            }else{
+                one = updateValue(messageClass, one);
+            }
+            mInterface.responseData(one);
         }
     }
 
@@ -214,43 +242,74 @@ public class FCMExecutive {
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
-            messageClass.response.eResult = tempLong;
+            messageClass.sEventmsgLoginResp.eResult = tempLong;
 
             System.arraycopy(bytes, 4, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
-            messageClass.response.bDevOnline = tempLong;
+            messageClass.sEventmsgLoginResp.bDevOnline = tempLong;
 
             System.arraycopy(bytes, 8, tempByte, 0, 4);
             byte[] publicIP = tempByte.clone();
 //            publicIP = convertEndian(publicIP);
-            messageClass.response.u32DevPublicIP = publicIP;
+            messageClass.sEventmsgLoginResp.u32DevPublicIP = publicIP;
 
             System.arraycopy(bytes, 12, tempByte, 0, 4);
             byte[] privateIP = tempByte.clone();
 //            privateIP = convertEndian(privateIP);
-            messageClass.response.u32DevPrivateIP = privateIP;
+            messageClass.sEventmsgLoginResp.u32DevPrivateIP = privateIP;
 
             System.arraycopy(bytes, 16, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
-            messageClass.response.u32DevHTTPPort = tempLong;
+            messageClass.sEventmsgLoginResp.u32DevHTTPPort = tempLong;
 
             System.arraycopy(bytes, 20, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
-            messageClass.response.u32DevRTSPPort = tempLong;
+            messageClass.sEventmsgLoginResp.u32DevRTSPPort = tempLong;
 
-            Log.d(TAG, "setupRemainData: " + messageClass.toString());
+            Log.d(TAG, "setupRemainResponseData: " + messageClass.toString());
 
-            ReadConfigure.getInstance(contextLocal, false).updateDoorBellDevice(messageClass);
+            String uuid = new String(messageClass.sEventmsgLoginReq.szUUID);
+            List<DeviceData> result = DeviceData.findWithQuery(DeviceData.class, "uuid = ?", uuid);
+            DeviceData one = result.get(0);
+            if (result.size() > 1) {
+                Log.d(TAG, "setupRemainRequestData: multiple records in SQLite !");
+            }else{
+                one = updateValue(messageClass, one);
+            }
+            mInterface.responseData(one);
+//            ReadConfigure.getInstance(contextLocal, false).updateDoorBellDevice(messageClass);
         }
+    }
+
+    private DeviceData updateValue(EventMessageClass message, DeviceData data){
+        DeviceData temp = data;
+        InetAddress address = null;
+        try {
+            address = InetAddresses.fromLittleEndianByteArray(message.sEventmsgLoginReq.u32DevPrivateIP);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if (data == null){
+            temp = new DeviceData();
+        }
+        String uuid = new String(message.sEventmsgLoginReq.szUUID);
+        String addr = address.toString().substring(1);
+        temp.setUuid(uuid);
+        temp.setPrivateIP(addr);
+        temp.setPublicIP(addr);
+        temp.setHttpPort((int)message.sEventmsgLoginReq.u32DevHTTPPort);
+        temp.setRtspPort((int)message.sEventmsgLoginReq.u32DevRTSPPort);
+        temp.save();
+        return temp;
     }
 
     public EventMessageClass getMessageClass(){

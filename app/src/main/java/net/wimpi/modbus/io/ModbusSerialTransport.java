@@ -55,8 +55,8 @@ abstract public class ModbusSerialTransport
       throws IOException;
 
   /**
-   *  <code>readResponse</code> reads a response message from the slave
-   *  responding to a master writeMessage request.
+   *  <code>readResponse</code> reads a sEventmsgLoginResp message from the slave
+   *  responding to a master writeMessage sEventmsgLoginReq.
    *
    * @return a <code>ModbusResponse</code> value
    * @exception ModbusIOException if an error occurs
@@ -66,7 +66,7 @@ abstract public class ModbusSerialTransport
   
   /**
    * The <code>readRequest</code> method listens continuously on the serial
-   * input stream for master request messages and replies if the request slave
+   * input stream for master sEventmsgLoginReq messages and replies if the sEventmsgLoginReq slave
    * ID matches its own set in ModbusCoupler.getUnitID().
    *
    * @return a <code>ModbusRequest</code> value

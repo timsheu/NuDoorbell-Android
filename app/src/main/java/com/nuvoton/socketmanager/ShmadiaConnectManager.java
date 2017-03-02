@@ -4,11 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.common.primitives.Longs;
+import com.nuvoton.utility.EventMessageClass;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -66,14 +65,14 @@ public class ShmadiaConnectManager {
                     byte[] tempByte = new byte[8];
                     int ret = inputStream.read(tempByte);
                     if (ret == 8){
-                        FCMExecutive.getInstance(contextLocal).setupHeader(tempByte);
+                        FCMExecutive.getInstance().setupHeader(tempByte);
                     }
-                    EventMessageClass messageClass = FCMExecutive.getInstance(contextLocal).getMessageClass();
-                    int remainDataLength = (int)messageClass.response.sMsgHdr.u32MsgLen - 8;
+                    EventMessageClass messageClass = FCMExecutive.getInstance().getMessageClass();
+                    int remainDataLength = (int)messageClass.sEventmsgLoginResp.sMsgHdr.u32MsgLen - 8;
                     tempByte = new byte[remainDataLength];
                     ret = inputStream.read(tempByte);
                     if (ret == remainDataLength){
-                        FCMExecutive.getInstance(contextLocal).setupRemainResponseData(tempByte);
+                        FCMExecutive.getInstance().setupRemainResponseData(tempByte);
                     }
                     closeSocket();
                 }
@@ -102,31 +101,31 @@ public class ShmadiaConnectManager {
 
     public void writeMessageToShmadia(EventMessageClass messageClass){
         byte[] outputData = new byte[344];
-        byte[] bytes = Longs.toByteArray(messageClass.request.sMsgHdr.eMsgType);//ByteBuffer.allocate(Long.SIZE).putLong(messageClass.request.sMsgHdr.eMsgType).array();
+        byte[] bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.sMsgHdr.eMsgType);//ByteBuffer.allocate(Long.SIZE).putLong(messageClass.sEventmsgLoginReq.sMsgHdr.eMsgType).array();
 
         bytes = convertEndian(bytes);
         System.arraycopy(bytes, 0, outputData, 0, 4);
 
-        bytes = Longs.toByteArray(messageClass.request.sMsgHdr.u32MsgLen);
+        bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.sMsgHdr.u32MsgLen);
         bytes = convertEndian(bytes);
         System.arraycopy(bytes, 0, outputData, 4, 4);
 
-        ByteBuffer buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(messageClass.request.szUUID));
+        ByteBuffer buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(messageClass.sEventmsgLoginReq.szUUID));
         bytes = new byte[buffer.limit()];
         buffer.get(bytes);
 
         System.arraycopy(bytes, 0, outputData, 8, 8);
 
-        bytes = Longs.toByteArray(messageClass.request.eRole);
+        bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.eRole);
         bytes = convertEndian(bytes);
 
         System.arraycopy(bytes, 0, outputData, 73, 4);
 
-        buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(messageClass.request.szCloudRegID));
+        buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(messageClass.sEventmsgLoginReq.szCloudRegID));
         bytes = new byte[buffer.limit()];
         buffer.get(bytes);
 
-        System.arraycopy(bytes, 0, outputData, 77, messageClass.request.szCloudRegID.length);
+        System.arraycopy(bytes, 0, outputData, 77, messageClass.sEventmsgLoginReq.szCloudRegID.length);
 
         String outputDataString = new String(outputData);
         if (clientSocket.isConnected()){

@@ -16,15 +16,11 @@
 
 package com.nuvoton.nudoorbell;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.nuvoton.socketmanager.EventMessageClass;
-import com.nuvoton.socketmanager.ReadConfigure;
+import com.nuvoton.utility.EventMessageClass;
 import com.nuvoton.socketmanager.ShmadiaConnectManager;
 
 
@@ -49,12 +45,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService imple
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken);
-        ReadConfigure configure = ReadConfigure.getInstance(getApplicationContext(), false);
-//        String preferenceName = "Setup Camera 5";
-//        Log.d(TAG, "initSharedPreference: " + preferenceName);
-//        SharedPreferences preferences = getApplicationContext().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
-        configure.setTargetValue("FCM Token", refreshedToken);
-//        boolean success = preferences.edit().putString("FCM Token", refreshedToken).commit();
         Log.d(TAG, "onTokenRefresh: ");
         // [END refresh_token]
     }
@@ -78,10 +68,10 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService imple
     public void announceIsConnected() {
         EventMessageClass messageClass = new EventMessageClass();
         char[] uuidArray = messageClass.TEST_UUID.toCharArray();
-        messageClass.request.szUUID = uuidArray;
-        messageClass.request.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
+        messageClass.sEventmsgLoginReq.szUUID = uuidArray;
+        messageClass.sEventmsgLoginReq.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
         char[] tokenArray = refreshedToken.toCharArray();
-        messageClass.request.szCloudRegID = tokenArray;
+        messageClass.sEventmsgLoginReq.szCloudRegID = tokenArray;
         manager.writeMessageToShmadia(messageClass);
         Log.d(TAG, "sendRegistrationToServer: " + messageClass.toString());
     }

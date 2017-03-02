@@ -27,7 +27,7 @@ import net.wimpi.modbus.Modbus;
  * Class implementing a <tt>ReadCoilsResponse</tt>.
  * The implementation directly correlates with the class 1
  * function <i>read coils (FC 1)</i>. It encapsulates
- * the corresponding response message.
+ * the corresponding sEventmsgLoginResp message.
  * <p>
  * Coils are understood as bits that can be manipulated
  * (i.e. set or unset).
@@ -66,7 +66,7 @@ public final class ReadCoilsResponse
 
   /**
    * Returns the number of bits (i.e. coils)
-   * read with the request.
+   * read with the sEventmsgLoginReq.
    * <p>
    * @return the number of bits that have been read.
    */

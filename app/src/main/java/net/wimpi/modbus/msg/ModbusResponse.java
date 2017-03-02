@@ -39,7 +39,7 @@ public abstract class ModbusResponse
    * Should not be used except under rare circumstances.
    * <p>
    * @param msg the <tt>byte[]</tt> resembling the raw modbus
-   *        response message.
+   *        sEventmsgLoginResp message.
    */
   protected void setMessage(byte[] msg) {
     try {
@@ -57,7 +57,7 @@ public abstract class ModbusResponse
    * Factory method creating the required specialized <tt>ModbusResponse</tt>
    * instance.
    *
-   * @param functionCode the function code of the response as <tt>int</tt>.
+   * @param functionCode the function code of the sEventmsgLoginResp as <tt>int</tt>.
    * @return a ModbusResponse instance specific for the given function code.
    */
   public static ModbusResponse createModbusResponse(int functionCode) {

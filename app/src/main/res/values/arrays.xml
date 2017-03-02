@@ -77,8 +77,16 @@
     </string-array>
 
     <string-array name="voice_upload_value">
-        <item>http</item>
-        <item>socket</item>
+        <item>HTTP</item>
+        <item>Socket</item>
     </string-array>
+
+    <string-array name="type_array">
+        <item>NuDoorbell</item>
+        <item>SkyEye</item>
+        <item>NuWicam</item>
+    </string-array>
+
+
 
 </resources>

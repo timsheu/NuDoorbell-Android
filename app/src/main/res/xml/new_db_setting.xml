@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="@string/db_setting_title"
+        android:layout="@layout/p_category_camera_layout"
+        >
+
+        <EditTextPreference
+            android:title="Name"
+            android:key="name"
+            android:summary="The device's name, click to edit"
+            />
+
+        <ListPreference
+            android:title="Type"
+            android:key="type"
+            android:summary="The device's type, click to change"
+            android:entries="@array/type_array"
+            android:entryValues="@array/type_array"
+            />
+
+        <EditTextPreference
+            android:title="IP"
+            android:key="ip"
+            android:summary="The device's IP, click to edit"
+            />
+
+        <Preference
+            android:title="Click to save and leave"
+            android:key="save"
+            />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

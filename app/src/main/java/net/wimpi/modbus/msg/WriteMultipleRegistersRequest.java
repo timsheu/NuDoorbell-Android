@@ -29,7 +29,7 @@ import net.wimpi.modbus.procimg.*;
  * Class implementing a <tt>ReadMultipleRegistersRequest</tt>.
  * The implementation directly correlates with the class 0
  * function <i>write multiple registers (FC 16)</i>. It
- * encapsulates the corresponding request message.
+ * encapsulates the corresponding sEventmsgLoginReq message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)
@@ -156,7 +156,7 @@ public final class WriteMultipleRegistersRequest
   /**
    * Returns the <tt>Register</tt> at
    * the given position (relative to the reference
-   * used in the request).
+   * used in the sEventmsgLoginReq).
    * <p>
    * @param index the relative index of the <tt>Register</tt>.
    *
@@ -179,7 +179,7 @@ public final class WriteMultipleRegistersRequest
   /**
    * Returns the value of the register at
    * the given position (relative to the reference
-   * used in the request) interpreted as unsigned short.
+   * used in the sEventmsgLoginReq) interpreted as unsigned short.
    * <p>
    * @param index the relative index of the register
    *        for which the value should be retrieved.

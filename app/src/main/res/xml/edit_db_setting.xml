@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:layout="@layout/p_category_camera_layout">
+        </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Basic Information">
+
+        <EditTextPreference
+            android:title="Name"
+            android:key="name"
+            android:summary="The device's name, click to edit"
+            />
+
+        <ListPreference
+            android:title="Type"
+            android:key="type"
+            android:summary="%s"
+            android:entries="@array/type_array"
+            android:entryValues="@array/type_array"
+            />
+
+        <EditTextPreference
+            android:title="URL"
+            android:key="url"
+            android:summary="The device's URL, click to edit"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Video">
+        <ListPreference
+            android:title="Resolution"
+            android:key="resolution"
+            android:summary="%s"
+            android:entries="@array/resolution_list"
+            android:entryValues="@array/resolution_value_list"
+            />
+
+        <ListPreference
+            android:key="bit_rate"
+            android:title="Bit Rate"
+            android:summary="%s"
+            android:entryValues="@array/bitrate_value_list"
+            android:entries="@array/bitrate_list"
+            android:defaultValue="1024"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Audio">
+        <ListPreference
+            android:key="voice_upload"
+            android:title="Voice Upload"
+            android:summary="%s"
+            android:entryValues="@array/voice_upload"
+            android:entries="@array/voice_upload_value"
+            android:defaultValue="0"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Wi-Fi">
+        <EditTextPreference
+            android:key="ssid"
+            android:title="SSID"
+            android:summary="Click to edit Soft-AP SSID."
+            android:defaultValue="NuPlayer"
+            android:maxLength="12"
+            />
+        <EditTextPreference
+            android:key="password"
+            android:title="Password"
+            android:summary="Click to edit Soft-AP Password."
+            android:defaultValue="12345678"
+            android:inputType="textPassword"
+            android:maxLength="15"
+            />
+
+        <ListPreference
+            android:key="show_password"
+            android:title="Show Password"
+            android:summary="Click to show password"
+            android:entryValues="@array/show_password_value"
+            android:entries="@array/show_password"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Restart">
+
+        <Preference
+            android:title="Restart"
+            android:key="restart"
+            android:summary="Click to show restart menu"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

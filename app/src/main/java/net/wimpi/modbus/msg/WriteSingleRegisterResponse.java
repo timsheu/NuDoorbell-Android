@@ -24,7 +24,7 @@ import java.io.IOException;
  * Class implementing a <tt>WriteSingleRegisterResponse</tt>.
  * The implementation directly correlates with the class 0
  * function <i>write single register (FC 6)</i>. It
- * encapsulates the corresponding response message.
+ * encapsulates the corresponding sEventmsgLoginResp message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)
@@ -72,7 +72,7 @@ public final class WriteSingleRegisterResponse
 
   /**
    * Sets the value that has been returned in the
-   * response message.
+   * sEventmsgLoginResp message.
    * <p>
    * @param value the returned register value.
    */

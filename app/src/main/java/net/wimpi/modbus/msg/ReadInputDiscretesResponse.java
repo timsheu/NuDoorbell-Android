@@ -27,7 +27,7 @@ import net.wimpi.modbus.Modbus;
  * Class implementing a <tt>ReadInputDiscretesResponse</tt>.
  * The implementation directly correlates with the class 1
  * function <i>read input discretes (FC 2)</i>. It encapsulates
- * the corresponding response message.
+ * the corresponding sEventmsgLoginResp message.
  * <p>
  * Input Discretes are understood as bits that cannot be
  * manipulated (i.e. set or unset).
@@ -66,7 +66,7 @@ public final class ReadInputDiscretesResponse
 
   /**
    * Returns the number of bits (i.e. input discretes)
-   * read with the request.
+   * read with the sEventmsgLoginReq.
    * <p>
    * @return the number of bits that have been read.
    */
@@ -75,9 +75,9 @@ public final class ReadInputDiscretesResponse
   }//getBitCount
 
   /**
-   * Sets the number of bits in this response.
+   * Sets the number of bits in this sEventmsgLoginResp.
    *
-   * @param count the number of response bits as int.
+   * @param count the number of sEventmsgLoginResp bits as int.
    */
   public void setBitCount(int count) {
     m_BitCount = count;

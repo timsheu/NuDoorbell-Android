@@ -30,7 +30,7 @@ import net.wimpi.modbus.procimg.ProcessImage;
  * Class implementing a <tt>WriteCoilRequest</tt>.
  * The implementation directly correlates with the class 0
  * function <i>write coil (FC 5)</i>. It
- * encapsulates the corresponding request message.
+ * encapsulates the corresponding sEventmsgLoginReq message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)

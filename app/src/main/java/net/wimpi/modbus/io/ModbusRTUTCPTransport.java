@@ -39,7 +39,7 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 	// The BytesInputStream wrapper for the transport input stream
 	private BytesInputStream inputBuffer;
 	
-	// The last request sent over the transport ?? useful ??
+	// The last sEventmsgLoginReq sent over the transport ?? useful ??
 	private byte[] lastRequest = null;
 	
 	// the socket used by this transport
@@ -146,11 +146,11 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 				// if (Modbus.debug)
 				System.out.println("Sent: " + ModbusUtil.toHex(rawBuffer, 0, bufferLength));
 				
-				// store the written buffer as the last request
+				// store the written buffer as the last sEventmsgLoginReq
 				this.lastRequest = new byte[bufferLength];
 				System.arraycopy(rawBuffer, 0, this.lastRequest, 0, bufferLength);
 				
-				// sleep for the time needed to receive the request at the other
+				// sleep for the time needed to receive the sEventmsgLoginReq at the other
 				// point of the connection
 				Thread.sleep(bufferLength);
 			}
@@ -176,7 +176,7 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 	 */
 	public synchronized ModbusResponse readResponse() throws ModbusIOException
 	{
-		// the received response
+		// the received sEventmsgLoginResp
 		ModbusResponse response = null;
 		
 		// reset the timed out flag
@@ -202,7 +202,7 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 				inputBuffer.reset(new byte[Modbus.MAX_MESSAGE_LENGTH]);
 				
 				// sleep for the time needed to receive the first part of the
-				// response
+				// sEventmsgLoginResp
 				int available = this.inputStream.available();
 				while ((available < 4) && (!this.isTimedOut))
 				{
@@ -241,7 +241,7 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 				int packetLength = this.computePacketLength(functionCode);
 				
 				// sleep for the time needed to receive the first part of the
-				// response
+				// sEventmsgLoginResp
 				while ((this.inputStream.available() < (packetLength - 3)) && (!this.isTimedOut))
 				{
 					try
@@ -251,7 +251,7 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 					catch (InterruptedException ie)
 					{
 						// do nothing
-						System.err.println("Sleep interrupted while waiting for response body...\n"+ie);
+						System.err.println("Sleep interrupted while waiting for sEventmsgLoginResp body...\n"+ie);
 					}
 				}
 				
@@ -294,11 +294,11 @@ public class ModbusRTUTCPTransport implements ModbusTransport
                 }
 
 				
-				// create the response
+				// create the sEventmsgLoginResp
 				response = ModbusResponse.createModbusResponse(functionCode);
 				response.setHeadless();
 				
-				// read the response
+				// read the sEventmsgLoginResp
 				response.readFrom(inputBuffer);
 			}
 		}
@@ -325,7 +325,7 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 		// reset the timeout timer
 		this.readTimeoutTimer.cancel();
 		
-		// return the response read from the socket stream
+		// return the sEventmsgLoginResp read from the socket stream
 		return response;
 		
 		/*-------------------------- SERIAL IMPLEMENTATION -----------------------------------
@@ -352,23 +352,23 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 						if (Modbus.debug)
 							System.out.println(ModbusRTUTCPTransport.logId + "Function code: " + uid);
 						
-						//bufferize the response
+						//bufferize the sEventmsgLoginResp
 						byteOutputStream.reset();
 						byteOutputStream.writeByte(uid);
 						byteOutputStream.writeByte(fc);
 						
 						// create the Modbus Response object to acquire length of message
-						response = ModbusResponse.createModbusResponse(fc);
-						response.setHeadless();
+						sEventmsgLoginResp = ModbusResponse.createModbusResponse(fc);
+						sEventmsgLoginResp.setHeadless();
 						
 						// With Modbus RTU, there is no end frame. Either we
 						// assume the message is complete as is or we must do
 						// function specific processing to know the correct length. 
 						
-						//bufferize the response according to the given function code
+						//bufferize the sEventmsgLoginResp according to the given function code
 						getResponse(fc, byteOutputStream);
 						
-						//compute the response length without considering the CRC
+						//compute the sEventmsgLoginResp length without considering the CRC
 						dlength = byteOutputStream.size() - 2; // less the crc
 						
 						//debug
@@ -392,16 +392,16 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 					}
 					else
 					{
-						throw new IOException("Error reading response");
+						throw new IOException("Error reading sEventmsgLoginResp");
 					}
 					
 					// restore the buffer state, cursor at 0, same content
 					byteInputStream.reset(inputBuffer, dlength);
 					
-					//actually read the response
-					if (response != null)
+					//actually read the sEventmsgLoginResp
+					if (sEventmsgLoginResp != null)
 					{
-						response.readFrom(byteInputStream);
+						sEventmsgLoginResp.readFrom(byteInputStream);
 					}
 					
 					//flag completion...
@@ -410,11 +410,11 @@ public class ModbusRTUTCPTransport implements ModbusTransport
 				}// synchronized
 			}
 			while (!done);
-			return response;
+			return sEventmsgLoginResp;
 		}
 		catch (Exception ex)
 		{
-			System.err.println("Last request: " + ModbusUtil.toHex(lastRequest));
+			System.err.println("Last sEventmsgLoginReq: " + ModbusUtil.toHex(lastRequest));
 			System.err.println(ex.getMessage());
 			throw new ModbusIOException("I/O exception - failed to read");
 		}

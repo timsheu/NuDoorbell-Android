@@ -24,8 +24,8 @@ import net.wimpi.modbus.msg.ModbusResponse;
  * Interface defining a ModbusTransaction.
  * <p>
  * A transaction is defined by the sequence of
- * sending a request message and receiving a
- * related response message.
+ * sending a sEventmsgLoginReq message and receiving a
+ * related sEventmsgLoginResp message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)
@@ -111,7 +111,7 @@ public interface ModbusTransaction {
    * be opened for the transaction and closed afterwards.
    * <p>
    * @throws ModbusException if an I/O error occurs,
-   *         or the response is a modbus protocol exception.
+   *         or the sEventmsgLoginResp is a modbus protocol exception.
    */
   public void execute() throws ModbusException;
 

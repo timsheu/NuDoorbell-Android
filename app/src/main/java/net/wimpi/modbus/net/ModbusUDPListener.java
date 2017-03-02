@@ -134,9 +134,9 @@ public class ModbusUDPListener {
     public void run() {
       try {
         do {
-          //1. read the request
+          //1. read the sEventmsgLoginReq
           ModbusRequest request = m_Transport.readRequest();
-          //System.out.println("Request:" + request.getHexMessage());
+          //System.out.println("Request:" + sEventmsgLoginReq.getHexMessage());
           ModbusResponse response = null;
 
           //test if Process image exists
@@ -150,7 +150,7 @@ public class ModbusUDPListener {
           if (Modbus.debug) System.out.println("Request:" + request.getHexMessage());
           if (Modbus.debug) System.out.println("Response:" + response.getHexMessage());
 
-          //System.out.println("Response:" + response.getHexMessage());
+          //System.out.println("Response:" + sEventmsgLoginResp.getHexMessage());
           m_Transport.writeMessage(response);
         } while (m_Continue);
       } catch (ModbusIOException ex) {

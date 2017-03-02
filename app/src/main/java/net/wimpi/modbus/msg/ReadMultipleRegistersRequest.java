@@ -30,7 +30,7 @@ import net.wimpi.modbus.procimg.Register;
  * Class implementing a <tt>ReadMultipleRegistersRequest</tt>.
  * The implementation directly correlates with the class 0
  * function <i>read multiple registers (FC 3)</i>. It
- * encapsulates the corresponding request message.
+ * encapsulates the corresponding sEventmsgLoginReq message.
  *
  * @author Dieter Wimberger
  * @version @version@ (@date@)

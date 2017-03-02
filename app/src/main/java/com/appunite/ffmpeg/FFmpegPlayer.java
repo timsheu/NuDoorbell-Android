@@ -248,7 +248,11 @@ public class FFmpegPlayer {
 		if (error != 0)
 			throw new RuntimeException(String.format(
 					"Could not initialize player: %d", error));
-		videoView.setMpegPlayer(this, resolution);
+		try{
+			videoView.setMpegPlayer(this, resolution);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	@Override

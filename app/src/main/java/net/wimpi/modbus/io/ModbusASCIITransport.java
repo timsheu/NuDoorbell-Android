@@ -125,7 +125,7 @@ public class ModbusASCIITransport
             continue;
           }
           in = m_ByteIn.readUnsignedByte();
-          //create request
+          //create sEventmsgLoginReq
           request = ModbusRequest.createModbusRequest(in);
           request.setHeadless();
           //read message
@@ -181,16 +181,16 @@ public class ModbusASCIITransport
 
           m_ByteIn.reset(m_InBuffer, m_ByteInOut.size());
           in = m_ByteIn.readUnsignedByte();
-          // JDC: To check slave unit identifier in a response we need to know
-          // the slave id in the request.  This is not tracked since slaves
-          // only respond when a master request is made and there is only one
+          // JDC: To check slave unit identifier in a sEventmsgLoginResp we need to know
+          // the slave id in the sEventmsgLoginReq.  This is not tracked since slaves
+          // only respond when a master sEventmsgLoginReq is made and there is only one
           // master.  We are the only master, so we can assume that this
-          // response message is from the slave responding to the last request.
+          // sEventmsgLoginResp message is from the slave responding to the last sEventmsgLoginReq.
 //           if (in != ModbusCoupler.getReference().getUnitID()) {
 //             continue;
 //           }
           in = m_ByteIn.readUnsignedByte();
-          //create request
+          //create sEventmsgLoginReq
           response = ModbusResponse.createModbusResponse(in);
           response.setHeadless();
           //read message

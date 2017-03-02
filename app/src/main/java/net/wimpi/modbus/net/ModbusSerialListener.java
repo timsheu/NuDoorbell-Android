@@ -82,7 +82,7 @@ public class ModbusSerialListener
       ModbusTransport transport = m_SerialCon.getModbusTransport();
       do {
         try {
-          //1. read the request
+          //1. read the sEventmsgLoginReq
           ModbusRequest request = transport.readRequest();
           ModbusResponse response = null;
 

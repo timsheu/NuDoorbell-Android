@@ -130,19 +130,19 @@ public class ModbusTCPTransport
       }
       int unitID = m_Input.readUnsignedByte();
       int functionCode = m_Input.readUnsignedByte();
-      ModbusRequest request =
+      ModbusRequest sEventmsgLoginReq =
           ModbusRequest.createModbusRequest(functionCode, m_Input, false);
-      if (request instanceof IllegalFunctionRequest) {
+      if (sEventmsgLoginReq instanceof IllegalFunctionRequest) {
         //skip rest of bytes
         for (int i = 0; i < dataLength - 2; i++) {
           m_Input.readByte();
         }
       }
       //set read parameters
-      request.setTransactionID(transactionID);
-      request.setProtocolID(protocolID);
-      request.setUnitID(unitID);
-      return request;
+      sEventmsgLoginReq.setTransactionID(transactionID);
+      sEventmsgLoginReq.setProtocolID(protocolID);
+      sEventmsgLoginReq.setUnitID(unitID);
+      return sEventmsgLoginReq;
 
       */
     } catch (EOFException eoex) {
@@ -197,19 +197,19 @@ public class ModbusTCPTransport
          //System.out.println("Read uid="+unitID);
          int functionCode = m_Input.readUnsignedByte();
          //System.out.println("Read fc="+functionCode);
-         ModbusResponse response =
+         ModbusResponse sEventmsgLoginResp =
              ModbusResponse.createModbusResponse(functionCode, m_Input, false);
-         if (response instanceof ExceptionResponse) {
+         if (sEventmsgLoginResp instanceof ExceptionResponse) {
            //skip rest of bytes
            for (int i = 0; i < dataLength - 2; i++) {
              m_Input.readByte();
            }
          }
          //set read parameters
-         response.setTransactionID(transactionID);
-         response.setProtocolID(protocolID);
-         response.setUnitID(unitID);
-         return response;
+         sEventmsgLoginResp.setTransactionID(transactionID);
+         sEventmsgLoginResp.setProtocolID(protocolID);
+         sEventmsgLoginResp.setUnitID(unitID);
+         return sEventmsgLoginResp;
          */
     } catch (Exception ex) {
       ex.printStackTrace();

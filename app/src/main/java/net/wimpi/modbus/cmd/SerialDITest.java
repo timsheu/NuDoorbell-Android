@@ -69,7 +69,7 @@ public class SerialDITest {
         }
       }
 
-      //2. Set slave identifier for master response parsing
+      //2. Set slave identifier for master sEventmsgLoginResp parsing
       ModbusCoupler.getReference().setUnitID(unitid);
 
       System.out.println("net.wimpi.modbus.debug set to: " +
@@ -91,7 +91,7 @@ public class SerialDITest {
       con.open();
 
 
-      //5. Prepare a request
+      //5. Prepare a sEventmsgLoginReq
       req = new ReadInputDiscretesRequest(ref, count);
       req.setUnitID(unitid);
       req.setHeadless();
