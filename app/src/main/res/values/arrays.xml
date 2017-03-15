@@ -84,7 +84,6 @@
     <string-array name="type_array">
         <item>NuDoorbell</item>
         <item>SkyEye</item>
-        <item>NuWicam</item>
     </string-array>
 
 

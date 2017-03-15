@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.nuvoton.nudoorbell.R;
+import com.nuvoton.nuplayer.R;
 
 import org.acra.ACRA;
 import org.acra.ReportField;

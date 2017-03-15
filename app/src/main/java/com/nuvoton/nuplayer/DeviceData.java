@@ -1,8 +1,6 @@
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
 import com.orm.SugarRecord;
-
-import java.util.List;
 
 /**
  * Created by cchsu20 on 16/12/2016.
@@ -276,14 +274,14 @@ public class DeviceData extends SugarRecord{
 
     public DeviceData(){
         uuid = "00000001";
-        name = "NuDoorbell";
-        deviceType = "NuDoorbell";
+        name = "SkyEye";
+        deviceType = "SkyEye";
         publicIP = "192.168.100.1";
         privateIP = "192.168.100.1";
         httpPort = 80;
         rtspPort = 554;
         fcmToken = "";
-        isVoiceUploadHttp = true;
+        isVoiceUploadHttp = false;
         isAdaptive = false;
         isFixedQuality = false;
         isFixedBitrate = false;
@@ -295,7 +293,7 @@ public class DeviceData extends SugarRecord{
         encodeQuality = 30;
         bitRate = 1024;
         fps = 20;
-        ssid = "NuDoorbell";
+        ssid = "SkyEye";
         password = "12345678";
         history1 = "192.168.100.1";
         history2 = "";

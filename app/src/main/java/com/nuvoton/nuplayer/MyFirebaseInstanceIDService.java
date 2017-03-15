@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
+import android.content.SharedPreferences;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -40,11 +43,13 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService imple
         // Get updated InstanceID token.
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
-
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.edit().putString(refreshedToken, "FCMToken").apply();
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken);
+
         Log.d(TAG, "onTokenRefresh: ");
         // [END refresh_token]
     }

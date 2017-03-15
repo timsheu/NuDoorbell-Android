@@ -1,11 +1,9 @@
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
-import android.*;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -31,12 +29,12 @@ import com.nuvoton.socketmanager.HTTPSocketInterface;
 import com.nuvoton.socketmanager.HTTPSocketManager;
 import com.nuvoton.utility.NuDoorbellCommand;
 import com.nuvoton.utility.NuPlayerCommand;
-import com.nuvoton.utility.NuWicamCommand;
 import com.nuvoton.utility.TwoWayTalking;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
+import java.util.stream.Stream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,7 +62,12 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
     //Tow way talking interface implementation
     @Override
     public void showToast(String message) {
-
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(Streaming.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -176,6 +179,7 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
                         mTwoWayTalking = TwoWayTalking.getInstance(getApplicationContext());
                         mTwoWayTalking.setInterface(Streaming.this);
                         mTwoWayTalking.setHTTPMode(deviceData.getVoiceUploadHttp());
+                        mTwoWayTalking.setDeviceID(deviceData.getId());
                         if (!mTwoWayTalking.isRecording) {
                             Toast.makeText(Streaming.this, "Audio upload started.", Toast.LENGTH_SHORT).show();
                             boolean isHttpVoice = true;
@@ -183,7 +187,7 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
                             if (isHttpVoice) {
                                 mTwoWayTalking.updateURL(localURL);
                             } else {
-                                mTwoWayTalking.pokeClient(localURL, "tcp");
+                                mTwoWayTalking.pokeClient(localURL, "tcp", true);
                             }
                             mTwoWayTalking.startRecording();
                             phoneAns.setEnabled(false);
@@ -205,6 +209,7 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
                         mTwoWayTalking.stopRecording();
                         phoneAns.setEnabled(true);
                         phoneHang.setEnabled(false);
+                        mTwoWayTalking.pokeClient(localURL, "tcp", false);
                     }
                 }
                 break;

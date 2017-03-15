@@ -26,7 +26,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.nuvoton.nudoorbell.R;
+import com.nuvoton.nuplayer.R;
 
 import java.util.List;
 

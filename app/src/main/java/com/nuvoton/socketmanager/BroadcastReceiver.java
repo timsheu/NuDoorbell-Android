@@ -3,7 +3,7 @@ package com.nuvoton.socketmanager;
 import android.content.Context;
 import android.util.Log;
 
-import com.nuvoton.nudoorbell.DeviceData;
+import com.nuvoton.nuplayer.DeviceData;
 import com.nuvoton.utility.EventMessageClass;
 
 import java.io.InputStream;

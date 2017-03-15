@@ -1,4 +1,4 @@
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
@@ -37,7 +37,7 @@ import java.util.Map;
 public class EditDBFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener, CustomDialogFragment.DialogFragmentInterface, EditDeviceDialogFragment.EditDeviceDialogInterface, HTTPSocketInterface{
 
     public interface EditDBInterface{
-        void editDevice(String serial, String name, String type, String url);
+        void editDevice(String serial, String name, String type, String ip);
     }
     public EditDBInterface mInterface;
     private final String TAG = "AddDBFragment";
@@ -68,6 +68,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         ip = deviceData.getPublicIP();
         name = deviceData.getName();
         type = deviceData.getDeviceType();
+        setPreferenceDefault();
     }
 
     @Override
@@ -105,6 +106,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                     Log.d(TAG, "onPreferenceChange: name");
                     name = (String) o;
                     pref.getEditText().setText(name);
+                    pref.setSummary(name);
                     deviceData.setName(name);
                     deviceData.save();
                     return false;
@@ -119,6 +121,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     ip = (String) o;
                     pref.getEditText().setText(ip);
+                    pref.setSummary(ip);
                     deviceData.setPublicIP(ip);
                     deviceData.setPrivateIP(ip);
                     deviceData.save();
@@ -128,18 +131,13 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         }else if (key.compareTo("type") == 0) {
             ListPreference list = (ListPreference) preference;
             String deviceDataTempString = deviceData.getDeviceType();
-            int listIndex = 0;
-            if (deviceDataTempString.compareTo("SkyEye") == 0){
-                listIndex = 1;
-            }else if(deviceDataTempString.compareTo("NuWicam") == 0){
-                listIndex = 2;
-            }
-            list.setValueIndex(listIndex);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
                     type = (String) o;
+                    list.setValue(type);
+                    list.setSummary(type);
                     deviceData.setDeviceType(type);
                     deviceData.save();
                     return true;
@@ -148,19 +146,17 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             // type is selected.
         }else if(key.compareTo("resolution") == 0){
             ListPreference list = (ListPreference) preference;
-            String deviceDataTempString = deviceData.getResolution();
-            int listIndex = 0;
-            if (deviceDataTempString.compareTo("VGA") == 0){
-                listIndex = 1;
-            }else if (deviceDataTempString.compareTo("360") == 0){
-                listIndex = 2;
-            }
-            list.setValueIndex(listIndex);
+            String resolutionString = deviceData.getResolution();
+            list.setValue(resolutionString);
+            list.setSummary(resolutionString);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
-                    deviceData.setResolution((String) o);
+                    String value = (String) o;
+                    list.setSummary(value);
+                    list.setValue(value);
+                    deviceData.setResolution(value);
                     deviceData.save();
                     setDeviceSetting(key, deviceData.getResolution());
                     return true;
@@ -186,27 +182,30 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                     deviceData.setBitRate(bitRate);
                     deviceData.save();
                     setDeviceSetting(key, String.valueOf(bitRate));
+                    list.setValue((String) o);
                     return false;
                 }
             });
         }else if(key.compareTo("voice_upload") == 0){
             ListPreference list = (ListPreference) preference;
-            boolean deviceDataTempBoolean = deviceData.getVoiceUploadHttp();
-            int listIndex = 1;
-            if (deviceDataTempBoolean){
-                listIndex = 0;
+            boolean isHttp = deviceData.getVoiceUploadHttp();
+            String option = "Socket";
+            if (isHttp){
+                option = "HTTP";
             }
-            list.setValueIndex(listIndex);
+            list.setValue(option);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
-                    boolean isHttp = true;
                     String httpString = (String) o;
                     if (httpString.compareTo("Socket") == 0){
-                        isHttp = false;
+                        deviceData.setVoiceUploadHttp(false);
+                    }else {
+                        deviceData.setVoiceUploadHttp(true);
                     }
-                    deviceData.setVoiceUploadHttp(isHttp);
+                    list.setSummary(httpString);
+                    list.setValue(httpString);
                     deviceData.save();
                     return false;
                 }
@@ -218,6 +217,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     String ssid = pref.getText();
+                    pref.setSummary((String) o);
                     deviceData.setSsid(ssid);
                     deviceData.save();
                     setDeviceSetting(key, ssid);
@@ -241,8 +241,9 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    EditTextPreference pref = (EditTextPreference) findPreference("show_password");
+                    EditTextPreference pref = (EditTextPreference) findPreference("password");
                     pref.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL | InputType.TYPE_CLASS_TEXT);
+                    Toast.makeText(getActivity().getApplicationContext(), "Password is shown", Toast.LENGTH_SHORT).show();
                     return false;
                 }
             });
@@ -361,6 +362,23 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         }
         httpSocketManager.setSocketInterface(this);
         httpSocketManager.executeSendGetTask(command);
+    }
+
+    private void setPreferenceDefault(){
+        Preference pref = findPreference("name");
+        pref.setSummary(deviceData.getName());
+        pref = findPreference("type");
+        pref.setSummary(deviceData.getDeviceType());
+        pref = findPreference("ip");
+        pref.setSummary(deviceData.getPublicIP());
+        pref = findPreference("ssid");
+        pref.setSummary(deviceData.getSsid());
+        pref = findPreference("voice_upload");
+        if (deviceData.getVoiceUploadHttp()){
+            pref.setSummary("HTTP");
+        }else {
+            pref.setSummary("Socket");
+        }
     }
 
     //MARK: EditDeviceDialogInterface

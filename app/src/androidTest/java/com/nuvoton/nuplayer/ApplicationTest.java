@@ -1,4 +1,4 @@
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

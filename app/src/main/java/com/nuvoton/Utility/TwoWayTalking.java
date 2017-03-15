@@ -6,8 +6,11 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.provider.ContactsContract;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.nuvoton.nuplayer.DeviceData;
 import com.nuvoton.socketmanager.HTTPSocketInterface;
 import com.nuvoton.socketmanager.HTTPSocketManager;
 
@@ -15,7 +18,10 @@ import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
@@ -45,11 +51,11 @@ public class TwoWayTalking implements HTTPSocketInterface{
         public void didOpenVoiceUpload();
     }
 
-    public void setDeviceID(int deviceID) {
+    public void setDeviceID(long deviceID) {
         this.deviceID = deviceID;
     }
 
-    private int deviceID = 0;
+    private long deviceID = 0;
     private static Context context;
     private final String lineEnd = "\r\n";
     private URLConnection conn;
@@ -63,7 +69,8 @@ public class TwoWayTalking implements HTTPSocketInterface{
     private String localURL;
     private HTTPSocketManager socketManager;
     private TwoWayTalkingInterface mInterface;
-    private ServerSocket mServerSocket = null;
+//    private ServerSocket mServerSocket = null;
+    private DatagramSocket mServerSocket = null;
     private URL url;
     private HttpURLConnection httpURLConnection;
     static public boolean isRecording = false;
@@ -76,6 +83,7 @@ public class TwoWayTalking implements HTTPSocketInterface{
     AudioRecord audioRecord;
     AudioTrack audioTrack;
     private static TwoWayTalking twoWayTalking = new TwoWayTalking();
+    private String ip;
     private TwoWayTalking(){
         recBufSize = AudioRecord.getMinBufferSize(frequency, inputChannelConfiguration, audioEncoding);
         playBufSize = AudioTrack.getMinBufferSize(frequency, outputChannelConfiguration, audioEncoding);
@@ -87,10 +95,11 @@ public class TwoWayTalking implements HTTPSocketInterface{
     }
 
     public void startRecording(){
+        DeviceData deviceData = DeviceData.findById(DeviceData.class, deviceID);
+        ip = deviceData.getPublicIP();
         if (socketManager == null){
             socketManager = new HTTPSocketManager();
         }
-
         isRecording = true;
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, inputChannelConfiguration, audioEncoding, recBufSize);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, frequency, outputChannelConfiguration, audioEncoding, playBufSize, AudioTrack.MODE_STREAM, audioRecord.getAudioSessionId());
@@ -100,45 +109,93 @@ public class TwoWayTalking implements HTTPSocketInterface{
         }else{
             Log.d(TAG, "startRecording: RecordThread");
             new RecordThread().start();
+//            new UDPThread().start();
         }
         mInterface.showToast("Two-way talking started.");
     }
 
     public void stopRecording(){
         isRecording = false;
+        mServerSocket.close();
+    }
+
+    class UDPThread extends Thread{
+        public void run(){
+            try {
+                int mServerPort = 8080;
+                DatagramSocket localSocket = new DatagramSocket(4869);
+                localSocket.connect(InetAddress.getLocalHost(), mServerPort);
+                byte[] data = new byte[recBufSize];
+                localSocket.send(new DatagramPacket(data, data.length));
+                audioTrack.play();
+                while (isRecording) {
+                    byte[] temp = new byte[recBufSize];
+                    DatagramPacket packet = new DatagramPacket(temp, temp.length);
+                    localSocket.receive(packet);
+                    audioTrack.write(packet.getData(), 0, packet.getLength());
+                    Log.d(TAG, "UDPThread, length: " + packet.getLength());
+                }
+
+                localSocket.close();
+            }catch (Throwable t){
+                Log.e(TAG, "Record Thread run: " + t.getMessage() );
+            }
+        }
     }
 
     class RecordThread extends Thread{
         public void run(){
             try {
                 int mServerPort = 8080;
-                mServerSocket = new ServerSocket(mServerPort);
+                mServerSocket = new DatagramSocket(mServerPort);
                 byte[] buffer = new byte[recBufSize];
-                Socket socketClient = mServerSocket.accept();
-                OutputStream os = socketClient.getOutputStream();
-                DataOutputStream dos = new DataOutputStream(os);
-                while(true){
-                    sleep(500);
-                    if (isRecording) break;
-                }
+                DatagramPacket dp = new DatagramPacket(buffer, recBufSize);
+                mInterface.showToast("RecordThread: before receive");
+                mServerSocket.receive(dp);
+                mInterface.showToast("RecordThread: after receive");
+                InetAddress address = dp.getAddress();
+                int port = dp.getPort();
+//                mServerSocket = new ServerSocket(mServerPort);
+//                byte[] buffer = new byte[recBufSize];
+//                Socket socketClient = mServerSocket.accept();
+//                OutputStream os = socketClient.getOutputStream();
+//                DataOutputStream dos = new DataOutputStream(os);
+//                while(true){
+//                    Log.d(TAG, "run: sleep");
+//                    sleep(500);
+//                    if (mServerSocket.isConnected() || mServerSocket.isClosed()) break;
+//                }
+                mInterface.showToast("RecordThread: start record");
                 audioRecord.startRecording();
-//                audioTrack.play();
                 while (isRecording) {
                     int bufferReadResult = audioRecord.read(buffer, 0, recBufSize);
                     byte[] tmpBuf = new byte[bufferReadResult];
 //                    Log.d(TAG, "run: " + String.valueOf(bufferReadResult));
                     System.arraycopy(buffer, 0, tmpBuf, 0, bufferReadResult);
+                    DatagramPacket packet = new DatagramPacket(tmpBuf, tmpBuf.length, address, port);
+                    mServerSocket.send(packet);
 //                    audioTrack.write(tmpBuf, 0, tmpBuf.length);
-                    dos.write(tmpBuf, 0, tmpBuf.length);
-                    dos.flush();
                 }
+                mInterface.showToast("RecordThread: stop record");
+
+
+////                audioTrack.play();
+//                while (isRecording) {
+//                    int bufferReadResult = audioRecord.read(buffer, 0, recBufSize);
+//                    byte[] tmpBuf = new byte[bufferReadResult];
+////                    Log.d(TAG, "run: " + String.valueOf(bufferReadResult));
+//                    System.arraycopy(buffer, 0, tmpBuf, 0, bufferReadResult);
+////                    audioTrack.write(tmpBuf, 0, tmpBuf.length);
+//                    dos.write(tmpBuf, 0, tmpBuf.length);
+//                    dos.flush();
+//                }
 
                 mServerSocket.close();
                 audioRecord.stop();
                 audioRecord = null;
-                dos.close();
-                os.close();
-                socketClient.close();
+//                dos.close();
+//                os.close();
+//                socketClient.close();
                 mInterface.showToast("Two-way talking ends.");
             }catch (Throwable t){
                 Log.e(TAG, "Record Thread run: " + t.getMessage() );
@@ -151,7 +208,7 @@ public class TwoWayTalking implements HTTPSocketInterface{
             try {
                 byte[] buffer = new byte[recBufSize];
                 audioRecord.startRecording();
-                audioTrack.play();
+//                audioTrack.play();
                 int bufferReadResult = recBufSize;
 //                int bufferReadResult = audioRecord.read(buffer, 0, recBufSize);
                 byte[] tmpBuf = new byte[bufferReadResult];
@@ -225,17 +282,26 @@ public class TwoWayTalking implements HTTPSocketInterface{
         localURL = "http://" + strings[2] + "/";
     }
 
-    public void pokeClient(String URL, String protocol){
+    public void pokeClient(String URL, String protocol, Boolean open){
         String [] strings = URL.split("/");
         String url = strings[2];
         Log.d(TAG, "pokeClient: ");
-        if (protocol.compareTo("tcp") == 0){
-            String command = "http://" + url + "/audio.input?protocol=tcp&samplerate=8000&channel=1&volume=100&port=8080";
+        if (open){
+            if (protocol.compareTo("tcp") == 0){
+                String command = "http://" + url + "/audio.input?protocol=tcp&samplerate=8000&channel=1&volume=100&port=8080";
+                localURL = url;
+                HTTPSocketManager socketManager = new HTTPSocketManager();
+                socketManager.setSocketInterface(this);
+                socketManager.executeSendGetTask(command);
+            }
+        }else {
+            String command = "http://" + url + "/audio.stop";
             localURL = url;
             HTTPSocketManager socketManager = new HTTPSocketManager();
             socketManager.setSocketInterface(this);
             socketManager.executeSendGetTask(command);
         }
+
     }
 
     public void setInterface(TwoWayTalkingInterface mInterface){

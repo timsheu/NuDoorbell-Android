@@ -1,4 +1,4 @@
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.nuvoton.utility.CustomDialogFragment;
+
+import java.util.List;
 
 
 /**
@@ -36,7 +38,7 @@ public class AddDBFragment extends PreferenceFragment implements SharedPreferenc
     private final String TAG = "AddDBFragment";
     private static String serial = "0";
     private static String name = "Device";
-    private static String ip = "rtsp://192.168.100.1/cam1/h264";
+    private static String ip = "192.168.100.1";
     private static String type = "NuDoorbell";
 
 
@@ -63,6 +65,12 @@ public class AddDBFragment extends PreferenceFragment implements SharedPreferenc
         String dbName = "Doorbell " + String.valueOf(serial);
         getPreferenceManager().setSharedPreferencesName(dbName);
         addPreferencesFromResource(R.xml.new_db_setting);
+        Preference pref = findPreference("name");
+        pref.setSummary(name);
+        pref = findPreference("ip");
+        pref.setSummary(ip);
+        pref = findPreference("type");
+        pref.setSummary(type);
     }
 
     @Override
@@ -85,26 +93,50 @@ public class AddDBFragment extends PreferenceFragment implements SharedPreferenc
         }else if (key.compareTo("name") == 0){
             EditTextPreference pref = (EditTextPreference) preference;
             pref.getEditText().setText(name);
-
+            pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    name = String.valueOf(o);
+                    pref.setSummary(name);
+                    return false;
+                }
+            });
         }else if (key.compareTo("ip") == 0){
             EditTextPreference pref = (EditTextPreference) preference;
             pref.getEditText().setText(ip);
+            pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    ip = String.valueOf(o);
+                    pref.setSummary(ip);
+                    return false;
+                }
+            });
         }else if (key.compareTo("type") == 0){
             ListPreference list = (ListPreference) preference;
+            list.setValue(type);
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Log.d(TAG, "onPreferenceChange: " + newValue);
                     type = (String) newValue;
+                    list.setValue(type);
+                    list.setSummary(type);
                     return false;
                 }
             });
             // type is selected.
         }else if (key.compareTo("save") == 0){
-            mInterface.addNewDoorbell(serial, type, name, ip);
-            FragmentTransaction trans = getFragmentManager().beginTransaction();
-            trans.setCustomAnimations(android.R.animator.fade_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
-            getFragmentManager().popBackStackImmediate();
+            List<DeviceData> list = DeviceData.find(DeviceData.class, "public_ip = ?", ip);
+            if (list.size() > 0){
+                Toast.makeText(getActivity().getApplicationContext(), "IP cannot be reused, please change it!", Toast.LENGTH_LONG).show();
+            }else {
+                mInterface.addNewDoorbell(serial, type, name, ip);
+                FragmentTransaction trans = getFragmentManager().beginTransaction();
+                trans.setCustomAnimations(android.R.animator.fade_in, R.animator.slide_out, R.animator.slide_in, R.animator.slide_out);
+                getFragmentManager().popBackStackImmediate();
+            }
+
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }

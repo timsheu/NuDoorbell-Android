@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "284753968971",
-    "firebase_url": "https://nudoorbell-d9574.firebaseio.com",
-    "project_id": "nudoorbell-d9574",
-    "storage_bucket": "nudoorbell-d9574.appspot.com"
+    "project_number": "197061509707",
+    "firebase_url": "https://nuplayer-d244a.firebaseio.com",
+    "project_id": "nuplayer-d244a",
+    "storage_bucket": "nuplayer-d244a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:284753968971:android:d606c40b1537fbad",
+        "mobilesdk_app_id": "1:197061509707:android:d33e3f0dfe0fef64",
         "android_client_info": {
-          "package_name": "com.nuvoton.nudoorbell"
+          "package_name": "com.nuvoton.nuplayer"
         }
       },
       "oauth_client": [
         {
-          "client_id": "284753968971-ko6o1d1u10bejo5memnpbh7247m72oem.apps.googleusercontent.com",
+          "client_id": "197061509707-84iajtncv5uumqiie7lcf0tuvm47f74i.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAtcr-P3JdRceZjaK2f59VFeEHSJDsdS08"
+          "current_key": "AIzaSyBYp8AU-8AJ6SzAZtJ1s-gCM-V25L9R3SY"
         }
       ],
       "services": {

@@ -22,9 +22,9 @@
             />
 
         <EditTextPreference
-            android:title="URL"
-            android:key="url"
-            android:summary="The device's URL, click to edit"
+            android:title="IP"
+            android:key="ip"
+            android:summary="The device's IP, click to edit"
             />
     </PreferenceCategory>
 
@@ -35,7 +35,7 @@
             android:key="resolution"
             android:summary="%s"
             android:entries="@array/resolution_list"
-            android:entryValues="@array/resolution_value_list"
+            android:entryValues="@array/resolution_list"
             />
 
         <ListPreference
@@ -79,12 +79,10 @@
             android:maxLength="15"
             />
 
-        <ListPreference
+        <Preference
             android:key="show_password"
             android:title="Show Password"
             android:summary="Click to show password"
-            android:entryValues="@array/show_password_value"
-            android:entries="@array/show_password"
             />
     </PreferenceCategory>
 

@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.nuvoton.nudoorbell.R;
+import com.nuvoton.nuplayer.R;
 
 /**
  * @author angelo.marchesin

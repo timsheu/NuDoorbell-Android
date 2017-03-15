@@ -1,4 +1,4 @@
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
 import org.junit.Test;
 

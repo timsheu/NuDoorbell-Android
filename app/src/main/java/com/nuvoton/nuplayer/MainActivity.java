@@ -1,7 +1,6 @@
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
 import android.app.FragmentTransaction;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -27,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements AddDBFragment.SetDBInterface, EditDBFragment.EditDBInterface, EditDeviceDialogFragment.EditDeviceDialogInterface{
     private boolean isSetting = false;
@@ -121,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
         gridView.setOnItemClickListener(new GridView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(getApplicationContext(), "OnItemClick" + items.get(i).toString(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "OnItemClick" + items.get(i).toString(), Toast.LENGTH_SHORT).show();
                 if (i==items.size() - 1){
                     index = i;
                     isSetting = true;
@@ -201,12 +199,12 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
 
     //MARK: AddDBDelegate
     @Override
-    public void addNewDoorbell(String serial, String type, String name, String url) {
+    public void addNewDoorbell(String serial, String type, String name, String ip) {
         DeviceData deviceData = new DeviceData();
         deviceData.setDeviceType(type);
         deviceData.setName(name);
-        deviceData.setPublicIP(url);
-        deviceData.setPrivateIP(url);
+        deviceData.setPublicIP(ip);
+        deviceData.setPrivateIP(ip);
         deviceData.save();
         Log.d(TAG, "addNewDoorbell: sugar id=" + deviceData.getId());
         Map<String, Object> item = new HashMap<>();
@@ -231,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
     //MARK: EditDialogInterface
     @Override
     public void removeDevice(String category) {
-        Toast.makeText(getApplicationContext(), "OnLongClick: " + index, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Device removed", Toast.LENGTH_SHORT).show();
         if (index < items.size() - 1){
             Map<String, Object> item = items.get(index);
             long sugarID = (long) item.get("ID");
@@ -293,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
 
     //MARK: EditDialogInterface
     @Override
-    public void editDevice(String serial, String name, String type, String url) {
+    public void editDevice(String serial, String name, String type, String ip) {
 
     }
 }

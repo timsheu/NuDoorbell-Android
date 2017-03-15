@@ -14,9 +14,9 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
-import com.nuvoton.nudoorbell.DeviceData;
-import com.nuvoton.nudoorbell.R;
-import com.nuvoton.nudoorbell.Streaming;
+import com.nuvoton.nuplayer.DeviceData;
+import com.nuvoton.nuplayer.R;
+import com.nuvoton.nuplayer.Streaming;
 
 public class UDPSocketService extends Service implements BroadcastReceiver.BroadcastInterface {
     public interface BGBCInterface {

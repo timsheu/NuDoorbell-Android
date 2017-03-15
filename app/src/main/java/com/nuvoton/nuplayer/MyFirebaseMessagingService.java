@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.nuvoton.nudoorbell;
+package com.nuvoton.nuplayer;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;

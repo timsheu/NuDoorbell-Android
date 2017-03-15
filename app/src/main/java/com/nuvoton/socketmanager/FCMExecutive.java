@@ -1,10 +1,9 @@
 package com.nuvoton.socketmanager;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.common.net.InetAddresses;
-import com.nuvoton.nudoorbell.DeviceData;
+import com.nuvoton.nuplayer.DeviceData;
 import com.nuvoton.utility.EventMessageClass;
 
 import java.net.InetAddress;

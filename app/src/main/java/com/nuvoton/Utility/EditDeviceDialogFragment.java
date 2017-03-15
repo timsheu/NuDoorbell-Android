@@ -1,6 +1,5 @@
 package com.nuvoton.utility;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -12,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.nuvoton.nudoorbell.R;
+import com.nuvoton.nuplayer.R;
 
 import org.angmarch.views.NiceSpinner;
 

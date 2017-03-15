@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NuDoorbell</string>
+    <string name="app_name">NuPlayer</string>
     <string name="version">1.0.6</string>
     <string name="dvr">DVR</string>
     <string name="skyeye">SkyEye</string>
