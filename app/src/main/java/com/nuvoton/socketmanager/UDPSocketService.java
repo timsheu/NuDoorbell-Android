@@ -18,14 +18,10 @@ import com.nuvoton.nuplayer.DeviceData;
 import com.nuvoton.nuplayer.R;
 import com.nuvoton.nuplayer.Streaming;
 
-public class UDPSocketService extends Service implements BroadcastReceiver.BroadcastInterface {
-    public interface BGBCInterface {
-        void updateURLToLive(DeviceData deviceData);
-    }
-    public BGBCInterface bgbcInterface;
+public class UDPSocketService extends Service implements LANBroadcastReceiver.BroadcastInterface {
     private int mID = 100;
     private final String TAG = "UDPSocketService";
-    private BroadcastReceiver bcrReceiver;
+    private LANBroadcastReceiver mLANBroadcastReceiver;
 
     public UDPSocketService() {
 
@@ -59,19 +55,15 @@ public class UDPSocketService extends Service implements BroadcastReceiver.Broad
     @Override
     public void onDestroy() {
         super.onDestroy();
-        BroadcastReceiver.getInstance(this).closeUDPSocket();
-        Intent intent = new Intent("com.nuvoton.ActivityRecognition.RestartService");
-        sendBroadcast(intent);
-        Log.d(TAG, "onDestroy: ");
     }
 
     @Override
-    public void signalDataHandled(DeviceData deviceData) {
+    public void signalDataHandled(DeviceData deviceData, String message) {
         Log.d(TAG, "signalDataHandled: " + deviceData.getPublicIP());
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Receive broadcast ring!")
+                .setContentTitle(message)
                 .setContentText("Click to open NuDoorbell")
                 .setPriority(Notification.PRIORITY_HIGH)
                 .setDefaults(Notification.DEFAULT_ALL)
@@ -95,24 +87,14 @@ public class UDPSocketService extends Service implements BroadcastReceiver.Broad
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(mID, mBuilder.build());
-        try {
-            bgbcInterface.updateURLToLive(deviceData);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-//        openWaiting();
-//        this.stopSelf();
+
     }
 
     private void openWaiting(){
         Log.d(TAG, "openWaiting: ");
-        bcrReceiver = BroadcastReceiver.getInstance(this);
-        bcrReceiver.openUDPSocket();
-        bcrReceiver.setBroadcastInterface(this);
+        mLANBroadcastReceiver = LANBroadcastReceiver.getInstance(this);
+        mLANBroadcastReceiver.openUDPSocket();
+        mLANBroadcastReceiver.setBroadcastInterface(this);
     }
 
-    public void setBgbcInterface(BGBCInterface bgbcInterface) {
-        Log.d(TAG, "setBgbcInterface: ");
-        this.bgbcInterface = bgbcInterface;
-    }
 }

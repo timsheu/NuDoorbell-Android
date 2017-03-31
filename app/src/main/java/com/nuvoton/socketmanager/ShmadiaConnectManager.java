@@ -4,12 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.common.primitives.Longs;
+import com.nuvoton.nuplayer.TokenHandler;
 import com.nuvoton.utility.EventMessageClass;
 
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -20,14 +21,10 @@ import java.nio.charset.StandardCharsets;
  */
 
 public class ShmadiaConnectManager {
-    public interface ShmadiaConnectInterface {
-        void announceIsConnected();
-    }
-    public ShmadiaConnectInterface shmadiaConnectInterface;
     private String tmp;
     private Thread thread;
     private Socket clientSocket;
-    private BufferedWriter writer;
+    private DataOutputStream outputStream;
 //    private BufferedReader reader;
     private InputStream inputStream;
     private Context contextLocal;
@@ -48,27 +45,22 @@ public class ShmadiaConnectManager {
         @Override
         public void run() {
             try{
-//                String url = ReadConfigure.getInstance(contextLocal, false).getTargetValue("PublicIPAddr");
                 String url = "192.168.8.9";
-                InetAddress serverIP = InetAddress.getByName(url);
-//                String httpPort = ReadConfigure.getInstance(contextLocal, false).getTargetValue("HTTPPort");
                 String httpPort = "5542";
                 int serverPort = Integer.valueOf(httpPort);
-                clientSocket = new Socket(serverIP, serverPort);
-                writer = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                clientSocket = new Socket(url, serverPort);
+                outputStream = new DataOutputStream(clientSocket.getOutputStream());
+                connectShmadiaServer();
 //                reader = new BufferedReader(new InputStreamReader((clientSocket.getInputStream())));
                 inputStream = clientSocket.getInputStream();
-                if (clientSocket.isConnected() && shmadiaConnectInterface != null){
-                    shmadiaConnectInterface.announceIsConnected();
-                }
-                while (clientSocket.isConnected()){
-                    byte[] tempByte = new byte[8];
+                if (clientSocket.isConnected()){
+                    byte[] tempByte = new byte[EventMessageClass.S_EVENTMSG_HEADER.SIZE];
                     int ret = inputStream.read(tempByte);
-                    if (ret == 8){
+                    if (ret == EventMessageClass.S_EVENTMSG_HEADER.SIZE){
                         FCMExecutive.getInstance().setupHeader(tempByte);
                     }
                     EventMessageClass messageClass = FCMExecutive.getInstance().getMessageClass();
-                    int remainDataLength = (int)messageClass.sEventmsgLoginResp.sMsgHdr.u32MsgLen - 8;
+                    int remainDataLength = (int)messageClass.sEventmsgLoginResp.sMsgHdr.u32MsgLen - EventMessageClass.S_EVENTMSG_HEADER.SIZE;
                     tempByte = new byte[remainDataLength];
                     ret = inputStream.read(tempByte);
                     if (ret == remainDataLength){
@@ -90,7 +82,7 @@ public class ShmadiaConnectManager {
 
     public void closeSocket(){
         try{
-            writer.close();
+            outputStream.close();
 //            reader.close();
             inputStream.close();
             clientSocket.close();
@@ -99,45 +91,38 @@ public class ShmadiaConnectManager {
         }
     }
 
-    public void writeMessageToShmadia(EventMessageClass messageClass){
-        byte[] outputData = new byte[344];
-        byte[] bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.sMsgHdr.eMsgType);//ByteBuffer.allocate(Long.SIZE).putLong(messageClass.sEventmsgLoginReq.sMsgHdr.eMsgType).array();
+    public byte[] convertMessageToString(EventMessageClass messageClass){
+        byte[] outputData = new byte[EventMessageClass.S_EVENTMSG_LOGIN_REQ.SIZE];
 
+        byte[] bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.sMsgHdr.u32SignWord);
         bytes = convertEndian(bytes);
         System.arraycopy(bytes, 0, outputData, 0, 4);
 
-        bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.sMsgHdr.u32MsgLen);
+        bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.sMsgHdr.eMsgType);//ByteBuffer.allocate(Long.SIZE).putLong(messageClass.sEventmsgLoginReq.sMsgHdr.eMsgType).array();
         bytes = convertEndian(bytes);
         System.arraycopy(bytes, 0, outputData, 4, 4);
+
+        bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.sMsgHdr.u32MsgLen);
+        bytes = convertEndian(bytes);
+        System.arraycopy(bytes, 0, outputData, 8, 4);
 
         ByteBuffer buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(messageClass.sEventmsgLoginReq.szUUID));
         bytes = new byte[buffer.limit()];
         buffer.get(bytes);
 
-        System.arraycopy(bytes, 0, outputData, 8, 8);
+        System.arraycopy(bytes, 0, outputData, 12, 8);
 
         bytes = Longs.toByteArray(messageClass.sEventmsgLoginReq.eRole);
         bytes = convertEndian(bytes);
 
-        System.arraycopy(bytes, 0, outputData, 73, 4);
+        System.arraycopy(bytes, 0, outputData, 77, 4);
 
         buffer = StandardCharsets.UTF_8.encode(CharBuffer.wrap(messageClass.sEventmsgLoginReq.szCloudRegID));
         bytes = new byte[buffer.limit()];
         buffer.get(bytes);
 
-        System.arraycopy(bytes, 0, outputData, 77, messageClass.sEventmsgLoginReq.szCloudRegID.length);
-
-        String outputDataString = new String(outputData);
-        if (clientSocket.isConnected()){
-            Log.d(TAG, "writeMessage: socket connected, sending: " + outputDataString);
-            try{
-                writer.write(outputDataString);
-                writer.flush();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-        }
+        System.arraycopy(bytes, 0, outputData, 81, messageClass.sEventmsgLoginReq.szCloudRegID.length);
+        return outputData;
     }
 
     private byte[] convertEndian(byte[] bytes){
@@ -147,5 +132,26 @@ public class ShmadiaConnectManager {
             returnByte[7-i] = bytes[i];
         }
         return returnByte;
+    }
+
+    public void connectShmadiaServer(){
+        String refreshedToken = TokenHandler.getToken();
+        EventMessageClass messageClass = new EventMessageClass();
+        char[] uuidArray = messageClass.TEST_UUID.toCharArray();
+        messageClass.sEventmsgLoginReq.szUUID = uuidArray;
+        messageClass.sEventmsgLoginReq.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
+        char[] tokenArray = refreshedToken.toCharArray();
+        messageClass.sEventmsgLoginReq.szCloudRegID = tokenArray;
+        byte[] message = convertMessageToString(messageClass);
+        if (clientSocket.isConnected()){
+            Log.d(TAG, "writeMessage: socket connected, sending: " + messageClass.toString());
+            try{
+                outputStream.write(message, 0, message.length);
+                outputStream.flush();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        Log.d(TAG, "sendRegistrationToServer: " + messageClass.toString());
     }
 }

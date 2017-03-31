@@ -5,8 +5,12 @@ import android.util.Log;
 import com.google.common.net.InetAddresses;
 import com.nuvoton.nuplayer.DeviceData;
 import com.nuvoton.utility.EventMessageClass;
+import com.nuvoton.utility.Miscellaneous;
 
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +21,7 @@ import java.util.Map;
 public class FCMExecutive {
     public interface FCMExecutiveInterface {
         void responseData(DeviceData deviceData);
+        void ring(DeviceData deviceData);
     }
 
     public void setmInterface(FCMExecutiveInterface mInterface) {
@@ -26,8 +31,8 @@ public class FCMExecutive {
     //    private Context contextLocal;
     private FCMExecutiveInterface mInterface;
     private static final String TAG = "FCMExecutive";
-    private static String token;
     private EventMessageClass messageClass;
+    private final int offset = 12;
 
     private static FCMExecutive manager = new FCMExecutive();
     
@@ -149,15 +154,7 @@ public class FCMExecutive {
             Log.d(TAG, "retrieveString: wrong string length: " + message.length());
         }
     }
-
-    public void setToken(String string){
-        this.token = string;
-    }
-
-    public String getToken(){
-        return token;
-    }
-
+    
     private byte[] convertEndian(byte[] bytes){
         int length = bytes.length;
         byte[] returnByte = new byte[length];
@@ -168,24 +165,18 @@ public class FCMExecutive {
     }
 
     public void setupHeader(byte[] bytes){
-        if (bytes.length == 8){
+        if (bytes.length == EventMessageClass.S_EVENTMSG_HEADER.SIZE){
             byte[] type = new byte[4];
             System.arraycopy(bytes, 0, type, 0, 4);
             long tempLong = 0L;
             for (int i=0; i<type.length; i++){
                 tempLong |= (type[i] << i*8);
             }
-//            messageClass.sEventmsgHeader.u32SignWord = tempLong;
-//            Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.u32SignWord: " + tempLong);
-//
-//            type = new byte[4];
-//            System.arraycopy(bytes, 4, type, 0, 4);
-//            tempLong = 0L;
-//            for (int i=0; i<type.length; i++){
-//                tempLong |= (type[i] << i*8);
-//            }
-            messageClass.sEventmsgHeader.eMsgType = tempLong;
-            Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.eMsgType: " + tempLong);
+            messageClass.sEventmsgLoginReq.sMsgHdr.u32SignWord = tempLong;
+            messageClass.sEventmsgLoginResp.sMsgHdr.u32SignWord = tempLong;
+            messageClass.sEventmsgEventNotify.sMsgHdr.u32SignWord = tempLong;
+
+            Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.u32SignWord: " + tempLong);
 
             type = new byte[4];
             System.arraycopy(bytes, 4, type, 0, 4);
@@ -193,27 +184,90 @@ public class FCMExecutive {
             for (int i=0; i<type.length; i++){
                 tempLong |= (type[i] << i*8);
             }
-            messageClass.sEventmsgHeader.u32MsgLen = tempLong;
+            messageClass.sEventmsgLoginReq.sMsgHdr.eMsgType = tempLong;
+            messageClass.sEventmsgLoginResp.sMsgHdr.eMsgType = tempLong;
+            messageClass.sEventmsgEventNotify.sMsgHdr.eMsgType = tempLong;
+            Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.eMsgType: " + tempLong);
+
+            type = new byte[4];
+            System.arraycopy(bytes, 8, type, 0, 4);
+            tempLong = 0L;
+            for (int i=0; i<type.length; i++){
+                tempLong |= (type[i] << i*8);
+            }
+            messageClass.sEventmsgLoginReq.sMsgHdr.u32MsgLen = tempLong;
+            messageClass.sEventmsgLoginResp.sMsgHdr.u32MsgLen = tempLong;
+            messageClass.sEventmsgEventNotify.sMsgHdr.u32MsgLen = tempLong;
             Log.d(TAG, "setupHeader: messageClass.sEventmsgLoginResp.sMsgHdr.u32MsgLen: " + tempLong);
         }
     }
 
-    public void setupRemainRequestData(byte[] bytes){
+    public void setupRemainNotifyData(byte[] bytes){
         byte[] tempByte = new byte[4];
-        if (bytes.length == 336){
-            System.arraycopy(bytes, 324, tempByte, 0, 4);
+        if (bytes.length == EventMessageClass.S_EVENTMSG_EVENT_NOTIFY.SIZE - EventMessageClass.S_EVENTMSG_HEADER.SIZE){
+            System.arraycopy(bytes, offset, tempByte, 0, 65);
             long tempLong = 0L;
+            char[] szUUID = Miscellaneous.getChars(tempByte, Miscellaneous.UTF_8_ENCODING);
+            messageClass.sEventmsgEventNotify.szUUID = szUUID;
+
+            System.arraycopy(bytes, 65+offset, tempByte, 0, 4);
+            tempLong = 0L;
+            for (int i=0; i<4; i++){
+                tempLong |= (tempByte[i] << i*8);
+            }
+            messageClass.sEventmsgEventNotify.eEventType = tempLong;
+
+            System.arraycopy(bytes, 69+offset, tempByte, 0, 4);
+            tempLong = 0L;
+            for (int i=0; i<4; i++){
+                tempLong |= (tempByte[i] << i*8);
+            }
+            messageClass.sEventmsgEventNotify.u32EventSeqNo = tempLong;
+
+            Log.d(TAG, "setupRemainNotifyData: " + messageClass.toString());
+
+            String uuid = new String(messageClass.sEventmsgLoginReq.szUUID);
+            List<DeviceData> result = DeviceData.find(DeviceData.class, "uuid = ?", uuid);
+            if (result.size() > 0) {
+                DeviceData one = result.get(0);
+                if (result.size() > 1) {
+                    Log.d(TAG, "setupRemainNotifyData: multiple records in SQLite !");
+                }
+                mInterface.ring(one);
+            }
+        }
+    }
+
+
+    public void setupRemainRequestData(byte[] bytes){
+        byte[] tempByte = new byte[65];
+        if (bytes.length == EventMessageClass.S_EVENTMSG_LOGIN_REQ.SIZE){
+            // As header has been set, need not to manipulate it
+            //System.arraycopy(bytes, offset, tempByte, 0, 65); 8 for default uuid size, otherwise it causes trouble
+            System.arraycopy(bytes, offset, tempByte, 0, 8);
+            messageClass.sEventmsgLoginReq.szUUID = Miscellaneous.getChars(tempByte, Miscellaneous.UTF_8_ENCODING);
+
+            tempByte = new byte[4];
+            System.arraycopy(bytes, 65+offset, tempByte, 0, 4);
+            long tempLong = 0L;
+            for (int i=0; i<4; i++){
+                tempLong |= (tempByte[i] << i*8);
+            }
+            messageClass.sEventmsgLoginReq.eRole = tempLong;
+
+            System.arraycopy(bytes, 324+offset, tempByte, 0, 4);
+            tempLong = 0L;
             byte[] publicIP = tempByte.clone();
             messageClass.sEventmsgLoginReq.u32DevPrivateIP = publicIP;
 
-            System.arraycopy(bytes, 328, tempByte, 0, 4);
+            System.arraycopy(bytes, 328+offset, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
             messageClass.sEventmsgLoginReq.u32DevHTTPPort = tempLong;
 
-            System.arraycopy(bytes, 332, tempByte, 0, 4);
+            System.arraycopy(bytes, 332+offset, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
@@ -223,51 +277,52 @@ public class FCMExecutive {
             Log.d(TAG, "setupRemainData: " + messageClass.toString());
 
             String uuid = new String(messageClass.sEventmsgLoginReq.szUUID);
-            List<DeviceData> result = DeviceData.find(DeviceData.class, "uuid = ?", uuid);DeviceData one = result.get(0);
-            if (result.size() > 1) {
-                Log.d(TAG, "sEventmsgLoginReq: multiple records in SQLite !");
-            }else{
+            List<DeviceData> result = DeviceData.find(DeviceData.class, "uuid = ?", "00000001");
+            if (result.size() > 0){
+                DeviceData one = result.get(0);
                 one = updateValue(messageClass, one);
+                mInterface.responseData(one);
+            }else {
+
             }
-            mInterface.responseData(one);
         }
     }
 
     public void setupRemainResponseData(byte[] bytes){
         byte[] tempByte = new byte[4];
-        if (bytes.length == 24){
-            System.arraycopy(bytes, 0, tempByte, 0, 4);
+        if (bytes.length == EventMessageClass.S_EVENTMSG_LOGIN_RESP.SIZE - EventMessageClass.S_EVENTMSG_HEADER.SIZE){
+            System.arraycopy(bytes, offset, tempByte, 0, 4);
             long tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
             messageClass.sEventmsgLoginResp.eResult = tempLong;
 
-            System.arraycopy(bytes, 4, tempByte, 0, 4);
+            System.arraycopy(bytes, 4+offset, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
             messageClass.sEventmsgLoginResp.bDevOnline = tempLong;
 
-            System.arraycopy(bytes, 8, tempByte, 0, 4);
+            System.arraycopy(bytes, 8+offset, tempByte, 0, 4);
             byte[] publicIP = tempByte.clone();
 //            publicIP = convertEndian(publicIP);
             messageClass.sEventmsgLoginResp.u32DevPublicIP = publicIP;
 
-            System.arraycopy(bytes, 12, tempByte, 0, 4);
+            System.arraycopy(bytes, 12+offset, tempByte, 0, 4);
             byte[] privateIP = tempByte.clone();
 //            privateIP = convertEndian(privateIP);
             messageClass.sEventmsgLoginResp.u32DevPrivateIP = privateIP;
 
-            System.arraycopy(bytes, 16, tempByte, 0, 4);
+            System.arraycopy(bytes, 16+offset, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
             }
             messageClass.sEventmsgLoginResp.u32DevHTTPPort = tempLong;
 
-            System.arraycopy(bytes, 20, tempByte, 0, 4);
+            System.arraycopy(bytes, 20+offset, tempByte, 0, 4);
             tempLong = 0L;
             for (int i=0; i<4; i++){
                 tempLong |= (tempByte[i] << i*8);
@@ -275,33 +330,16 @@ public class FCMExecutive {
             messageClass.sEventmsgLoginResp.u32DevRTSPPort = tempLong;
 
             Log.d(TAG, "setupRemainResponseData: " + messageClass.toString());
-
-            String uuid = new String(messageClass.sEventmsgLoginReq.szUUID);
-            List<DeviceData> result = DeviceData.findWithQuery(DeviceData.class, "uuid = ?", uuid);
-            DeviceData one = result.get(0);
-            if (result.size() > 1) {
-                Log.d(TAG, "setupRemainRequestData: multiple records in SQLite !");
-            }else{
-                one = updateValue(messageClass, one);
-            }
-            mInterface.responseData(one);
-//            ReadConfigure.getInstance(contextLocal, false).updateDoorBellDevice(messageClass);
         }
     }
 
     private DeviceData updateValue(EventMessageClass message, DeviceData data){
         DeviceData temp = data;
-        InetAddress address = null;
-        try {
-            address = InetAddresses.fromLittleEndianByteArray(message.sEventmsgLoginReq.u32DevPrivateIP);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         if (data == null){
             temp = new DeviceData();
         }
-        String uuid = new String(message.sEventmsgLoginReq.szUUID);
-        String addr = address.toString().substring(1);
+        String uuid = new String(message.sEventmsgLoginReq.szUUID).substring(0, 8);
+        String addr = Miscellaneous.ipConversionFromByteArray(message.sEventmsgLoginReq.u32DevPrivateIP);
         temp.setUuid(uuid);
         temp.setPrivateIP(addr);
         temp.setPublicIP(addr);
@@ -314,4 +352,5 @@ public class FCMExecutive {
     public EventMessageClass getMessageClass(){
         return this.messageClass;
     }
+
 }

@@ -10,8 +10,8 @@ android {
         applicationId "com.nuvoton.nuplayer"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 203
-        versionName "2.0.3"
+        versionCode 204
+        versionName "2.0.4"
     }
     buildTypes {
         release {
@@ -34,17 +34,17 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:preference-v7:24.+'
-    compile 'com.android.support:support-v4:24.+'
-    compile 'com.android.support:recyclerview-v7:24.+'
+    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support:preference-v7:25.3.0'
+    compile 'com.android.support:support-v4:25.3.0'
+    compile 'com.android.support:recyclerview-v7:25.3.0'
     compile 'info.hoang8f:android-segmented:1.0.6'
-    compile 'com.android.support:percent:24.+'
-    compile 'com.android.support:design:24.+'
+    compile 'com.android.support:percent:25.3.0'
+    compile 'com.android.support:design:25.3.0'
     compile 'org.rxtx:rxtx:2.1.7'
     compile 'ch.acra:acra:4.9.0'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
-    compile 'com.google.guava:guava:19.0'
+    compile 'com.google.guava:guava:20.0'
     compile 'com.karumi:dexter:3.0.0'
     compile 'com.github.satyan:sugar:1.4'
     compile 'com.jakewharton:butterknife:8.4.0'

@@ -1,8 +1,11 @@
 package com.nuvoton.nuplayer;
 
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -16,8 +19,12 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.nuvoton.socketmanager.NewLoginInterface;
+import com.nuvoton.socketmanager.ShmadiaConnectManager;
 import com.nuvoton.socketmanager.UDPSocketService;
 import com.nuvoton.utility.EditDeviceDialogFragment;
+import com.nuvoton.utility.FirebaseCloudDialogFragment;
+import com.nuvoton.utility.Miscellaneous;
 import com.orm.SugarContext;
 
 import java.io.Serializable;
@@ -27,9 +34,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements AddDBFragment.SetDBInterface, EditDBFragment.EditDBInterface, EditDeviceDialogFragment.EditDeviceDialogInterface{
+import static java.lang.Thread.sleep;
+
+public class MainActivity extends AppCompatActivity implements AddDBFragment.SetDBInterface, EditDBFragment.EditDBInterface, EditDeviceDialogFragment.EditDeviceDialogInterface, NewLoginInterface{
     private boolean isSetting = false;
-    private int iterateCount = 0;
     private final String TAG = "grid";
     private GridView gridView;
     private SimpleAdapter adapter;
@@ -39,7 +47,9 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
     private int[] button = {R.mipmap.db, R.mipmap.plus};
     private int index = 0;
     private UDPSocketService udpSocketService;
-    private boolean isBinded = false;
+    private boolean isBinded = false, isBackTwice = false;
+    private String token = "";
+    private ShmadiaConnectManager manager;
     public ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -75,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        registerReceiver(loginBroadcastReceiver, new IntentFilter(MyFirebaseMessagingService.LOGIN_FILTER));
         setContentView(R.layout.activity_main);
         SugarContext.init(this);
         initElement();
@@ -88,6 +99,12 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
         Intent intent = new Intent(MainActivity.this, UDPSocketService.class);
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
         isBinded = true;
+        token = TokenHandler.getToken();
+        Log.d(TAG, "onCreate: fcmtoken = " + token);
+        if (token.compareTo("-1") != 0){
+            manager = ShmadiaConnectManager.getInstance(this);
+            manager.openSocket();
+        }
     }
 
     @Override
@@ -96,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
             isBinded = false;
             unbindService(serviceConnection);
         }
+        unregisterReceiver(loginBroadcastReceiver);
         super.onDestroy();
     }
 
@@ -104,9 +122,29 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
         if (isSetting){
             backFromSettingsFragment();
         }else{
-            if (isBinded){
-                isBinded = false;
-                unbindService(serviceConnection);
+            if (isBackTwice == true){
+                if (isBinded){
+                    isBinded = false;
+                    unbindService(serviceConnection);
+                }
+                finish();
+            }else {
+                if (isSetting == false){
+                    Toast.makeText(getApplicationContext(), "Click back button again to kill the app, or click home button to remain the broadcast receiver service.", Toast.LENGTH_LONG).show();
+                    isBackTwice = true;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                sleep(3000);
+                                isBackTwice = false;
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    return;
+                }
             }
             super.onBackPressed();
         }
@@ -173,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
             Map<String, Object> item = new HashMap<>();
             item.put("indicator", indicator[0]);
             item.put("button", button[0]);
-            String text = deviceDataList.get(i).getDeviceType();
+            String text = deviceDataList.get(i).getName();
             item.put("text", text);
             long id = deviceDataList.get(i).getId();
             item.put("ID", id);
@@ -248,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
     @Override
     public void enterEditPage(String category) {
         Log.d(TAG, "enterEditPage: ");
+        isSetting = true;
         if (category.compareTo("Selection") == 0){
             final Bundle bundle = new Bundle();
             Map<String, Object> item = items.get(index);
@@ -294,4 +333,40 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
     public void editDevice(String serial, String name, String type, String ip) {
 
     }
+
+    //MARK: Broadcast Receiver
+    private BroadcastReceiver loginBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String publicIP = intent.getStringExtra("publicIP"),
+                    privateIP = intent.getStringExtra("privateIP"),
+                    httpPort = intent.getStringExtra("httpPort"),
+                    rtspPort = intent.getStringExtra("rtspPort");
+            publicIP = Miscellaneous.ipConversionFromInt(Long.valueOf(publicIP));
+            privateIP = Miscellaneous.ipConversionFromInt(Long.valueOf(privateIP));
+            httpPort = Miscellaneous.ipConversionFromInt(Long.valueOf(httpPort));
+            rtspPort = Miscellaneous.ipConversionFromInt(Long.valueOf(rtspPort));
+            FirebaseCloudDialogFragment fragment =  new FirebaseCloudDialogFragment();
+            fragment.setLoginData(publicIP, privateIP, httpPort, rtspPort);
+            fragment.show(getFragmentManager(), MyFirebaseMessagingService.LOGIN_FILTER);
+            fragment.setFirebaseCloudDialogInterface(MainActivity.this);
+        }
+    };
+
+    //MARK: FirebaseCloudDialogFragment interface
+
+    @Override
+    public void refreshTable(DeviceData deviceData) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("indicator", indicator[1]);
+        item.put("button", button[0]);
+        String text = deviceData.getName();
+        item.put("text", text);
+        long id = deviceData.getId();
+        item.put("ID", id);
+        items.add(items.size()-1, item);
+        Log.d(TAG, "initElement: " + items);
+        adapter.notifyDataSetChanged();
+    }
+
 }

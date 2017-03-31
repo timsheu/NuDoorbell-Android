@@ -8,7 +8,6 @@ import android.app.usage.UsageEvents;
 
 public class EventMessageClass {
     private static final String TAG = "EventMessageClass";
-    public static S_EVENTMSG_HEADER sEventmsgHeader;
     public S_EVENTMSG_LOGIN_RESP sEventmsgLoginResp;
     public S_EVENTMSG_LOGIN_REQ sEventmsgLoginReq;
     public S_EVENTMSG_EVENT_NOTIFY sEventmsgEventNotify;
@@ -76,13 +75,11 @@ public class EventMessageClass {
     }
 
     public EventMessageClass(){
-        sEventmsgHeader = new S_EVENTMSG_HEADER();
-
         sEventmsgLoginResp = new S_EVENTMSG_LOGIN_RESP();
 
         sEventmsgLoginReq = new S_EVENTMSG_LOGIN_REQ();
         sEventmsgLoginReq.sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_LOGIN;
-        sEventmsgLoginReq.sMsgHdr.u32MsgLen = 344;
+        sEventmsgLoginReq.sMsgHdr.u32MsgLen = 348;
         sEventmsgLoginReq.szUUID = TEST_UUID.toCharArray();
 
         sEventmsgEventNotify = new S_EVENTMSG_EVENT_NOTIFY();
@@ -117,11 +114,11 @@ public class EventMessageClass {
 
     public static final class E_EVENTMSG_TYPE{
         public static int
-                    eEVENTMSG_LOGIN                 = 0x0100,		//Device/Client login message
-                    eEVENTMSG_LOGIN_RESP            = 0x0101,		//Device/Client login sEventmsgLoginResp message
+                    eEVENTMSG_LOGIN                 = 0x0100,		//Device/Client login message: from doorbell to phone, from phone to shmadia
+                    eEVENTMSG_LOGIN_RESP            = 0x0101,		//Device/Client login sEventmsgLoginResp message: from shmadia to phone
 
         //Device message
-                    eEVENTMSG_EVENT_NOTIFY			= 0x0200,		//Device event notify message
+                    eEVENTMSG_EVENT_NOTIFY			= 0x0200,		//Device event notify message: from doorbell to phone
                     eEVENTMSG_EVENT_NOTIFY_RESP		= 0x0201,   	//Device event notify sEventmsgLoginResp message
 
         //Client message	start from 0x0300
@@ -135,12 +132,12 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_HEADER{ // 12 bytes
-        private final int SIZE = 12;
+        public static final int SIZE = 12;
         public long u32SignWord;
         public long eMsgType;				//E_EVENTMSG_TYPE
         public long u32MsgLen;			//include message header length
         public S_EVENTMSG_HEADER(){
-
+            this.u32SignWord = SIGNATURE_WORD;
         }
         public int messageLength(){
             return SIZE;
@@ -148,7 +145,7 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_LOGIN_REQ{
-        private final int SIZE = 348;
+        public static final int SIZE = 348;
         public S_EVENTMSG_HEADER sMsgHdr; //12 bytes
         public char[] szUUID = new char[DEVICE_UUID_LEN + 1]; //64+1 bytes
         public long eRole;							//E_EVENTMSG_ROLE, 4 bytes
@@ -157,7 +154,9 @@ public class EventMessageClass {
         public long u32DevHTTPPort;					// Used by device. Device http service port. 4 bytes
         public long u32DevRTSPPort;
         S_EVENTMSG_LOGIN_REQ(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_LOGIN;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -165,7 +164,7 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_LOGIN_RESP{
-        private final int SIZE = 36;
+        public static final int SIZE = 36;
         public S_EVENTMSG_HEADER sMsgHdr;
         public long eResult;					// E_EVENTMSG_RET_CODE. eEVENTMSG_RET_SUCCESS: success; otherwise: failed.
         public long bDevOnline;				// BOOL. Report to client. Device online or not.
@@ -174,7 +173,9 @@ public class EventMessageClass {
         public long u32DevHTTPPort;			// Report to client. Device http service port.
         public long u32DevRTSPPort;			// Report to client. Device rtsp service port.
         S_EVENTMSG_LOGIN_RESP(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_LOGIN_RESP;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -182,13 +183,15 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_EVENT_NOTIFY{
-        private final int SIZE = 85;
+        public static final int SIZE = 89;
         public S_EVENTMSG_HEADER sMsgHdr;
         public char[] szUUID = new char[DEVICE_UUID_LEN + 1]; //64+1 bytes
         public long eEventType;
         public long u32EventSeqNo;
         S_EVENTMSG_EVENT_NOTIFY(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_EVENT_NOTIFY;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -196,11 +199,13 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_EVENT_NOTIFY_RESP{
-        private final int SIZE = 16;
+        public static final int SIZE = 20;
         public S_EVENTMSG_HEADER sMsgHdr;
         public long eResult;
         S_EVENTMSG_EVENT_NOTIFY_RESP(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_EVENT_NOTIFY_RESP;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -208,12 +213,14 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_GET_FW_VER{
-        private final int SIZE = 81;
+        public static final int SIZE = 85;
         public S_EVENTMSG_HEADER sMsgHdr;
         public char[] szUUID = new char[DEVICE_UUID_LEN + 1]; //64+1 bytes
         public long eFirmwareType;
         S_EVENTMSG_GET_FW_VER(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_GET_FW_VER;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -221,12 +228,14 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_GET_FW_VER_RESP{
-        private final int SIZE = 20;
+        public static final int SIZE = 24;
         public S_EVENTMSG_HEADER sMsgHdr;
         public long eResult;
         public long u32FWVer;
         S_EVENTMSG_GET_FW_VER_RESP(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_GET_FW_VER_RESP;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -234,12 +243,14 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_FW_DOWNLOAD{
-        private final int SIZE = 81;
+        public static final int SIZE = 85;
         public S_EVENTMSG_HEADER sMsgHdr;
         public char[] szUUID = new char[DEVICE_UUID_LEN + 1]; //64+1 bytes
         public long eFirmwareType;
         S_EVENTMSG_FW_DOWNLOAD(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_FW_DOWNLOAD;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -247,12 +258,14 @@ public class EventMessageClass {
     }
 
     public class S_EVENTMSG_FW_DOWNLOAD_RESP{
-        private final int SIZE = 20;
+        public static final int SIZE = 24;
         public S_EVENTMSG_HEADER sMsgHdr;
         public long eResult;
         public long u32FWLen;
         S_EVENTMSG_FW_DOWNLOAD_RESP(){
-            sMsgHdr = EventMessageClass.sEventmsgHeader;
+            sMsgHdr = new S_EVENTMSG_HEADER();
+            sMsgHdr.eMsgType = E_EVENTMSG_TYPE.eEVENTMSG_FW_DOWNLOAD_RESP;
+            sMsgHdr.u32MsgLen = SIZE;
         }
         public int messageLength(){
             return SIZE;
@@ -262,16 +275,17 @@ public class EventMessageClass {
     @Override
     public String toString(){
         String returnValue = "Request header: " +
+                String.valueOf(sEventmsgLoginReq.sMsgHdr.u32SignWord) + ", " +
                 String.valueOf(sEventmsgLoginReq.sMsgHdr.eMsgType) + ", " +
                 String.valueOf(sEventmsgLoginReq.sMsgHdr.u32MsgLen) +
                 "\nRequest content: " +
                 String.valueOf(sEventmsgLoginReq.szUUID) + ", " +
                 String.valueOf(sEventmsgLoginReq.szCloudRegID) + ", " +
                 String.valueOf(sEventmsgLoginReq.eRole) + ", " +
-                "\n Response header: " +
+                "\nResponse header: " +
                 String.valueOf(sEventmsgLoginResp.sMsgHdr.eMsgType) + ", " +
                 String.valueOf(sEventmsgLoginResp.sMsgHdr.u32MsgLen) + ", " +
-                "\n Response header: " +
+                "\nResponse header: " +
                 String.valueOf(sEventmsgLoginResp.eResult) + ", " +
                 String.valueOf(sEventmsgLoginResp.bDevOnline) + ", " +
                 String.valueOf(sEventmsgLoginResp.u32DevPublicIP) + ", " +

@@ -14,8 +14,10 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:screenOrientation="portrait"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name="com.nuvoton.nuplayer.MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,7 +47,8 @@
 
         <meta-data
             android:name="VERSION"
-            android:value="1" />
+            android:value="204"
+            />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />

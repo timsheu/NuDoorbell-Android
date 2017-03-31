@@ -27,9 +27,14 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.nuvoton.utility.Miscellaneous;
+
+import java.util.List;
+import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-
+    public static final String LOGIN_FILTER = "Received FCM Login";
+    public static final String RING_FILTER = "Received FCM Ring";
     private static final String TAG = "MyFirebaseMsgService";
 
     /**
@@ -56,12 +61,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Map<String, String> data = remoteMessage.getData();
+            Log.d(TAG, "Message data payload: " + data);
+            String publicIP = data.get("PublicIPAddr");
+            String privateIP = data.get("PrivateIPAddr");
+            String httpPort = data.get("HTTPPort");
+            String rtspPort = data.get("RTSPPort");
+            Intent intent = new Intent(LOGIN_FILTER);
+            intent.putExtra("publicIP", publicIP);
+            intent.putExtra("privateIP", privateIP);
+            intent.putExtra("httpPort", httpPort);
+            intent.putExtra("rtspPort", rtspPort);
+            sendBroadcast(intent);
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            Intent intent = new Intent(RING_FILTER);
+            sendBroadcast(intent);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM

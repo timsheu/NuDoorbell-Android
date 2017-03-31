@@ -16,22 +16,20 @@
 
 package com.nuvoton.nuplayer;
 
-import android.content.SharedPreferences;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.nuvoton.utility.EventMessageClass;
 import com.nuvoton.socketmanager.ShmadiaConnectManager;
 
 
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService implements ShmadiaConnectManager.ShmadiaConnectInterface{
-    private String refreshedToken;
+public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     private ShmadiaConnectManager manager;
     private static final String TAG = "MyFirebaseIIDService";
 
+    static public void getDefaultSharedPreference(){
+
+    }
     /**
      * Called if InstanceID token is updated. This may occur if the security of
      * the previous token had been compromised. Note that this is called when the InstanceID token
@@ -41,16 +39,15 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService imple
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
-        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        preferences.edit().putString(refreshedToken, "FCMToken").apply();
+        TokenHandler.setToken(refreshedToken);
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken);
 
-        Log.d(TAG, "onTokenRefresh: ");
+        Log.d(TAG, "onTokenRefresh: " + refreshedToken);
         // [END refresh_token]
     }
 
@@ -65,19 +62,6 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService imple
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
         manager = ShmadiaConnectManager.getInstance(getApplicationContext());
-        manager.shmadiaConnectInterface = this;
         manager.openSocket();
-    }
-
-    @Override
-    public void announceIsConnected() {
-        EventMessageClass messageClass = new EventMessageClass();
-        char[] uuidArray = messageClass.TEST_UUID.toCharArray();
-        messageClass.sEventmsgLoginReq.szUUID = uuidArray;
-        messageClass.sEventmsgLoginReq.eRole = EventMessageClass.E_EVENTMSG_ROLE.eEVENTMSG_ROLE_USER.getRole();
-        char[] tokenArray = refreshedToken.toCharArray();
-        messageClass.sEventmsgLoginReq.szCloudRegID = tokenArray;
-        manager.writeMessageToShmadia(messageClass);
-        Log.d(TAG, "sendRegistrationToServer: " + messageClass.toString());
     }
 }

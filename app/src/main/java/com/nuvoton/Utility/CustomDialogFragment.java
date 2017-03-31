@@ -69,12 +69,6 @@ public class CustomDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        Log.d(TAG, "onAttach: ");
-    }
-
     public void setLabel(String label){
         this.label = label;
     }
