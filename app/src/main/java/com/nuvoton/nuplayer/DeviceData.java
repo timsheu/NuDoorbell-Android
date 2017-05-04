@@ -60,6 +60,7 @@ public class DeviceData extends SugarRecord{
     Boolean isMute;                     // True: device is muted, false: device is not muted
     Boolean isStorageAvailable;         // True: device has storage, false: device has not enough storage
     Boolean isRecorderOn;               // True: device recorder is on, false: device recorder is off
+    Boolean isPAL;                      // True: flicker is PAL(50Hz), false: flicker is NTSC(60Hz)
     String resolution;                  // Device resolution: QVGA, VGA, 360p, 720p
     int encodeQuality;                  // Device encode quality, range: 1-52
     int bitRate;                        // Device bit rate, range: 1000-8000
@@ -272,6 +273,10 @@ public class DeviceData extends SugarRecord{
         this.history5 = history5;
     }
 
+    public void setIsPAL(Boolean isPAL){
+        this.isPAL = isPAL;
+    }
+
     public DeviceData(){
         uuid = "00000001";
         name = "SkyEye";
@@ -289,6 +294,7 @@ public class DeviceData extends SugarRecord{
         isMute = false;
         isStorageAvailable = false;
         isRecorderOn = false;
+        isPAL = false;
         resolution = "QVGA";
         encodeQuality = 30;
         bitRate = 1024;

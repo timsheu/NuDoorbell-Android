@@ -101,7 +101,7 @@ public class TwoWayTalking implements HTTPSocketInterface{
             socketManager = new HTTPSocketManager();
         }
         isRecording = true;
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, inputChannelConfiguration, audioEncoding, recBufSize);
+        audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_CALL, frequency, inputChannelConfiguration, audioEncoding, recBufSize);
         audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, frequency, outputChannelConfiguration, audioEncoding, playBufSize, AudioTrack.MODE_STREAM, audioRecord.getAudioSessionId());
         if (isHTTPMode){
             Log.d(TAG, "startRecording: HTTPRecordThread");

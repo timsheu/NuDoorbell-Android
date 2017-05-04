@@ -43,18 +43,11 @@
             android:enabled="true"
             android:exported="true" />
 
+        <meta-data android:name="VERSION" android:value="206" />
+        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.nuvoton.nuplayer" />
         <meta-data android:name="DATABASE" android:value="device_data.db" />
 
-        <meta-data
-            android:name="VERSION"
-            android:value="204"
-            />
-        <meta-data
-            android:name="QUERY_LOG"
-            android:value="true" />
-        <meta-data
-            android:name="DOMAIN_PACKAGE_NAME"
-            android:value="com.nuvoton.nuplayer" />
 
         <activity
             android:name="com.nuvoton.nuplayer.Streaming"

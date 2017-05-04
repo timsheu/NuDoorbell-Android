@@ -93,7 +93,25 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         CustomDialogFragment dialog = new CustomDialogFragment();
         dialog.setInterface(this);
         Log.d(TAG, "onPreferenceTreeClick: " + key);
-        if (key.compareTo("serial") == 0){
+        if (key.compareTo("flicker") == 0){
+            ListPreference list = (ListPreference) preference;
+            list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    Log.d(TAG, "onPreferenceChange: " + o);
+                    String isPAL = (String) o;
+                    list.setValue(isPAL);
+                    list.setSummary(isPAL);
+                    if (isPAL.compareTo("PAL") == 0){
+                        deviceData.setIsPAL(true);
+                    }else {
+                        deviceData.setIsPAL(false);
+                    }
+                    deviceData.save();
+                    return true;
+                }
+            });
+        }else if (key.compareTo("serial") == 0){
             if (isAdded()) {
                 Toast.makeText(getActivity(), "Serial is auto generated, cannot be modified.", Toast.LENGTH_SHORT).show();
             }

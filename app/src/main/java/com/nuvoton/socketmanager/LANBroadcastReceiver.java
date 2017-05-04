@@ -139,7 +139,7 @@ public class LANBroadcastReceiver implements FCMExecutive.FCMExecutiveInterface{
                             DeviceData deviceData = list.get(0);
                             InetAddress address = InetAddresses.fromLittleEndianByteArray(message.sEventmsgLoginReq.u32DevPrivateIP);
                             Log.d(TAG, "run, addrees: " + address.toString());
-//                            broadcastInterface.signalDataHandled(deviceData, "Ring from UUID: " + uuid);
+                            broadcastInterface.signalDataHandled(deviceData, "Login from " + address.toString().substring(1));
                         }
                     }
                 }

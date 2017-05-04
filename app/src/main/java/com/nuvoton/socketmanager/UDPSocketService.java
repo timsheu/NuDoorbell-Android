@@ -87,7 +87,6 @@ public class UDPSocketService extends Service implements LANBroadcastReceiver.Br
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(mID, mBuilder.build());
-
     }
 
     private void openWaiting(){

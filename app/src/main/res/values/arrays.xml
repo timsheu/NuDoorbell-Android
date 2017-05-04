@@ -86,6 +86,9 @@
         <item>SkyEye</item>
     </string-array>
 
-
+    <string-array name="flicker">
+        <item>PAL</item>
+        <item>NTSC</item>
+    </string-array>
 
 </resources>

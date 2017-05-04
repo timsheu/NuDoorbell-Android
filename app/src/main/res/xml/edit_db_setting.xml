@@ -46,6 +46,14 @@
             android:entries="@array/bitrate_list"
             android:defaultValue="1024"
             />
+        <ListPreference
+            android:key="flicker"
+            android:title="Flicker"
+            android:summary="%s"
+            android:entryValues="@array/flicker"
+            android:entries="@array/flicker"
+            android:defaultValue="NTSC"
+            />
 
     </PreferenceCategory>
 

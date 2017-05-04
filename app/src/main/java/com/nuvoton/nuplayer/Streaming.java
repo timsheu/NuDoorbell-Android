@@ -253,8 +253,8 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
 
         HashMap<String, String> params = new HashMap<>();
         // set font for ass
-        params.put("probesize", "50");
-        params.put("max_delay", "50");
+        params.put("probesize", "2560");
+//        params.put("max_delay", "50");
 //        params.put("fflags", "nobuffer");
 //        params.put("flush_packets", "1");
         boolean isTCP = deviceData.getTCPTransmission();
