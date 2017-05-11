@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
     defaultConfig {
         jackOptions {
             enabled true
@@ -10,8 +10,8 @@ android {
         applicationId "com.nuvoton.nuplayer"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 206
-        versionName "2.0.6"
+        versionCode 208
+        versionName "2.0.8"
     }
     buildTypes {
         release {

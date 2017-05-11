@@ -86,6 +86,11 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
 
     }
 
+    @Override
+    public void didDisconnected() {
+
+    }
+
     public interface OnHideBottomBarListener{
         public void onHideBottomBar(boolean isHide);
         public void onEnableClick(boolean isEnable);
@@ -155,7 +160,7 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
                 }
                 HTTPSocketManager httpSocketManager = new HTTPSocketManager();
                 httpSocketManager.setHttpSocketInterface(this);
-                httpSocketManager.executeSendGetTask(snapshotCommand);
+                httpSocketManager.executeSendGetTask(snapshotCommand, HTTPSocketManager.HTTPSocketTags.DEFAULT.getString());
                 Log.d(TAG, "onClick: snapshot");
                 break;
             case R.id.playButton:
@@ -253,7 +258,7 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
 
         HashMap<String, String> params = new HashMap<>();
         // set font for ass
-        params.put("probesize", "2560");
+        params.put("probesize", "5120");
 //        params.put("max_delay", "50");
 //        params.put("fflags", "nobuffer");
 //        params.put("flush_packets", "1");

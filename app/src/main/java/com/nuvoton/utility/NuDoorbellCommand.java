@@ -62,4 +62,24 @@ public class NuDoorbellCommand {
         String command = "/server.command?command=restart";
         return command;
     }
+
+    public static String updateFlicker(String type){
+        String command = "/param.cgi?action=update&group=plugin&name=video_in&param=port0_flicker";
+        String hzValue = "50";
+        if (type.compareTo("NTSC") == 0){
+            hzValue = "60";
+        }
+        command = command + "&value=" + hzValue;
+        return command;
+    }
+
+    public static String listVideoInputParameters(){
+        String command = "/param.cgi?action=list&group=plugin&name=video_in";
+        return command;
+    }
+
+    public static String listNetworkParameters(){
+        String command = "/param.cgi?action=list&group=plugin&name=network";
+        return command;
+    }
 }
