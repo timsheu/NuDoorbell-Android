@@ -39,14 +39,6 @@
             />
 
         <ListPreference
-            android:key="bit_rate"
-            android:title="Bit Rate"
-            android:summary="%s"
-            android:entryValues="@array/bitrate_value_list"
-            android:entries="@array/bitrate_list"
-            android:defaultValue="1024"
-            />
-        <ListPreference
             android:key="flicker"
             android:title="Flicker"
             android:summary="%s"
@@ -65,6 +57,14 @@
             android:summary="%s"
             android:entryValues="@array/voice_upload"
             android:entries="@array/voice_upload_value"
+            android:defaultValue="0"
+            />
+        <ListPreference
+            android:key="aec"
+            android:title="Echo Cancellation"
+            android:summary="%s"
+            android:entryValues="@array/aec"
+            android:entries="@array/aec"
             android:defaultValue="0"
             />
     </PreferenceCategory>
@@ -100,7 +100,7 @@
         <Preference
             android:title="Restart"
             android:key="restart"
-            android:summary="Click to show restart menu"
+            android:summary="Click to restart"
             />
 
     </PreferenceCategory>

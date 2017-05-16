@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.media.audiofx.AutomaticGainControl;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.Toast;
@@ -101,7 +102,12 @@ public class TwoWayTalking implements HTTPSocketInterface{
             socketManager = new HTTPSocketManager();
         }
         isRecording = true;
-        audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_CALL, frequency, inputChannelConfiguration, audioEncoding, recBufSize);
+        if (deviceData.getIsAECOn()){
+            audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION, frequency, inputChannelConfiguration, audioEncoding, recBufSize);
+        }else {
+            audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, frequency, inputChannelConfiguration, audioEncoding, recBufSize);
+        }
+
         audioTrack = new AudioTrack(AudioManager.STREAM_VOICE_CALL, frequency, outputChannelConfiguration, audioEncoding, playBufSize, AudioTrack.MODE_STREAM, audioRecord.getAudioSessionId());
         if (isHTTPMode){
             Log.d(TAG, "startRecording: HTTPRecordThread");
@@ -116,7 +122,11 @@ public class TwoWayTalking implements HTTPSocketInterface{
 
     public void stopRecording(){
         isRecording = false;
-        mServerSocket.close();
+        try {
+            mServerSocket.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     class UDPThread extends Thread{
@@ -292,14 +302,14 @@ public class TwoWayTalking implements HTTPSocketInterface{
                 localURL = url;
                 HTTPSocketManager socketManager = new HTTPSocketManager();
                 socketManager.setSocketInterface(this);
-                socketManager.executeSendGetTask(command);
+                socketManager.executeSendGetTask(command, HTTPSocketManager.HTTPSocketTags.UPLOAD_AUDIO_STREAM.getString());
             }
         }else {
             String command = "http://" + url + "/audio.stop";
             localURL = url;
             HTTPSocketManager socketManager = new HTTPSocketManager();
             socketManager.setSocketInterface(this);
-            socketManager.executeSendGetTask(command);
+            socketManager.executeSendGetTask(command, HTTPSocketManager.HTTPSocketTags.UPLOAD_AUDIO_STREAM.getString());
         }
 
     }

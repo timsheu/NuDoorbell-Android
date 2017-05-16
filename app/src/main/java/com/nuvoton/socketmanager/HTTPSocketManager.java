@@ -19,13 +19,40 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.Timer;
 
 /**
  * Created by timsheu on 6/3/16.
  */
 public class HTTPSocketManager {
-    public static final String CMDSET_TWOWAY="17";
+    public enum HTTPSocketTags {
+        PLUGIN_LIST_VIDEO_IN_PARAM(10),
+        PLUGIN_LIST_NETWORK_PARAM(11),
+        UPDATE_VIDEO_RESOLUTION(20),
+        UPDATE_VIDEO_FLICKER(21),
+        UPDATE_VIDEO_BITRATE(22),
+        UPLOAD_AUDIO_STREAM(30),
+        UPDATE_WIFI_SSID(40),
+        UPDATE_WIFI_PASSWORD(41),
+        RESTART(90),
+        DEFAULT(100);
+
+        private int value;
+        private String valueString;
+        HTTPSocketTags(int value){
+            this.value = value;
+            this.valueString = String.valueOf(value);
+        }
+        public int getValue() {
+            return this.value;
+        }
+
+        public String getString(){
+            return this.valueString;
+        }
+
+    }
     private Map<String, String> paramters;
     private byte[] dataContent;
     private ArrayList<String> commandList;
@@ -107,9 +134,11 @@ public class HTTPSocketManager {
 
 
     private class SendGetTask extends AsyncTask<String,Void,String> {
+        int tag = 0;
         @Override
         protected String doInBackground(String... params) {
             String result= SendGet(params[0]);
+            tag = Integer.valueOf(params[1]);
             return result;
         }
 
@@ -117,6 +146,7 @@ public class HTTPSocketManager {
             try {
                 JSONObject jsonObject = new JSONObject(result);
                 Map<String, Object> map = toMap(jsonObject);
+                map.put("tag", tag);
                 httpSocketInterface.httpSocketResponse(map);
                 if (isTwoWayTalking) {
                     httpSocketInterface.voiceConnectionOpened();
@@ -127,8 +157,8 @@ public class HTTPSocketManager {
         }
     }
 
-    public void executeSendGetTask(String command){
-        new SendGetTask().execute(command);
+    public void executeSendGetTask(String command, String tag){
+        new SendGetTask().execute(command, tag);
     }
 
 

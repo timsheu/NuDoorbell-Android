@@ -11,7 +11,7 @@
     <string-array name="resolution_list">
         <item>QVGA</item>
         <item>VGA</item>
-        <item>360p</item>
+        <item>720p</item>
     </string-array>
 
     <string-array name="resolution_value_list">
@@ -89,6 +89,11 @@
     <string-array name="flicker">
         <item>PAL</item>
         <item>NTSC</item>
+    </string-array>
+
+    <string-array name="aec">
+        <item>OFF</item>
+        <item>ON</item>
     </string-array>
 
 </resources>

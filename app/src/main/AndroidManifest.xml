@@ -43,18 +43,19 @@
             android:enabled="true"
             android:exported="true" />
 
-        <meta-data android:name="VERSION" android:value="206" />
+        <activity
+            android:name="com.nuvoton.nuplayer.StreamingVLC"
+            android:label="@string/title_activity_streaming"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:configChanges="orientation|screenSize"
+            />
+
+        <meta-data android:name="VERSION" android:value="2010" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="com.nuvoton.nuplayer" />
         <meta-data android:name="DATABASE" android:value="device_data.db" />
 
 
-        <activity
-            android:name="com.nuvoton.nuplayer.Streaming"
-            android:label="@string/title_activity_streaming"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:configChanges="orientation|screenSize"
-            ></activity>
     </application>
 
 </manifest>

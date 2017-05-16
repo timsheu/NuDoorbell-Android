@@ -3,6 +3,7 @@ package com.nuvoton.nuplayer;
 import android.app.FragmentTransaction;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.audiofx.AcousticEchoCanceler;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 
 /**
@@ -69,6 +71,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         name = deviceData.getName();
         type = deviceData.getDeviceType();
         setPreferenceDefault();
+        updateVideoInParameter();
     }
 
     @Override
@@ -93,21 +96,52 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         CustomDialogFragment dialog = new CustomDialogFragment();
         dialog.setInterface(this);
         Log.d(TAG, "onPreferenceTreeClick: " + key);
-        if (key.compareTo("flicker") == 0){
+        if (key.compareTo("aec") == 0) {
             ListPreference list = (ListPreference) preference;
             list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object o) {
                     Log.d(TAG, "onPreferenceChange: " + o);
-                    String isPAL = (String) o;
+                    String isAEC = (String) o;
+                    list.setValue(isAEC);
+                    list.setSummary(isAEC);
+                    if (isAEC.compareTo("OFF") == 0){
+                        deviceData.setIsAECOn(false);
+                        list.setSummary("Echo cancellation is OFF");
+                    }else {
+                        if (AcousticEchoCanceler.isAvailable()) {
+                            deviceData.setIsAECOn(true);
+                            list.setSummary("Echo cancellation is ON");
+                        }else {
+                            list.setSummary("Device does not support AEC!!");
+                            list.setValue("OFF");
+                            Toast.makeText(getActivity(), "Device does not support AEC!!", Toast.LENGTH_SHORT).show();
+                            deviceData.setIsAECOn(false);
+                        }
+                    }
+                    deviceData.save();
+                    return true;
+                }
+            });
+        }else if (key.compareTo("flicker") == 0){
+            ListPreference list = (ListPreference) preference;
+            list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    Log.d(TAG, "onPreferenceChange: " + o);
+                    String isPAL = (String) o, hzValue = "50";
                     list.setValue(isPAL);
                     list.setSummary(isPAL);
                     if (isPAL.compareTo("PAL") == 0){
                         deviceData.setIsPAL(true);
+                        hzValue = "50";
                     }else {
                         deviceData.setIsPAL(false);
+                        hzValue = "60";
                     }
                     deviceData.save();
+                    setDeviceSetting("flicker", hzValue);
+                    Toast.makeText(getActivity().getApplicationContext(), "Requires device to restart", Toast.LENGTH_SHORT).show();
                     return true;
                 }
             });
@@ -269,24 +303,24 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    EditDeviceDialogFragment fragment = new EditDeviceDialogFragment();
-                    String restart = "Restart";
-                    fragment.setInterface(EditDBFragment.this);
-                    fragment.setLabel(restart);
-                    List<String> list = new ArrayList<>();
-                    if (type.compareTo("NuDoorbell") == 0){
-                        list.add("restart");
-                    } else if (type.compareTo("SkyEye") == 0){
-                        list.add("reboot");
-                    } else if (type.compareTo("NuWicam") == 0){
+                    if (type.compareTo("NuWicam") == 0){
+                        EditDeviceDialogFragment fragment = new EditDeviceDialogFragment();
+                        String restart = "Restart";
+                        List<String> list = new ArrayList<>();
+                        fragment.setInterface(EditDBFragment.this);
+                        fragment.setLabel(restart);
                         list.add("wifi");
                         list.add("board");
                         list.add("Stream");
+                        fragment.setSpinnerData(list);
+                        fragment.setType(restart);
+                        fragment.setContent("Choose target to restart");
+                        fragment.show(getFragmentManager(), restart);
+                    }else if (type.compareTo("NuDoorbell") == 0){
+                        setDeviceSetting("restart", "");
+                    }else if (type.compareTo("SkyEye") == 0){
+
                     }
-                    fragment.setSpinnerData(list);
-                    fragment.setType(restart);
-                    fragment.setContent("Choose target to restart");
-                    fragment.show(getFragmentManager(), restart);
                     return false;
                 }
             });
@@ -318,20 +352,32 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     //MARK: Utility
     public void setDeviceSetting(String category, String value){
         String deviceType = deviceData.deviceType;
+        String tagString = "";
         HTTPSocketManager httpSocketManager = new HTTPSocketManager();
         httpSocketManager.setSocketInterface(this);
         String command = "http://" + ip + ":" + deviceData.getHttpPort();
         if (deviceType.compareTo("NuDoorbell") == 0){
             if (category.compareTo("resolution") == 0){
                 command += NuDoorbellCommand.setResolution(value);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_RESOLUTION);
             }else if (category.compareTo("bit_rate") == 0){
                 command += NuDoorbellCommand.setEncodeBitrate(value);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_BITRATE);
             }else if (category.compareTo("ssid") == 0){
                 localSsid = value;
                 command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_SSID);
             }else if (category.compareTo("password") == 0){
                 localPassword = value;
                 command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_PASSWORD);
+            }else if (category.compareTo("flicker") == 0){
+                command += NuDoorbellCommand.updateFlicker(value);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_FLICKER);
+            }else if (category.compareTo("restart") == 0){
+                command += NuDoorbellCommand.restart();
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.RESTART);
+                Toast.makeText(getActivity().getApplicationContext(), "Device restarted", Toast.LENGTH_SHORT).show();
             }
         }else if (deviceType.compareTo("SkyEye") == 0){
             if (category.compareTo("resolution") == 0){
@@ -379,28 +425,62 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             }
         }
         httpSocketManager.setSocketInterface(this);
-        httpSocketManager.executeSendGetTask(command);
+        httpSocketManager.executeSendGetTask(command, tagString);
     }
 
     private void setPreferenceDefault(){
         Preference pref = findPreference("name");
         pref.setSummary(deviceData.getName());
         pref = findPreference("type");
+        ListPreference list = (ListPreference) pref;
         pref.setSummary(deviceData.getDeviceType());
         pref = findPreference("ip");
         pref.setSummary(deviceData.getPublicIP());
-        pref = findPreference("ssid");
-        pref.setSummary(deviceData.getSsid());
+        EditTextPreference edit = (EditTextPreference) findPreference("ssid");
+        edit.setSummary(deviceData.getSsid());
+        edit.getEditText().setText(deviceData.getSsid());
+        edit = (EditTextPreference) findPreference("password");
+        edit.setSummary(deviceData.getPassword());
+        edit.getEditText().setText(deviceData.getPassword());
         pref = findPreference("voice_upload");
+        list = (ListPreference) pref;
         if (deviceData.getVoiceUploadHttp()){
-            pref.setSummary("HTTP");
+            list.setSummary("HTTP");
+            list.setValue("HTTP");
         }else {
-            pref.setSummary("Socket");
+            list.setSummary("Socket");
+            list.setValue("Socket");
+        }
+        pref = findPreference("aec");
+        list = (ListPreference) pref;
+        if (deviceData.getIsAECOn()){
+            list.setSummary("ON");
+            list.setValue("ON");
+        }else {
+            list.setSummary("OFF");
+            list.setValue("OFF");
         }
     }
 
-    //MARK: EditDeviceDialogInterface
+    private void sendSetting(String command, int tag){
+        HTTPSocketManager httpSocketManager = new HTTPSocketManager();
+        httpSocketManager.setSocketInterface(this);
+        String temp = "http://" + ip + ":" + deviceData.getHttpPort();
+        temp += command;
+        httpSocketManager.executeSendGetTask(temp, String.valueOf(tag));
+    }
 
+    private void  updateVideoInParameter(){
+        String command = NuDoorbellCommand.listVideoInputParameters();
+        sendSetting(command, HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_VIDEO_IN_PARAM.getValue());
+    }
+
+    private void updateNetworkParameter(){
+        String command = NuDoorbellCommand.listNetworkParameters();
+        sendSetting(command, HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_NETWORK_PARAM.getValue());
+    }
+
+    //MARK: EditDeviceDialogInterface
     @Override
     public void removeDevice(String category) {
 
@@ -430,12 +510,43 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     //MARK: HTTPSocketInterface
     @Override
     public void httpSocketResponse(Map<String, Object> responseMap) {
+        int tag = (int) responseMap.get("tag");
         String value = (String) responseMap.get("value");
-        if (value.compareTo("0") == 0){
-            Toast.makeText(getActivity().getApplicationContext(), "Value sent successfully.", Toast.LENGTH_SHORT).show();
+        if (tag == HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_VIDEO_IN_PARAM.getValue()){
+            String port0_flicker = (String) responseMap.get("port0_flicker");
+            if (port0_flicker.compareTo("50") == 0){
+                deviceData.isPAL = true;
+            }else if (port0_flicker.compareTo("60") == 0){
+                deviceData.isPAL = false;
+            }
+
+            String width = (String) responseMap.get("port0_planar_width");
+            if (width.compareTo("1280") == 0){
+                deviceData.resolution = "720p";
+            }else if (width.compareTo("640") == 0){
+                deviceData.resolution = "VGA";
+            }else if (width.compareTo("320") == 0){
+                deviceData.resolution = "QVGA";
+            }
+
+            Toast.makeText(getActivity().getApplicationContext(), "Video parameters are synchronized", Toast.LENGTH_SHORT).show();
+            updateNetworkParameter();
+        }else if (tag == HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_NETWORK_PARAM.getValue()){
+            String ssid = (String) responseMap.get("wifi_ap_ssid");
+            deviceData.ssid = ssid;
+            String password = (String) responseMap.get("wifi_ap_psk");
+            deviceData.password = password;
+
+            Toast.makeText(getActivity().getApplicationContext(), "Wi-Fi parameters are synchronized", Toast.LENGTH_SHORT).show();
         }else {
-            Toast.makeText(getActivity().getApplicationContext(), "Value sent failed.", Toast.LENGTH_SHORT).show();
+            if (value.compareTo("0") == 0){
+                Toast.makeText(getActivity().getApplicationContext(), "Value sent successfully.", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(getActivity().getApplicationContext(), "Value sent failed.", Toast.LENGTH_SHORT).show();
+            }
         }
+        deviceData.save();
+        setPreferenceDefault();
     }
 
     @Override

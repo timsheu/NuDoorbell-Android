@@ -67,11 +67,7 @@ public class DeviceData extends SugarRecord{
     int fps;                            // Device frame rate per second: 1-30
     String ssid;                        // Device SSID in soft AP mode
     String password;                    // Device password in soft AP mode
-    String history1;                    // Device history list
-    String history2;                    // Device history list
-    String history3;                    // Device history list
-    String history4;                    // Device history list
-    String history5;                    // Device history list
+    Boolean isAECOn;                    // Mic AEC on/off setting
 
     public String getDeviceType() {
         return deviceType;
@@ -233,60 +229,24 @@ public class DeviceData extends SugarRecord{
         this.password = password;
     }
 
-    public String getHistory1() {
-        return history1;
-    }
-
-    public void setHistory1(String history1) {
-        this.history1 = history1;
-    }
-
-    public String getHistory2() {
-        return history2;
-    }
-
-    public void setHistory2(String history2) {
-        this.history2 = history2;
-    }
-
-    public String getHistory3() {
-        return history3;
-    }
-
-    public void setHistory3(String history3) {
-        this.history3 = history3;
-    }
-
-    public String getHistory4() {
-        return history4;
-    }
-
-    public void setHistory4(String history4) {
-        this.history4 = history4;
-    }
-
-    public String getHistory5() {
-        return history5;
-    }
-
-    public void setHistory5(String history5) {
-        this.history5 = history5;
-    }
-
     public void setIsPAL(Boolean isPAL){
         this.isPAL = isPAL;
     }
 
+    public void setIsAECOn(Boolean isAECOn) { this.isAECOn = isAECOn; }
+
+    public boolean getIsAECOn() { return this.isAECOn; }
+
     public DeviceData(){
         uuid = "00000001";
-        name = "SkyEye";
-        deviceType = "SkyEye";
+        name = "Doorbell";
+        deviceType = "NuDoorbell";
         publicIP = "192.168.100.1";
         privateIP = "192.168.100.1";
         httpPort = 80;
         rtspPort = 554;
         fcmToken = "";
-        isVoiceUploadHttp = false;
+        isVoiceUploadHttp = true;
         isAdaptive = false;
         isFixedQuality = false;
         isFixedBitrate = false;
@@ -301,11 +261,7 @@ public class DeviceData extends SugarRecord{
         fps = 20;
         ssid = "SkyEye";
         password = "12345678";
-        history1 = "192.168.100.1";
-        history2 = "";
-        history3 = "";
-        history4 = "";
-        history5 = "";
+        isAECOn = false;
     }
 
     public DeviceData(String uuid, String name, String deviceType, String publicIP, String privateIP, int httpPort, int rtspPort, String fcmToken, Boolean isVoiceUploadHttp, Boolean isAdaptive, Boolean isFixedQuality, Boolean isFixedBitrate, Boolean isTCPTransmission, Boolean isMute, Boolean isStorageAvailable, Boolean isRecorderOn, String resolution, int encodeQuality, int bitRate, int fps, String ssid, String password, String history1, String history2, String history3, String history4, String history5) {
@@ -330,11 +286,6 @@ public class DeviceData extends SugarRecord{
         this.fps = fps;
         this.ssid = ssid;
         this.password = password;
-        this.history1 = history1;
-        this.history2 = history2;
-        this.history3 = history3;
-        this.history4 = history4;
-        this.history5 = history5;
         this.name = name;
     }
 }

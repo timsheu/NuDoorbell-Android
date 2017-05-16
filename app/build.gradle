@@ -10,8 +10,8 @@ android {
         applicationId "com.nuvoton.nuplayer"
         minSdkVersion 19
         targetSdkVersion 24
-        versionCode 206
-        versionName "2.0.6"
+        versionCode 2010
+        versionName "2.0.10"
     }
     buildTypes {
         release {
@@ -49,6 +49,7 @@ dependencies {
     compile 'com.github.satyan:sugar:1.4'
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile project(':libvlc')
 }
 
 apply plugin: 'com.google.gms.google-services'

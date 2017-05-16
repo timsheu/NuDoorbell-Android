@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
                 }else{
                     Map<String, Object> map = items.get(i);
                     long id = (long) map.get("ID");
-                    Intent intent = new Intent(MainActivity.this, Streaming.class);
+                    Intent intent = new Intent(MainActivity.this, StreamingVLC.class);
                     intent.putExtra("ID", id);
                     startActivity(intent);
                 }

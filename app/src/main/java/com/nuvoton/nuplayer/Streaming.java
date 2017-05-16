@@ -155,7 +155,7 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
                 }
                 HTTPSocketManager httpSocketManager = new HTTPSocketManager();
                 httpSocketManager.setHttpSocketInterface(this);
-                httpSocketManager.executeSendGetTask(snapshotCommand);
+                httpSocketManager.executeSendGetTask(snapshotCommand, HTTPSocketManager.HTTPSocketTags.DEFAULT.getString());
                 Log.d(TAG, "onClick: snapshot");
                 break;
             case R.id.playButton:
@@ -253,19 +253,21 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
 
         HashMap<String, String> params = new HashMap<>();
         // set font for ass
-        params.put("probesize", "2560");
+        params.put("probesize", "5120");
 //        params.put("max_delay", "50");
 //        params.put("fflags", "nobuffer");
 //        params.put("flush_packets", "1");
         boolean isTCP = deviceData.getTCPTransmission();
         isTCP = deviceData.isTCPTransmission;
         if (isTCP){
-            params.put("rtsp_transport", "tcp");
+            params.put("rtsp_transport", "udp");
         }
         mMpegPlayer.setMpegListener(this);
         mMpegPlayer.setDataSource(localURL, params, FFmpegPlayer.UNKNOWN_STREAM, mAudioStreamNo,
                 mSubtitleStreamNo, resolution);
 //        mMpegPlayer.setDataSource("rtsp://192.168.8.14/cam1/h264", params, FFmpegPlayer.UNKNOWN_STREAM, mAudioStreamNo,
+//                mSubtitleStreamNo, resolution);
+//        mMpegPlayer.setDataSource("rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov", params, FFmpegPlayer.UNKNOWN_STREAM, mAudioStreamNo,
 //                mSubtitleStreamNo, resolution);
     }
 
