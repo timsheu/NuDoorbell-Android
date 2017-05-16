@@ -84,6 +84,7 @@ public class HTTPSocketManager {
             throw new IOException("Not an HTTP connection");
         try{
             HttpURLConnection httpConn = (HttpURLConnection) conn;
+            httpConn.setConnectTimeout(5000);
             httpConn.setAllowUserInteraction(false);
             httpConn.setInstanceFollowRedirects(true);
             httpConn.setRequestMethod("GET");
@@ -93,6 +94,7 @@ public class HTTPSocketManager {
                 in = httpConn.getInputStream();
             }
         } catch (Exception ex) {
+            httpSocketInterface.didDisconnected();
             //Log.d("Networking", ex.getLocalizedMessage());
             ex.printStackTrace();
             throw new IOException("Error connceting");
@@ -148,6 +150,7 @@ public class HTTPSocketManager {
                 Map<String, Object> map = toMap(jsonObject);
                 map.put("tag", tag);
                 httpSocketInterface.httpSocketResponse(map);
+                httpSocketInterface.didDisconnected();
                 if (isTwoWayTalking) {
                     httpSocketInterface.voiceConnectionOpened();
                 }

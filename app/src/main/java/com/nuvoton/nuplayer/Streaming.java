@@ -86,6 +86,11 @@ public class Streaming extends AppCompatActivity implements FFmpegListener, TwoW
 
     }
 
+    @Override
+    public void didDisconnected() {
+
+    }
+
     public interface OnHideBottomBarListener{
         public void onHideBottomBar(boolean isHide);
         public void onEnableClick(boolean isEnable);

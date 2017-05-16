@@ -318,4 +318,8 @@ public class TwoWayTalking implements HTTPSocketInterface{
         twoWayTalking.mInterface = mInterface;
     }
 
+    @Override
+    public void didDisconnected() {
+
+    }
 }
