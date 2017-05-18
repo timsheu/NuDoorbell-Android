@@ -16,7 +16,7 @@ import android.util.Log;
 
 import com.nuvoton.nuplayer.DeviceData;
 import com.nuvoton.nuplayer.R;
-import com.nuvoton.nuplayer.Streaming;
+import com.nuvoton.nuplayer.StreamingVLC;
 
 public class UDPSocketService extends Service implements LANBroadcastReceiver.BroadcastInterface {
     private int mID = 100;
@@ -69,11 +69,11 @@ public class UDPSocketService extends Service implements LANBroadcastReceiver.Br
                 .setDefaults(Notification.DEFAULT_ALL)
                 ;
 
-        Intent resultIntent = new Intent(this, Streaming.class);
+        Intent resultIntent = new Intent(this, StreamingVLC.class);
         resultIntent.putExtra("ID", deviceData.getId());
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(Streaming.class);
+        stackBuilder.addParentStack(StreamingVLC.class);
         stackBuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent =
                 stackBuilder.getPendingIntent(

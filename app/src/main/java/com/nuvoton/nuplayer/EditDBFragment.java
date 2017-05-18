@@ -553,4 +553,9 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     public void voiceConnectionOpened() {
 
     }
+
+    @Override
+    public void didDisconnected() {
+
+    }
 }

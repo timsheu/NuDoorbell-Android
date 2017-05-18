@@ -119,7 +119,12 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
 
     }
 
-//    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    @Override
+    public void didDisconnected() {
+
+    }
+
+    //    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onNewVideoLayout(IVLCVout vlcVout, int width, int height, int visibleWidth, int visibleHeight, int sarNum, int sarDen) {
         mVideoWidth = width;
@@ -129,6 +134,7 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
         mVideoSarNum = sarNum;
         mVideoSarDen = sarDen;
         updateVideoSurfaces();
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -170,8 +176,23 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
                     }
                 }).check();
         final ArrayList<String> args = new ArrayList<>();
-        args.add("-vvv");
-        args.add("--rtsp-tcp");
+//        args.add("--rtsp-tcp");
+//        args.add("--audio-time-stretch"); // time stretching
+        args.add("--swscale-mode=0");
+        args.add("--file-caching=900");
+        args.add("--network-caching=900");
+        args.add("--avcodec-skip-frame");
+        args.add("--avcodec-hw=any");
+
+//        args.add("-vvv");
+//        args.add("--file-caching=500");
+//        args.add("--network-caching=500");
+        args.add("--clock-jitter=10");
+        args.add("--clock-synchro=10");
+//        args.add("--rtp-max-dropout=50");
+//        args.add("--rtp-max-misorder=50");
+//        args.add("--rtsp-frame-buffer-size=128");
+//        args.add("--avcodec-hw=no");
         mLibVLC = new LibVLC(this, args);
         mMediaPlayer = new MediaPlayer(mLibVLC);
     }
@@ -192,8 +213,12 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
         vlcVout.attachViews(this);
 
         Media media = new Media(mLibVLC, Uri.parse(localURL));
+        media.setHWDecoderEnabled(true, true);
+        media.addOption(":network-caching=900");
+        media.addOption(":clock-jitter=10");
+        media.addOption(":clock-synchro=10");
         mMediaPlayer.setMedia(media);
-        media.release();
+//        media.release();
         mMediaPlayer.play();
 
         if (mOnLayoutChangeListener == null) {
