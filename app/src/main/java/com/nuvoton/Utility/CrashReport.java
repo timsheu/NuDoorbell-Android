@@ -8,6 +8,7 @@ import com.nuvoton.nuplayer.R;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
+import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 /**
@@ -16,6 +17,9 @@ import org.acra.annotation.ReportsCrashes;
 
 
 @ReportsCrashes(
+        mode = ReportingInteractionMode.TOAST,
+        resToastText = R.string.crash_toast_text,
+        reportSenderFactoryClasses = {HockeySenderFactory.class},
         mailTo = "cchsu20@nuvoton.com",
         customReportContent = {
                 ReportField.APP_VERSION_CODE,
@@ -27,6 +31,7 @@ import org.acra.annotation.ReportsCrashes;
                 ReportField.LOGCAT
         }
 //        mode = ReportingInteractionMode.TOAST
+
 )
 
 public class CrashReport extends Application {

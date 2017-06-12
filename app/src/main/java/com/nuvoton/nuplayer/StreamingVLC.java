@@ -176,11 +176,11 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
                     }
                 }).check();
         final ArrayList<String> args = new ArrayList<>();
-//        args.add("--rtsp-tcp");
+        args.add("--rtsp-tcp");
 //        args.add("--audio-time-stretch"); // time stretching
         args.add("--swscale-mode=0");
-        args.add("--file-caching=900");
-        args.add("--network-caching=900");
+        args.add("--file-caching=1000");
+        args.add("--network-caching=1000");
         args.add("--avcodec-skip-frame");
         args.add("--avcodec-hw=any");
 
@@ -214,7 +214,7 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
 
         Media media = new Media(mLibVLC, Uri.parse(localURL));
         media.setHWDecoderEnabled(true, true);
-        media.addOption(":network-caching=900");
+        media.addOption(":network-caching=1000");
         media.addOption(":clock-jitter=10");
         media.addOption(":clock-synchro=10");
         mMediaPlayer.setMedia(media);

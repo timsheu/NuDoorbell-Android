@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements AddDBFragment.Set
     private boolean isBinded = false, isBackTwice = false;
     private String token = "";
     private ShmadiaConnectManager manager;
+    List<String> crash = new ArrayList<>();
     public ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
