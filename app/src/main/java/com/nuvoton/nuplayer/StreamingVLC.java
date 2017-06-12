@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
@@ -240,6 +241,7 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
             };
         }
         mVideoSurfaceFrame.addOnLayoutChangeListener(mOnLayoutChangeListener);
+//        mVideoSurfaceFrame.setOnTouchListener(AEWindowOnTouchListener);
     }
 
     protected void onStop() {
@@ -359,6 +361,7 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
             lp.width  = ViewGroup.LayoutParams.MATCH_PARENT;
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
             mVideoSurface.setLayoutParams(lp);
+            mVideoSurface.setOnTouchListener(AEWindowOnTouchListener);
             lp = mVideoSurfaceFrame.getLayoutParams();
             lp.width  = ViewGroup.LayoutParams.MATCH_PARENT;
             lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -502,4 +505,59 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
                 break;
         }
     }
+
+    View.OnTouchListener AEWindowOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN){
+                Log.d(TAG, "onTouch:Touch coordinates : " +
+                        String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()) +
+                "\nview size " + String.valueOf(mVideoSurface.getWidth()) + "x" + String.valueOf(mVideoSurface.getHeight()));
+            }
+            float xPositionRatio = event.getX() / mVideoSurface.getWidth(),
+                    yPositionRatio = event.getY() / mVideoSurface.getHeight();
+            if (xPositionRatio < 0.25F){
+                xPositionRatio = 0.25F;
+            }else if (xPositionRatio > 0.75F){
+                xPositionRatio = 0.75F;
+            }
+
+            if (yPositionRatio < 0.25F){
+                yPositionRatio = 0.25F;
+            }else if (yPositionRatio > 0.75F){
+                yPositionRatio = 0.75F;
+            }
+            int startX, endX, startY, endY;
+            String resolution = deviceData.getResolution();
+            if (resolution.compareTo("QVGA") == 0){
+                startX = (int)((xPositionRatio - 0.25F) * 320);
+                endX = (int)((xPositionRatio + 0.25F) * 320);
+                startY = (int)((yPositionRatio - 0.25F) * 240);
+                endY = (int)((yPositionRatio + 0.25F) * 240);
+            }else if (resolution.compareTo("VGA") == 0){
+                startX = (int)((xPositionRatio - 0.25F) * 640);
+                endX = (int)((xPositionRatio + 0.25F) * 640);
+                startY = (int)((yPositionRatio - 0.25F) * 480);
+                endY = (int)((yPositionRatio + 0.25F) * 480);
+            }else if (resolution.compareTo("720p") == 0){
+                startX = (int)((xPositionRatio - 0.25F) * 1280);
+                endX = (int)((xPositionRatio + 0.25F) * 1280);
+                startY = (int)((yPositionRatio - 0.25F) * 720);
+                endY = (int)((yPositionRatio + 0.25F) * 720);
+            }else { //1080p
+                startX = (int)((xPositionRatio - 0.25F) * 1920);
+                endX = (int)((xPositionRatio + 0.25F) * 1920);
+                startY = (int)((yPositionRatio - 0.25F) * 1080);
+                endY = (int)((yPositionRatio + 0.25F) * 1080);
+            }
+            Log.d(TAG, "onTouch: " + startX + ", " + endX + ", " + startY + ", " + endY);
+            String command = "http://" + deviceData.getPrivateIP() + ":" + deviceData.getHttpPort();
+            command += NuDoorbellCommand.setAEWindow(startX, endX, startY, endY);
+            HTTPSocketManager socketManager = new HTTPSocketManager();
+            socketManager.executeSendGetTask(command, String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_AE_WINDOW.getValue()));
+            return true;
+        }
+    };
+
+
 }

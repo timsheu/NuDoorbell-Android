@@ -47,7 +47,7 @@
             android:name="com.nuvoton.nuplayer.StreamingVLC"
             android:label="@string/title_activity_streaming"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:configChanges="orientation|screenSize"
+            android:screenOrientation="landscape"
             />
 
         <meta-data android:name="VERSION" android:value="2010" />

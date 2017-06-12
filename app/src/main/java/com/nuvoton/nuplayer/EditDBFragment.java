@@ -359,24 +359,24 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
         if (deviceType.compareTo("NuDoorbell") == 0){
             if (category.compareTo("resolution") == 0){
                 command += NuDoorbellCommand.setResolution(value);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_RESOLUTION);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_RESOLUTION.getValue());
             }else if (category.compareTo("bit_rate") == 0){
                 command += NuDoorbellCommand.setEncodeBitrate(value);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_BITRATE);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_BITRATE.getValue());
             }else if (category.compareTo("ssid") == 0){
                 localSsid = value;
                 command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_SSID);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_SSID.getValue());
             }else if (category.compareTo("password") == 0){
                 localPassword = value;
                 command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_PASSWORD);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_PASSWORD.getValue());
             }else if (category.compareTo("flicker") == 0){
                 command += NuDoorbellCommand.updateFlicker(value);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_FLICKER);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_FLICKER.getValue());
             }else if (category.compareTo("restart") == 0){
                 command += NuDoorbellCommand.restart();
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.RESTART);
+                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.RESTART.getString());
                 Toast.makeText(getActivity().getApplicationContext(), "Device restarted", Toast.LENGTH_SHORT).show();
             }
         }else if (deviceType.compareTo("SkyEye") == 0){
@@ -521,7 +521,9 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             }
 
             String width = (String) responseMap.get("port0_planar_width");
-            if (width.compareTo("1280") == 0){
+            if (width.compareTo("1920") == 0){
+                deviceData.resolution = "1080p";
+            }else if (width.compareTo("1280") == 0){
                 deviceData.resolution = "720p";
             }else if (width.compareTo("640") == 0){
                 deviceData.resolution = "VGA";

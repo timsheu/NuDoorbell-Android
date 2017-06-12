@@ -12,12 +12,14 @@
         <item>QVGA</item>
         <item>VGA</item>
         <item>720p</item>
+        <item>1080p</item>
     </string-array>
 
     <string-array name="resolution_value_list">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string-array name="bitrate_list">

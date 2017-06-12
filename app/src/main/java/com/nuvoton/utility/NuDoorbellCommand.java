@@ -5,8 +5,18 @@ package com.nuvoton.utility;
  */
 
 public class NuDoorbellCommand {
-    public static String setResolution(String value){
+    public static String setResolution(String resolution){
         String command = "/server.command?command=set_resol&pipe=0&type=h264";
+        String value;
+        if (resolution.compareTo("1080p") == 0){
+            value = "3";
+        }else if (resolution.compareTo("720p") == 0){
+            value = "2";
+        }else if (resolution.compareTo("VGA") == 0){
+            value = "1";
+        }else{
+            value = "0";
+        }
         command = command + "&value=" + value;
         return command;
     }
@@ -80,6 +90,13 @@ public class NuDoorbellCommand {
 
     public static String listNetworkParameters(){
         String command = "/param.cgi?action=list&group=plugin&name=network";
+        return command;
+    }
+
+    public static String setAEWindow(int startX, int endX, int startY, int endY){
+        String command = "/server.command?command=set_sensor_ae_window&pipe=0" +
+                "&start_x=" + startX + "&end_x=" + endX +
+                "&start_y=" + startY + "&end_y=" + endY ;
         return command;
     }
 }
