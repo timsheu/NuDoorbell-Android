@@ -51,6 +51,7 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     compile project(':libvlc')
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
+    compile 'com.android.volley:volley:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.RunnableFuture;
 import java.util.stream.Stream;
 
 import butterknife.BindView;
@@ -79,6 +81,7 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
     private String localURL;
     private long localId;
     private DeviceData deviceData;
+    private boolean isAEWindow = false;
 
     //Bind view with ButterKnife
     @BindView(R.id.video_surface_frame) FrameLayout mVideoSurfaceFrame;
@@ -509,6 +512,10 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
     View.OnTouchListener AEWindowOnTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+            if (isAEWindow == true){
+                return true;
+            }
+            isAEWindow = true;
             if (event.getAction() == MotionEvent.ACTION_DOWN){
                 Log.d(TAG, "onTouch:Touch coordinates : " +
                         String.valueOf(event.getX()) + "x" + String.valueOf(event.getY()) +
@@ -554,10 +561,21 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
             String command = "http://" + deviceData.getPrivateIP() + ":" + deviceData.getHttpPort();
             command += NuDoorbellCommand.setAEWindow(startX, endX, startY, endY);
             HTTPSocketManager socketManager = new HTTPSocketManager();
+            socketManager.setSocketInterface(StreamingVLC.this);
             socketManager.executeSendGetTask(command, String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_AE_WINDOW.getValue()));
+            Toast.makeText(StreamingVLC.this, "Set AE Window, delay 5 seconds", Toast.LENGTH_SHORT).show();
+            Timer timer = new Timer(true);
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    setAEWindow(false);
+                }
+            }, 5000);
             return true;
         }
     };
 
-
+    public void setAEWindow(boolean AEWindow) {
+        isAEWindow = AEWindow;
+    }
 }

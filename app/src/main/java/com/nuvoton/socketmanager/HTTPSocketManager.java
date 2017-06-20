@@ -98,7 +98,7 @@ public class HTTPSocketManager {
             httpSocketInterface.didDisconnected();
             //Log.d("Networking", ex.getLocalizedMessage());
             ex.printStackTrace();
-            throw new IOException("Error connceting");
+            throw new IOException("Error connecting");
         }
         return  in;
     }
@@ -150,8 +150,10 @@ public class HTTPSocketManager {
                 JSONObject jsonObject = new JSONObject(result);
                 Map<String, Object> map = toMap(jsonObject);
                 map.put("tag", tag);
-                httpSocketInterface.httpSocketResponse(map);
-                httpSocketInterface.didDisconnected();
+                if (httpSocketInterface != null){
+                    httpSocketInterface.httpSocketResponse(map);
+                    httpSocketInterface.didDisconnected();
+                }
                 if (isTwoWayTalking) {
                     httpSocketInterface.voiceConnectionOpened();
                 }
