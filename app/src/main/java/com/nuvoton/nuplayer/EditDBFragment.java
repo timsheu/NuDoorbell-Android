@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.nuvoton.socketmanager.HTTPSocketInterface;
 import com.nuvoton.socketmanager.HTTPSocketManager;
+import com.nuvoton.socketmanager.VolleyManager;
 import com.nuvoton.utility.CustomDialogFragment;
 import com.nuvoton.utility.EditDeviceDialogFragment;
 import com.nuvoton.utility.NuDoorbellCommand;
@@ -353,30 +354,35 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     public void setDeviceSetting(String category, String value){
         String deviceType = deviceData.deviceType;
         String tagString = "";
-        HTTPSocketManager httpSocketManager = new HTTPSocketManager();
-        httpSocketManager.setSocketInterface(this);
+        VolleyManager.HTTPSocketTags tag = VolleyManager.HTTPSocketTags.DEFAULT;
         String command = "http://" + ip + ":" + deviceData.getHttpPort();
         if (deviceType.compareTo("NuDoorbell") == 0){
             if (category.compareTo("resolution") == 0){
                 command += NuDoorbellCommand.setResolution(value);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_RESOLUTION.getValue());
+                tag = VolleyManager.HTTPSocketTags.UPDATE_VIDEO_RESOLUTION;
+                tagString = String.valueOf(VolleyManager.HTTPSocketTags.UPDATE_VIDEO_RESOLUTION.getValue());
             }else if (category.compareTo("bit_rate") == 0){
                 command += NuDoorbellCommand.setEncodeBitrate(value);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_BITRATE.getValue());
+                tag = VolleyManager.HTTPSocketTags.UPDATE_VIDEO_BITRATE;
+                tagString = String.valueOf(VolleyManager.HTTPSocketTags.UPDATE_VIDEO_BITRATE.getValue());
             }else if (category.compareTo("ssid") == 0){
                 localSsid = value;
                 command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_SSID.getValue());
+                tag = VolleyManager.HTTPSocketTags.UPDATE_WIFI_SSID;
+                tagString = String.valueOf(VolleyManager.HTTPSocketTags.UPDATE_WIFI_SSID.getValue());
             }else if (category.compareTo("password") == 0){
                 localPassword = value;
                 command += NuDoorbellCommand.wifiSetup(localSsid, localPassword);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_WIFI_PASSWORD.getValue());
+                tag = VolleyManager.HTTPSocketTags.UPDATE_WIFI_PASSWORD;
+                tagString = String.valueOf(VolleyManager.HTTPSocketTags.UPDATE_WIFI_PASSWORD.getValue());
             }else if (category.compareTo("flicker") == 0){
                 command += NuDoorbellCommand.updateFlicker(value);
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_FLICKER.getValue());
+                tag = VolleyManager.HTTPSocketTags.UPDATE_VIDEO_FLICKER;
+                tagString = String.valueOf(VolleyManager.HTTPSocketTags.UPDATE_VIDEO_FLICKER.getValue());
             }else if (category.compareTo("restart") == 0){
                 command += NuDoorbellCommand.restart();
-                tagString = String.valueOf(HTTPSocketManager.HTTPSocketTags.RESTART.getString());
+                tag = VolleyManager.HTTPSocketTags.RESTART;
+                tagString = String.valueOf(VolleyManager.HTTPSocketTags.RESTART.getString());
                 Toast.makeText(getActivity().getApplicationContext(), "Device restarted", Toast.LENGTH_SHORT).show();
             }
         }else if (deviceType.compareTo("SkyEye") == 0){
@@ -424,8 +430,8 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
                 command += NuWicamCommand.updateWifiParameters(localSsid, localPassword);
             }
         }
-        httpSocketManager.setSocketInterface(this);
-        httpSocketManager.executeSendGetTask(command, tagString);
+        VolleyManager.getShared(getActivity().getApplicationContext()).setHttpSocketInterface(this);
+        VolleyManager.getShared(getActivity().getApplicationContext()).sendCommand(command, tag);
     }
 
     private void setPreferenceDefault(){
@@ -463,11 +469,10 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     }
 
     private void sendSetting(String command, int tag){
-        HTTPSocketManager httpSocketManager = new HTTPSocketManager();
-        httpSocketManager.setSocketInterface(this);
         String temp = "http://" + ip + ":" + deviceData.getHttpPort();
         temp += command;
-        httpSocketManager.executeSendGetTask(temp, String.valueOf(tag));
+        VolleyManager.getShared(getActivity().getApplicationContext()).setHttpSocketInterface(this);
+        VolleyManager.getShared(getActivity().getApplicationContext()).sendCommand(temp, VolleyManager.HTTPSocketTags.fromInt(tag));
     }
 
     private void  updateVideoInParameter(){
@@ -510,9 +515,9 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
     //MARK: HTTPSocketInterface
     @Override
     public void httpSocketResponse(Map<String, Object> responseMap) {
-        int tag = (int) responseMap.get("tag");
+        VolleyManager.HTTPSocketTags tag = (VolleyManager.HTTPSocketTags) responseMap.get("socketTag");
         String value = (String) responseMap.get("value");
-        if (tag == HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_VIDEO_IN_PARAM.getValue()){
+        if (tag.getValue() == HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_VIDEO_IN_PARAM.getValue()){
             String port0_flicker = (String) responseMap.get("port0_flicker");
             if (port0_flicker.compareTo("50") == 0){
                 deviceData.isPAL = true;
@@ -533,7 +538,7 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
 
             Toast.makeText(getActivity().getApplicationContext(), "Video parameters are synchronized", Toast.LENGTH_SHORT).show();
             updateNetworkParameter();
-        }else if (tag == HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_NETWORK_PARAM.getValue()){
+        }else if (tag.getValue() == HTTPSocketManager.HTTPSocketTags.PLUGIN_LIST_NETWORK_PARAM.getValue()){
             String ssid = (String) responseMap.get("wifi_ap_ssid");
             deviceData.ssid = ssid;
             String password = (String) responseMap.get("wifi_ap_psk");

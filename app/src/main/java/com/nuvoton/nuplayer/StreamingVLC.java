@@ -21,6 +21,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -28,11 +34,13 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 import com.nuvoton.socketmanager.HTTPSocketInterface;
-import com.nuvoton.socketmanager.HTTPSocketManager;
+import com.nuvoton.socketmanager.VolleyManager;
 import com.nuvoton.utility.NuDoorbellCommand;
 import com.nuvoton.utility.NuPlayerCommand;
 import com.nuvoton.utility.TwoWayTalking;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
 import org.videolan.libvlc.Media;
@@ -51,6 +59,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.TwoWayTalkingInterface, HTTPSocketInterface, IVLCVout.OnNewVideoLayoutListener{
+    private RequestQueue volleyQueue;
     private static String TAG = "StreamingVLC";
     private final Handler mHandler = new Handler();
     private View.OnLayoutChangeListener mOnLayoutChangeListener = null;
@@ -116,6 +125,13 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
     @Override
     public void httpSocketResponse(Map<String, Object> responseMap) {
         Log.d(TAG, "httpSocketResponse: " + responseMap);
+        VolleyManager.HTTPSocketTags socketTag = (VolleyManager.HTTPSocketTags) responseMap.get("socketTag");
+        String returnValue = (String) responseMap.get("value");
+        if (returnValue.compareTo("0") == 0){
+            if (socketTag == VolleyManager.HTTPSocketTags.UPDATE_VIDEO_AE_WINDOW){
+                Toast.makeText(getApplicationContext(), "Send AE command success", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -268,9 +284,8 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
                 if (deviceData.deviceType.compareTo("NuDoorbell") == 0){
                     snapshotCommand = NuDoorbellCommand.snapshot();
                 }
-                HTTPSocketManager httpSocketManager = new HTTPSocketManager();
-                httpSocketManager.setHttpSocketInterface(this);
-                httpSocketManager.executeSendGetTask(snapshotCommand, HTTPSocketManager.HTTPSocketTags.DEFAULT.getString());
+                VolleyManager.getShared(getApplicationContext()).setHttpSocketInterface(this);
+                VolleyManager.getShared(getApplicationContext()).sendCommand(snapshotCommand, VolleyManager.HTTPSocketTags.DEFAULT);
                 Log.d(TAG, "onClick: snapshot");
                 break;
             case R.id.playButton:
@@ -560,9 +575,11 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
             Log.d(TAG, "onTouch: " + startX + ", " + endX + ", " + startY + ", " + endY);
             String command = "http://" + deviceData.getPrivateIP() + ":" + deviceData.getHttpPort();
             command += NuDoorbellCommand.setAEWindow(startX, endX, startY, endY);
-            HTTPSocketManager socketManager = new HTTPSocketManager();
-            socketManager.setSocketInterface(StreamingVLC.this);
-            socketManager.executeSendGetTask(command, String.valueOf(HTTPSocketManager.HTTPSocketTags.UPDATE_VIDEO_AE_WINDOW.getValue()));
+            if (volleyQueue == null){
+                volleyQueue = VolleyManager.getShared(getApplicationContext()).mQueue;
+            }
+            VolleyManager.getShared(getApplicationContext()).setHttpSocketInterface(StreamingVLC.this);
+            VolleyManager.getShared(getApplicationContext()).sendCommand(command, VolleyManager.HTTPSocketTags.UPDATE_VIDEO_AE_WINDOW);
             Toast.makeText(StreamingVLC.this, "Set AE Window, delay 5 seconds", Toast.LENGTH_SHORT).show();
             Timer timer = new Timer(true);
             timer.schedule(new TimerTask() {
