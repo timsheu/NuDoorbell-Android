@@ -466,6 +466,9 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             list.setSummary("OFF");
             list.setValue("OFF");
         }
+        pref = findPreference("resolution");
+        ((ListPreference) pref).setValue(deviceData.getResolution());
+        pref.setSummary(deviceData.getResolution());
     }
 
     private void sendSetting(String command, int tag){
@@ -526,7 +529,10 @@ public class EditDBFragment extends PreferenceFragment implements SharedPreferen
             }
 
             String width = (String) responseMap.get("port0_planar_width");
-            if (width.compareTo("1920") == 0){
+            String height = (String) responseMap.get("port0_planar_height");
+            if (height.compareTo("368") == 0){
+                deviceData.resolution = "360p";
+            }else if (width.compareTo("1920") == 0){
                 deviceData.resolution = "1080p";
             }else if (width.compareTo("1280") == 0){
                 deviceData.resolution = "720p";

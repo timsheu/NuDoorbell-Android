@@ -11,6 +11,7 @@
     <string-array name="resolution_list">
         <item>QVGA</item>
         <item>VGA</item>
+        <item>360p</item>
         <item>720p</item>
         <item>1080p</item>
     </string-array>
@@ -20,6 +21,7 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
+        <item>4</item>
     </string-array>
 
     <string-array name="bitrate_list">
