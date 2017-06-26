@@ -566,11 +566,16 @@ public class StreamingVLC extends AppCompatActivity implements TwoWayTalking.Two
                 endX = (int)((xPositionRatio + 0.25F) * 1280);
                 startY = (int)((yPositionRatio - 0.25F) * 720);
                 endY = (int)((yPositionRatio + 0.25F) * 720);
-            }else { //1080p
+            }else if (resolution.compareTo("1080p") == 0){ //1080p
                 startX = (int)((xPositionRatio - 0.25F) * 1920);
                 endX = (int)((xPositionRatio + 0.25F) * 1920);
                 startY = (int)((yPositionRatio - 0.25F) * 1080);
                 endY = (int)((yPositionRatio + 0.25F) * 1080);
+            }else {
+                startX = (int)((xPositionRatio - 0.25F) * 640);
+                endX = (int)((xPositionRatio + 0.25F) * 640);
+                startY = (int)((yPositionRatio - 0.25F) * 368);
+                endY = (int)((yPositionRatio + 0.25F) * 368);
             }
             Log.d(TAG, "onTouch: " + startX + ", " + endX + ", " + startY + ", " + endY);
             String command = "http://" + deviceData.getPrivateIP() + ":" + deviceData.getHttpPort();
